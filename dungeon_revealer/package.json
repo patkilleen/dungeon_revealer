@@ -1,0 +1,41 @@
+{
+  "name": "dungeon-revealer",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node ./bin/dungeon-revealer"
+  },
+  "dependencies": {
+    "body-parser": "~1.8.1",
+    "connect-busboy": "0.0.2",
+    "cookie-parser": "~1.3.3",
+    "cookie-session": "^1.1.0",
+    "debug": "~2.0.0",
+    "express": "~4.9.0",
+    "jade": "~1.6.0",
+    "morgan": "~1.3.0",
+    "serve-favicon": "~2.1.3",
+    "socket.io": "^1.2.1"
+  },
+  "description": "dungeon-revealer ================",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apclary/dungeon-revealer.git"
+  },
+  "author": {
+    "name": "apclary"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/apclary/dungeon-revealer/issues"
+  },
+  "homepage": "https://github.com/apclary/dungeon-revealer",
+  "gitHead": "c1b0cfcd8a34493351806b7c3417ef3f401b178d",
+  "readme": "dungeon-revealer\r\n================\r\n\r\nA web app for tabletop gaming to allow the game master to reveal areas of the game map to players.\r\n\r\nWhat the DM Sees\r\n----------------\r\n![alt text](http://apclary.github.io/dungeon-revealer/img/example_dm_1.jpeg \"DM's view\")\r\n\r\nWhat the players see\r\n--------------------\r\n![alt text](https://apclary.github.io/dungeon-revealer/img/example_player_1.jpeg \"Player's view\")\r\n\r\n\r\nInstallation\r\n------------\r\n(This is the simplest way I know to install. If you know a better way, please shoot me a message.)\r\n\r\n1. Install git. On Windows, I believe if you install the Github version of git it should add git automatically to your path.\r\n2.. Go to https://nodejs.org/download/ and download and install Node. Node is the runtime for this software, which basically means you need it to make the software work. Only one person needs Node (assumed to be the DM). \r\n3. Once Node is installed, open a command prompt. \r\n  * For Mac users, press Command + Space and type \"terminal\" into Spotlight. Press enter and a prompt should open. \r\n  * For Windows users, press the Windows key and type \"command prompt\" or \"cmd\" into the search box and then press enter.\r\n  * For Linux users, you already know how to open the command prompt.\r\n4. Using the command prompt, change to whatever directory you want to keep this program in. \r\n5. Once you are in that directory, type `npm install apclary/dungeon-revealer` (without quotes) into the command prompt and press enter.\r\n6. Wait a little bit while it installs.\r\n7. Once it's done, a directory named node_modules should appear. Using the prompt, navigate to node_modules/dungeon-revealer/bin.\r\n8. Type `node dungeon-revealer` into the prompt. Some messages should appear. This likely means the server is now running. \r\n  * On some Windows machines, a firewall prompt will appear. Check all of the checkboxes and click OK.\r\n\r\nUse\r\n---\r\n\r\nTo use dungeon-revealer, the game master and the players must be on the same local network (usually a wifi network). The game master will start the server, navigate to the server's URL in a browser like Chrome, and then click on the Dungeon Master link. At this point, she will be prompted to upload an image file of the map to share with the other players. The other players will navigate to the server using their own browsers (laptop, tablet, or phone) and will remain at the home page. The connection information is displayed in command prompt for convenience.\r\n\r\nTo clear areas of the map, click and draw on the map. If you clear too much, you can switch the brush to the \"shadow brush\" and restore some of the fog. Whenever you clear some of the fog of war from the map and is ready to share with the players, she will click \"Send\" and the revealed areas of the map will appear in the player's browsers. What appears as a shadow to the DM will appear as pure blackness to players, thus only revealing the cleared sections of the map to them.\r\n\r\nTo replace the existing map with a new image file, click \"New Map\".\r\n\r\n\r\n",
+  "readmeFilename": "README.md",
+  "_id": "dungeon-revealer@0.0.1",
+  "_shasum": "a363147e831fb54fc3dae2db44046f0299fb425a",
+  "_from": "apclary/dungeon-revealer",
+  "_resolved": "git://github.com/apclary/dungeon-revealer.git#c1b0cfcd8a34493351806b7c3417ef3f401b178d"
+}

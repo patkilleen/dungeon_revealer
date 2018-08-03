@@ -1,0 +1,55 @@
+extends layout.jade
+
+block content
+    //include splash.jade
+
+    #app.app-js
+        .navbar.navbar-inverse
+            .navbar-header
+                button.navbar-toggle(type="button", data-toggle="collapse", data-target=".navbar-inverse-collapse")
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a.navbar-brand Dungeon Revealer
+                
+            #bs-example-navbar-collapse-2.collapse.navbar-collapse
+              form.navbar-form.navbar-left(role='search')
+                button#btn-new-map.btn.btn-default(type='button') New Map
+                span#loading_screen
+        #upload-wrapper
+          form#upload.dropzone
+
+        #map-wrapper
+        #dm-toolbar
+            .toolbar-wrapper
+                .btn-toolbar
+                    .btn-group
+                        a#btn-toggle-canvas.btn.btn-default Toggle Canvas
+                        a#btn-toggle-fow-brush.btn.btn-default Toggle Brush
+                    .btn-group
+                        a#btn-shroud-all.btn.btn-default Shroud All
+                        a#btn-clear-all.btn.btn-default Clear All
+                    .btn-group
+                        a#btn-undo.btn.btn-default Undo
+                    .btn-group
+                        div#slidecontainer
+                            input#size_input(type='Range',min="1",max="1024", value="15")
+                        a#btn-shrink-brush.btn.btn-default Shrink Brush
+                        a#btn-enlarge-brush.btn.btn-default Enlarge Brush
+                        a#btn-shape-brush.btn.btn-default Square Brush
+                    .btn-group
+                        a#btn-send.btn.btn-default Send
+            ul#messages.navbar-text
+            .form-group.navbar-text
+                label#labelText Label
+                input#labelTextInput.form-control
+            div#label_mng_container(style='display: none;')
+                select#label_sel.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;')
+                select#label_sel2.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;')
+                .btn-group
+                    a#btn-clear-other-labels.btn.btn-default Delete Other Labels
+                    a#btn-clear-player-labels.btn.btn-default Delete Player Labels
+                    a#btn-save-labels.btn.btn-default Save Labels
+                    a#btn-restore-labels.btn.btn-default Restore Labels
+block js
+    script(data-main='/javascripts/dm-app.js', src='/javascripts/require.js')
