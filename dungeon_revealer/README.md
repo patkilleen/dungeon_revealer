@@ -2,6 +2,7 @@ dungeon-revealer
 ================
 
 A web app for tabletop gaming to allow the game master to reveal areas of the game map to players.
+The original project the core of this project was based on is found here: https://github.com/apclary/dungeon-revealer
 
 What the DM Sees
 ----------------
