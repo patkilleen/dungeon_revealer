@@ -77,13 +77,17 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 fowCanvas = canvases.fowCanvas;
                 cursorCanvas = canvases.cursorCanvas;
 				indCanvas = canvases.indCanvas;
+				gridCanvas = canvases.gridCanvas;
                 container.appendChild(mapImageCanvas);
                 container.appendChild(fowCanvas);
 				container.appendChild(indCanvas);
+				container.appendChild(gridCanvas);
                 container.appendChild(cursorCanvas);
                 mapImageContext = mapImageCanvas.getContext('2d');
                 fowContext = fowCanvas.getContext('2d');
 				indContext = indCanvas.getContext('2d');
+				gridContext = gridCanvas.getContext('2d');
+				gridContext.save();
                 cursorContext = cursorCanvas.getContext('2d');
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext, opts);
@@ -140,7 +144,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 mapImageCanvas: createCanvas('map-image-canvas', 1),
                 fowCanvas: createCanvas('fow-canvas', 2),
                 indCanvas: createCanvas('indicator-canvas', 3),
-				cursorCanvas: createCanvas('cursor-canvas', 4)
+				gridCanvas: createCanvas('grid-canvas', 4),
+				cursorCanvas: createCanvas('cursor-canvas', 5)
+				
 				
             };
 
@@ -1432,7 +1438,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				slider.value = parseInt(slider.value)-10;
 				lineWidth = slider.value;
             });
-
+			
+			$('#btn-smaller-grid').click(function () {
+                // If the new width would be less than 1, set it to 1
+                //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
+				var slider = document.getElementById("grid_size_input");
+				//console.log("size slider value: "+slider.value);
+				slider.value = parseInt(slider.value)-10;
+            });
+			
+			$('#btn-bigger-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)+10;
+            });
+			$('#btn-add-grid').click(function () {
+            
+				var slider = document.getElementById("grid_size_input");
+				
+				squareSize = slider.value
+				addGrid(squareSize,'black')
+            });
+			$('#btn-rm-grid').click(function () {
+				
+				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+				gridCanvas.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+				//gridContext = gridCanvas.getContext('2d');
+            });
+			
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;
                 if (toggleButton.innerHTML === 'Square Brush') {
@@ -1468,6 +1500,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 			}
 			
+			function addGrid(squareSize,color){
+				
+				var numCols = gridCanvas.width/squareSize;
+				var numRows = gridCanvas.height/squareSize;
+				console.log("numRows: " + numRows);
+				console.log("numCols: " + numCols);
+				gridContext.beginPath();
+				gridContext.strokeStyle = color;
+				
+				var row = 0;
+				var col = 0;
+				
+				//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
+				
+				while (row < numRows){
+					col=0;
+					while (col < numCols){
+						//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
+						col++;
+						gridContext.rect(row*squareSize, col*squareSize, squareSize, squareSize);
+						//context.fillStyle = 'rgba(0,255,0,1)';
+						
+					}
+					row++;
+				}
+				gridContext.stroke();
+			} 
 			function enableLoadingScreen(){
 				console.log("hello world");
 				document.getElementById("loading_screen").setAttribute('class',"modal");
