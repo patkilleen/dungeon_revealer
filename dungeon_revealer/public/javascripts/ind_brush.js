@@ -8,7 +8,7 @@ define(function () {
             throw new Error('Invalid args');
         }
 
-        var brushTypes = ["player", "enemy", "target", "eraser"],
+        var brushTypes = ["player", "enemy", "target", "grid"],
             currentBrushType = brushTypes[0],
 			labelTexts = ["","","",""],
 			labelSizes = [settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth],
@@ -26,16 +26,29 @@ define(function () {
                     currentBrushType = brushTypes[1];
 					//document.getElementById('labelTextInput').value = labelTexts[1];
 					//document.getElementById('size_input').value = labelSizes[1]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
+					hideGridButtons();
+					showLabelButtons();
                 } else if (currentBrushType === brushTypes[1]) {
 
                     console.log("target brush set");
                     currentBrushType = brushTypes[2];
 					//document.getElementById('labelTextInput').value = labelTexts[2];
 					//document.getElementById('size_input').value = labelSizes[2]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
+					hideGridButtons();
+					showLabelButtons();
 				} else if (currentBrushType === brushTypes[2]) {
 
-                    console.log("eraser brush set");
+                    console.log("grid ui set");
                     currentBrushType = brushTypes[3];
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: inline-block !important;';
+					
+					showGridButtons();
+					hideLabelButtons();
 					//document.getElementById('labelTextInput').value = labelTexts[3];
 					//document.getElementById('size_input').value = labelSizes[3]; 
                 } else if (currentBrushType === brushTypes[3]) {
@@ -44,6 +57,10 @@ define(function () {
                     currentBrushType = brushTypes[0];
 					//document.getElementById('labelTextInput').value = labelTexts[0];
 					//document.getElementById('size_input').value = labelSizes[0]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
+					hideGridButtons();
+					showLabelButtons();
                 } else {
                     console.log("nothing: ");
                     console.log(currentBrushType);
@@ -107,6 +124,22 @@ define(function () {
                     return 'rgba(' + settings.targetRGB + ',' + settings.indOpacity + ')';
                 }
             },
+			hideGridButtons = function(){
+				var btns = document.getElementById('grid-btns');
+				btns.style='display: none';
+			},
+			showGridButtons = function(){
+				var btns = document.getElementById('grid-btns');
+				btns.style='display: inline-block !important;';
+			},
+			hideLabelButtons = function(){
+				var btns = document.getElementById('label-btns');
+				btns.style='display: none';
+			},
+			showLabelButtons = function(){
+				var btns = document.getElementById('label-btns');
+				btns.style='display: inline-block !important;';
+			},
             getCurrent = function () {
                 return getPattern(currentBrushType);
             }

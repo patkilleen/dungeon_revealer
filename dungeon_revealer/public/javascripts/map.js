@@ -77,13 +77,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 fowCanvas = canvases.fowCanvas;
                 cursorCanvas = canvases.cursorCanvas;
 				indCanvas = canvases.indCanvas;
+				gridCanvas = canvases.gridCanvas;
                 container.appendChild(mapImageCanvas);
-                container.appendChild(fowCanvas);
+                container.appendChild(gridCanvas);
 				container.appendChild(indCanvas);
+				container.appendChild(fowCanvas);
                 container.appendChild(cursorCanvas);
                 mapImageContext = mapImageCanvas.getContext('2d');
                 fowContext = fowCanvas.getContext('2d');
 				indContext = indCanvas.getContext('2d');
+				gridContext = gridCanvas.getContext('2d');
+				gridContext.save();
+				gridSlider = document.getElementById("grid_size_input");
                 cursorContext = cursorCanvas.getContext('2d');
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext, opts);
@@ -138,9 +143,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
             return {
                 mapImageCanvas: createCanvas('map-image-canvas', 1),
-                fowCanvas: createCanvas('fow-canvas', 2),
-                indCanvas: createCanvas('indicator-canvas', 3),
-				cursorCanvas: createCanvas('cursor-canvas', 4)
+                gridCanvas: createCanvas('grid-canvas', 2),
+				indCanvas: createCanvas('indicator-canvas', 3),
+				fowCanvas: createCanvas('fow-canvas', 4),
+				cursorCanvas: createCanvas('cursor-canvas', 5)
+				
 				
             };
 
@@ -294,6 +301,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             fowCanvas.style.height = displayHeight + 'px';
 			indCanvas.style.width = displayWidth + 'px';
 			indCanvas.style.height = displayHeight + 'px';
+			gridCanvas.style.width = displayWidth + 'px';
+			gridCanvas.style.height = displayHeight + 'px';
             mapImageCanvas.style.width = displayWidth + 'px';
             mapImageCanvas.style.height = displayHeight + 'px';
         }
@@ -309,7 +318,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         function toImage() {
             //return convertCanvasToImage(mergeCanvas(mapImageCanvas, fowCanvas));
-			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(fowCanvas,indCanvas)));
+			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(indCanvas,fowCanvas))));
         }
 
         function remove() {
@@ -317,6 +326,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             mapImageCanvas.remove();
             fowCanvas.remove();
 			indCanvas.remove();
+			gridCanvas.remove();
         }
 
         function getMapDisplayRatio() {
@@ -571,6 +581,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             };
 
             cursorCanvas.drawCursor = function (cords) {
+				
+				//only draw the cursor if not in grid brush
+				//are we on grid brush?
+				//fog of war canvas?
+				if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
+					return;
+				}
 				var lineWidth= getLineWidth();
                 // Cleanup
                 cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
@@ -893,6 +910,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						toggleButton.innerHTML = 'Player Brush';
 					}*/
 					indBrush.toggle();
+					//are we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						displayTempGrid();
+					}else{
+						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					}
 				}
                updateMsg();
             });
@@ -917,6 +940,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//fog of war canvas?
 				if(currBrush == fowBrush){
 					
+					//we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						
+						var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';
+						btns = document.getElementById('label-btns');
+						btns.style='display: none';
+						displayTempGrid();
+					}else{
+						btns = document.getElementById('label-btns');
+						btns.style='display: inline-block !important;';
+					}
 					//indBrush.updateSliderSize();
 					//swap to indicator canvas
 					currBrush = indBrush;
@@ -942,6 +977,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}else if(currBrush == indBrush){
 					//save the current size of brush
 					//indBrush.saveLabelSize();
+					var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+					btns = document.getElementById('label-btns');
+					btns.style='display: inline-block !important;';
 					
 					currBrush = fowBrush;
 					currContext=fowContext;
@@ -1423,7 +1462,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
-
+			
+			function displayTempGrid(){
+				squareSize = gridSlider.value;
+				addGrid(cursorCanvas,squareSize,undefined);
+			}
             $('#btn-shrink-brush').click(function () {
                 // If the new width would be less than 1, set it to 1
                 //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
@@ -1432,7 +1475,45 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				slider.value = parseInt(slider.value)-10;
 				lineWidth = slider.value;
             });
-
+			
+			$('#btn-smaller-grid').click(function () {
+                // If the new width would be less than 1, set it to 1
+                //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
+				var slider = document.getElementById("grid_size_input");
+				//console.log("size slider value: "+slider.value);
+				slider.value = parseInt(slider.value)-1;
+				displayTempGrid();
+            });
+			
+			$('#btn-bigger-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)+1;
+				displayTempGrid();
+            });
+			$('#btn-add-grid').click(function () {	
+				squareSize = gridSlider.value
+				addGrid(gridCanvas,squareSize,'black')
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				var rmBtn = document.getElementById('btn-rm-grid');
+				rmBtn.style='display: inline-block !important;';
+				this.style='display: none';
+				createRender();
+            });
+			$('#btn-rm-grid').click(function () {
+				
+				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+				var addBtn = document.getElementById('btn-add-grid');
+				addBtn.style='display: inline-block !important;';
+				this.style='display: none';
+				createRender();
+            });
+			
+			
+			//size of grid changed?
+			gridSlider.onchange = function(e){
+				
+				displayTempGrid();
+			}
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;
                 if (toggleButton.innerHTML === 'Square Brush') {
@@ -1468,6 +1549,38 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 			}
 			
+			function addGrid(canvas,squareSize,color){
+				
+				var numCols = canvas.width/squareSize;
+				var numRows = canvas.height/squareSize;
+				var context = canvas.getContext('2d');
+				console.log("numRows: " + numRows);
+				console.log("numCols: " + numCols);
+				context.beginPath();
+				if(color != undefined){
+					context.strokeStyle = color;
+				}
+				context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				//canvas.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				
+				var row = 0;
+				var col = 0;
+				
+				//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
+				
+				while (row < numRows){
+					col=0;
+					while (col < numCols){
+						//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
+						col++;
+						context.rect(row*squareSize, col*squareSize, squareSize, squareSize);
+						//context.fillStyle = 'rgba(0,255,0,1)';
+						
+					}
+					row++;
+				}
+				context.stroke();
+			} 
 			function enableLoadingScreen(){
 				console.log("hello world");
 				document.getElementById("loading_screen").setAttribute('class',"modal");
