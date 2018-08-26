@@ -301,6 +301,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             fowCanvas.style.height = displayHeight + 'px';
 			indCanvas.style.width = displayWidth + 'px';
 			indCanvas.style.height = displayHeight + 'px';
+			gridCanvas.style.width = displayWidth + 'px';
+			gridCanvas.style.height = displayHeight + 'px';
             mapImageCanvas.style.width = displayWidth + 'px';
             mapImageCanvas.style.height = displayHeight + 'px';
         }
@@ -316,7 +318,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         function toImage() {
             //return convertCanvasToImage(mergeCanvas(mapImageCanvas, fowCanvas));
-			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(fowCanvas,indCanvas)));
+			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(fowCanvas,mergeCanvas(indCanvas,gridCanvas))));
         }
 
         function remove() {
@@ -324,6 +326,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             mapImageCanvas.remove();
             fowCanvas.remove();
 			indCanvas.remove();
+			gridCanvas.remove();
         }
 
         function getMapDisplayRatio() {
@@ -1492,6 +1495,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				var rmBtn = document.getElementById('btn-rm-grid');
 				rmBtn.style='display: inline-block !important;';
 				this.style='display: none';
+				createRender();
             });
 			$('#btn-rm-grid').click(function () {
 				
@@ -1499,6 +1503,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				var addBtn = document.getElementById('btn-add-grid');
 				addBtn.style='display: inline-block !important;';
 				this.style='display: none';
+				createRender();
             });
 			
 			
