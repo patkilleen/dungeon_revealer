@@ -31,12 +31,19 @@ block content
                         a#btn-clear-all.btn.btn-default Clear All
                     .btn-group
                         a#btn-undo.btn.btn-default Undo
-                    .btn-group
+                    .btn-group#label-btns
                         div#slidecontainer
                             input#size_input(type='Range',min="1",max="1024", value="15")
                         a#btn-shrink-brush.btn.btn-default Shrink Brush
                         a#btn-enlarge-brush.btn.btn-default Enlarge Brush
                         a#btn-shape-brush.btn.btn-default Square Brush
+                    .btn-group#grid-btns(style='display: none;')
+                        div#gridslidecontainer
+                            input#grid_size_input(type='Range',min="10",max="500", value="75")
+                        a#btn-smaller-grid.btn.btn-default Srink Grid				
+                        a#btn-bigger-grid.btn.btn-default Enlarge Grid
+                        a#btn-add-grid.btn.btn-default Add Grid
+                        a#btn-rm-grid.btn.btn-default(style='display: none;') Remove Grid
                     .btn-group
                         a#btn-send.btn.btn-default Send
             ul#messages.navbar-text
@@ -51,12 +58,5 @@ block content
                     a#btn-clear-player-labels.btn.btn-default Delete Player Labels
                     a#btn-save-labels.btn.btn-default Save Labels
                     a#btn-restore-labels.btn.btn-default Restore Labels
-                .btn-group#grid-btns(style='display: none;')
-                    a#btn-add-grid.btn.btn-default Add Grid
-                    a#btn-rm-grid.btn.btn-default Remove Grid
-                    div#gridslidecontainer
-                            input#grid_size_input(type='Range',min="10",max="500", value="75")
-                    a#btn-bigger-grid.btn.btn-default Bigger
-                    a#btn-smaller-grid.btn.btn-default Smaller
 block js
     script(data-main='/javascripts/dm-app.js', src='/javascripts/require.js')

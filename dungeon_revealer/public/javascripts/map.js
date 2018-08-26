@@ -578,6 +578,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             };
 
             cursorCanvas.drawCursor = function (cords) {
+				
+				//only draw the cursor if not in grid brush
+				//are we on grid brush?
+				//fog of war canvas?
+				if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
+					return;
+				}
 				var lineWidth= getLineWidth();
                 // Cleanup
                 cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
@@ -900,6 +907,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						toggleButton.innerHTML = 'Player Brush';
 					}*/
 					indBrush.toggle();
+					//are we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						displayTempGrid();
+					} 
 				}
                updateMsg();
             });
@@ -924,6 +935,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//fog of war canvas?
 				if(currBrush == fowBrush){
 					
+					//we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						
+						var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';
+						btns = document.getElementById('label-btns');
+						btns.style='display: none';
+						displayTempGrid();
+					}else{
+						btns = document.getElementById('label-btns');
+						btns.style='display: inline-block !important;';
+					}
 					//indBrush.updateSliderSize();
 					//swap to indicator canvas
 					currBrush = indBrush;
@@ -949,6 +972,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}else if(currBrush == indBrush){
 					//save the current size of brush
 					//indBrush.saveLabelSize();
+					var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+					btns = document.getElementById('label-btns');
+					btns.style='display: inline-block !important;';
 					
 					currBrush = fowBrush;
 					currContext=fowContext;
@@ -1430,7 +1457,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
-
+			
+			function displayTempGrid(){
+				squareSize = gridSlider.value;
+				addGrid(cursorCanvas,squareSize,undefined);
+			}
             $('#btn-shrink-brush').click(function () {
                 // If the new width would be less than 1, set it to 1
                 //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
@@ -1445,28 +1476,36 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
 				var slider = document.getElementById("grid_size_input");
 				//console.log("size slider value: "+slider.value);
-				slider.value = parseInt(slider.value)-10;
+				slider.value = parseInt(slider.value)-1;
+				displayTempGrid();
             });
 			
 			$('#btn-bigger-grid').click(function () {
 				var slider = document.getElementById("grid_size_input");
-				slider.value = parseInt(slider.value)+10;
+				slider.value = parseInt(slider.value)+1;
+				displayTempGrid();
             });
 			$('#btn-add-grid').click(function () {	
 				squareSize = gridSlider.value
 				addGrid(gridCanvas,squareSize,'black')
 				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				var rmBtn = document.getElementById('btn-rm-grid');
+				rmBtn.style='display: inline-block !important;';
+				this.style='display: none';
             });
 			$('#btn-rm-grid').click(function () {
 				
 				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+				var addBtn = document.getElementById('btn-add-grid');
+				addBtn.style='display: inline-block !important;';
+				this.style='display: none';
             });
 			
 			
+			//size of grid changed?
 			gridSlider.onchange = function(e){
 				
-				squareSize = gridSlider.value
-				addGrid(cursorCanvas,squareSize,undefined)
+				displayTempGrid();
 			}
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;
