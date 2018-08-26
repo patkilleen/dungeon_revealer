@@ -318,7 +318,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         function toImage() {
             //return convertCanvasToImage(mergeCanvas(mapImageCanvas, fowCanvas));
-			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(fowCanvas,mergeCanvas(indCanvas,gridCanvas))));
+			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(indCanvas,fowCanvas))));
         }
 
         function remove() {
