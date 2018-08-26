@@ -79,9 +79,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				indCanvas = canvases.indCanvas;
 				gridCanvas = canvases.gridCanvas;
                 container.appendChild(mapImageCanvas);
-                container.appendChild(fowCanvas);
+                container.appendChild(gridCanvas);
 				container.appendChild(indCanvas);
-				container.appendChild(gridCanvas);
+				container.appendChild(fowCanvas);
                 container.appendChild(cursorCanvas);
                 mapImageContext = mapImageCanvas.getContext('2d');
                 fowContext = fowCanvas.getContext('2d');
@@ -143,9 +143,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
             return {
                 mapImageCanvas: createCanvas('map-image-canvas', 1),
-                fowCanvas: createCanvas('fow-canvas', 2),
-                indCanvas: createCanvas('indicator-canvas', 3),
-				gridCanvas: createCanvas('grid-canvas', 4),
+                gridCanvas: createCanvas('grid-canvas', 2),
+				indCanvas: createCanvas('indicator-canvas', 3),
+				fowCanvas: createCanvas('fow-canvas', 4),
 				cursorCanvas: createCanvas('cursor-canvas', 5)
 				
 				
@@ -913,7 +913,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					//are we on grid brush?
 					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
 						displayTempGrid();
-					} 
+					}else{
+						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					}
 				}
                updateMsg();
             });
