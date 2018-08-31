@@ -1574,17 +1574,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				document.body.style.cursor='default';
             });
 			
-			$('#btn-save-labels').click(function () {
-                saveAllLabels();
-            });
-			
-			$('#btn-restore-labels').click(function () {
-				if(confirm('Are you sure you want to relaod the selection pane labels (all current labels will be lost)?')){
-					pushCanvasStack();
-					restoreAllLabels();
-				}
-				
-            });
 			
 			/*function restoreAllLabels(){
 				var savePlayers = getCookie("pLabels");
