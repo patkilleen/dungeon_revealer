@@ -286,12 +286,19 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 				resetMap(fowContext, 'clear', fowBrush);
 			}else if(currBrush == indBrush){
+				if(confirm('Are you sure you want to clear away the map labels?')){			
+					//erase all labels
+					pushCanvasStack();
 				
-				if(confirm('Are you sure you want to clear away the map labels?')){
-				
-					//resetMap(indContext, 'player', indBrush);
 					indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
-					//resetMap(context, 'clear');
+					for (var label in labelMap){
+						if (labelMap.hasOwnProperty(label)) {					
+							if(!(labelMap[label] === undefined)){
+								labelMap[label].coords = undefined;												
+							}
+						}
+					}			
+					createRender();	
 				}
 			}
         }
@@ -1129,9 +1136,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				indCanvas.drawText(fowMask.x,fowMask.y,l);
 			}
 			function eraseMapLabel(label){
-				if(label === undefined){
+				if((label === undefined) || (labelMap[label] === undefined)){
 					return;
 				}
+				
+				
 				pushCanvasStack();
 				
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
@@ -1298,6 +1307,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 					var token = labelMap[label];
 					
+					if(token === undefined){
+						return;
+					}
+					
 					var newsize = token.size;
 					var newbrushType = token.brushType;
 					var newbrushShape = token.brushShape;
@@ -1337,76 +1350,45 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 			}
 			
-			$('#label_sel').click(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
-				
-				var e = document.getElementById('label_sel');
+			function getSelectedLabel(selectId){
+				var e = document.getElementById(selectId);
 				if(e.options[e.selectedIndex] === undefined){
 					return;
 				}
-				var label = e.options[e.selectedIndex].value;
-				restoreLabelState(label);
+				return e.options[e.selectedIndex].value;
+			}
+			$('#label_sel').click(function () {
 				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
+				var label = getSelectedLabel('label_sel');
+				if(label !== undefined){
+					restoreLabelState(label);
+				}	
             });
 			
 			$('#label_sel2').click(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel2');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel2');
+				if(label !== undefined){
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				restoreLabelState(label);
-				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			$('#label_sel').dblclick(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel');
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				eraseMapLabel(label);
-				restoreLabelState(label);
-				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			$('#label_sel2').dblclick(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel2');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel2');
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				eraseMapLabel(label);
-				restoreLabelState(label);
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			function findLabelIndex(label,dom_id){
@@ -1454,11 +1436,24 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 				
 			$('#label_sel').contextmenu(function(e,h) {
+				//erase the label first
+				var label = e.target.value;
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
+				}
 				removeLabelFromSelect(e.target.value,'label_sel');
+			
 				return false;
 			});
 			
 			$('#label_sel2').contextmenu(function(e,h) {
+				//erase the label first
+				var label = e.target.value;
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
+				}
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
