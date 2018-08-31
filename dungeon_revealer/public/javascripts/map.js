@@ -787,16 +787,21 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             };
 	
 			indCanvas.drawInitial = function (coords) {
-				setTimeout(enableLoadingScreen,0);
-				var labelValue = document.getElementById('labelTextInput').value;
-				//only erase the label if already on map 
-				if(!(labelMap[labelValue] === undefined)){
-					eraseMapLabel(labelValue);
-					restoreLabelState(labelValue);
-				}
-				
-				drawLabel(coords);
-				setTimeout(disableLoadingScreen,0);
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					var labelValue = document.getElementById('labelTextInput').value;
+					
+					//label exists?
+					if(!(labelMap[labelValue] === undefined)){
+						//only erase the label if already on map 
+						eraseMapLabel(labelValue);
+					}
+					
+					drawLabel(coords);
+					
+					disableLoadingScreen();
+				},0);
             };
 			
 			//draws text to top right corner of shape
@@ -1039,6 +1044,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			
 			//erase label from label canvas
 			function eraseMapLabel(label){
+					
 				if((label === undefined) || (labelMap[label] === undefined)){
 					return;
 				}		
@@ -1049,39 +1055,41 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				labelMap[label].coords = undefined;
 				//repaint all but removed label
 				repaintLabels(label);
+				
+				restoreLabelState(label);	
 			}
 			
 			//repaints a label except...
 			function repaintLabels(exception){
-				enableLoadingScreen();
-				//give chance for loading screen to pop up
-				setTimeout(function() {
-					for (var label in labelMap){
-						if (labelMap.hasOwnProperty(label)) {
-							//not label to erase?
-							if(!(labelMap[label] === undefined)){
-								if(!(label === exception)){
-								//only if wasn't erased
-									if(!(labelMap[label].coords === undefined)){
-										restoreLabelState(label);
-										drawLabel(labelMap[label].coords);
-									}else{
-										
-										labelMap[label].coords = undefined;
-										
-									}// end ifmake sure the label hasn't already been erase
-								}//end if ignore label to erase
-							}//end if make sure it hasn't been delete
-						}
+				for (var label in labelMap){
+					if (labelMap.hasOwnProperty(label)) {
+						//not label to erase?
+						if(!(labelMap[label] === undefined)){
+							if(!(label === exception)){
+							//only if wasn't erased
+								if(!(labelMap[label].coords === undefined)){
+									restoreLabelState(label);
+									drawLabel(labelMap[label].coords);
+								}else{
+									
+									labelMap[label].coords = undefined;
+									
+								}// end ifmake sure the label hasn't already been erase
+							}//end if ignore label to erase
+						}//end if make sure it hasn't been delete
 					}
-					createRender();
-					disableLoadingScreen();
-				},0);//end timeout (new thread)
+				}
+				createRender();
 			}
 			
 			//repaints all the labels
 			function repaintAllLabels(){
-				repaintLabels(undefined);		
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					repaintLabels(undefined);	
+					disableLoadingScreen();
+				},0);
 			}
 			
 			function addLabelToList(dom_id,coords){
@@ -1225,21 +1233,27 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             });
 			
 			$('#label_sel').dblclick(function () {
-				
-				var label = getSelectedLabel('label_sel');
-				if(label !== undefined){
-					eraseMapLabel(label);
-					restoreLabelState(label);
-				}
+				enableLoadingScreen();			
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					var label = getSelectedLabel('label_sel');
+					if(label !== undefined){
+						eraseMapLabel(label);
+					}
+					disableLoadingScreen();
+				},0);
             });
 			
 			$('#label_sel2').dblclick(function () {
-				
-				var label = getSelectedLabel('label_sel2');
-				if(label !== undefined){
-					eraseMapLabel(label);
-					restoreLabelState(label);
-				}
+				enableLoadingScreen();			
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					var label = getSelectedLabel('label_sel2');
+					if(label !== undefined){
+						eraseMapLabel(label);
+					}
+					disableLoadingScreen();
+				},0);
             });
 			
 			function findLabelIndex(label,dom_id){
@@ -1262,27 +1276,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			
 			function removeLabelFromSelect(label,dom_id){
+				if((label === undefined) || (dom_id === undefined)){
+					return false;
+				}
+				
 				if(!confirm('Are you sure you want to delete the label "'+label+'" from the list?')){
 					return;
 				}
-
-				var targetIndex = findLabelIndex(label,dom_id);		
-				
-				var selection = document.getElementById(dom_id);
-				var options = selection.options;
-				
-				selection.removeChild(options[targetIndex]);
-				labelMap[label] = undefined;			
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					var targetIndex = findLabelIndex(label,dom_id);		
+					
+					var selection = document.getElementById(dom_id);
+					var options = selection.options;
+					
+					selection.removeChild(options[targetIndex]);
+					//erase the label first
+					eraseMapLabel(label);
+					labelMap[label] = undefined;			
+					disableLoadingScreen();
+				},0);
 				return false;	
 			}
 				
 			$('#label_sel').contextmenu(function(e,h) {
 				//erase the label first
 				var label = e.target.value;
-				if(label !== undefined){
-					eraseMapLabel(label);
-					restoreLabelState(label);
-				}
 				removeLabelFromSelect(e.target.value,'label_sel');
 			
 				return false;
@@ -1291,17 +1311,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			$('#label_sel2').contextmenu(function(e,h) {
 				//erase the label first
 				var label = e.target.value;
-				if(label !== undefined){
-					eraseMapLabel(label);
-					restoreLabelState(label);
-				}
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
 			
 			function displayTempGrid(){
-				squareSize = gridSlider.value;
-				addGrid(cursorCanvas,squareSize,undefined);
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					squareSize = gridSlider.value;
+					addGrid(cursorCanvas,squareSize,undefined);
+					disableLoadingScreen();
+				},0);
 			}
 			
             $('#btn-shrink-brush').click(function () {
@@ -1323,13 +1344,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             });
 			
 			$('#btn-add-grid').click(function () {	
-				squareSize = gridSlider.value
-				addGrid(gridCanvas,squareSize,'black')
-				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-				var rmBtn = document.getElementById('btn-rm-grid');
-				rmBtn.style='display: inline-block !important;';
-				this.style='display: none';
-				createRender();
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					squareSize = gridSlider.value
+					addGrid(gridCanvas,squareSize,'black')
+					cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					var rmBtn = document.getElementById('btn-rm-grid');
+					rmBtn.style='display: inline-block !important;';
+					this.style='display: none';
+					createRender();
+					disableLoadingScreen();
+				},0);
             });
 			
 			$('#btn-rm-grid').click(function () {
@@ -1375,33 +1401,28 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			
 			function addGrid(canvas,squareSize,color){
-				enableLoadingScreen();
-				//give chance for loading screen to pop up
-				setTimeout(function() {
-					var numCols = width/squareSize;
-					var numRows = height/squareSize;
-					var context = canvas.getContext('2d');
-		
-					context.beginPath();
-					if(color != undefined){
-						context.strokeStyle = color;
+				var numCols = width/squareSize;
+				var numRows = height/squareSize;
+				var context = canvas.getContext('2d');
+	
+				context.beginPath();
+				if(color != undefined){
+					context.strokeStyle = color;
+				}
+				context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				
+				var row = 0;
+				var col = 0;
+				
+				while (row < numRows){
+					col=0;
+					while (col < numCols){
+						col++;
+						context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
 					}
-					context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-					
-					var row = 0;
-					var col = 0;
-					
-					while (row < numRows){
-						col=0;
-						while (col < numCols){
-							col++;
-							context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
-						}
-						row++;
-					}
-					context.stroke();
-					disableLoadingScreen();
-				},0);
+					row++;
+				}
+				context.stroke();
 			} 
 			
 			$('#btn-clear-other-labels').click(function () {

@@ -12,6 +12,9 @@ define(function () {
             currentBrushType = brushTypes[0],
 			labelTexts = ["","","",""],
 			labelSizes = [settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth],
+			savedBrush = undefined,
+			savedStrokeStyle =undefined,
+			erasing = false,
             currentPattern = null,
             setBrushType = function (tmp) {
                 currentBrushType = tmp;
@@ -19,24 +22,47 @@ define(function () {
             },
             toggle = function () {
                 if (currentBrushType === brushTypes[0]) {
+                    console.log("enemy brush set");
                     currentBrushType = brushTypes[1];
+					//document.getElementById('labelTextInput').value = labelTexts[1];
+					//document.getElementById('size_input').value = labelSizes[1]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
 					hideGridButtons();
 					showLabelButtons();
                 } else if (currentBrushType === brushTypes[1]) {
+
+                    console.log("target brush set");
                     currentBrushType = brushTypes[2];
+					//document.getElementById('labelTextInput').value = labelTexts[2];
+					//document.getElementById('size_input').value = labelSizes[2]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
 					hideGridButtons();
 					showLabelButtons();
 				} else if (currentBrushType === brushTypes[2]) {
-                    currentBrushType = brushTypes[3];			
+
+                    console.log("grid ui set");
+                    currentBrushType = brushTypes[3];
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: inline-block !important;';
+					
 					showGridButtons();
 					hideLabelButtons();
+					//document.getElementById('labelTextInput').value = labelTexts[3];
+					//document.getElementById('size_input').value = labelSizes[3]; 
                 } else if (currentBrushType === brushTypes[3]) {
 
+                    console.log("player brush set");
                     currentBrushType = brushTypes[0];
+					//document.getElementById('labelTextInput').value = labelTexts[0];
+					//document.getElementById('size_input').value = labelSizes[0]; 
+					//var btns = document.getElementById('grid-btns');
+					//btns.style='display: none';
 					hideGridButtons();
 					showLabelButtons();
                 } else {
-                    console.log("error toggling brush");
+                    console.log("nothing: ");
                     console.log(currentBrushType);
                 }
                 context.strokeStyle = getCurrent();
@@ -61,6 +87,27 @@ define(function () {
 				   
 				}
 				return i;
+			},
+			saveBrush = function (){
+				if(!erasing){
+					savedBrush = currentBrushType;
+					//savedStrokeStyle = getCurrent();
+					erasing=true;
+				}
+            },
+			restoreBrush = function (){
+				if(erasing){	    	
+					currentBrushType = (savedBrush == undefined) ? currentBrushType : savedBrush;
+					//context.strokeStyle = (savedStrokeStyle == undefined) ? context.strokeStyle : savedStrokeStyle;
+					context.strokeStyle = getCurrent();
+					erasing=false;
+				}
+            },
+     	    setEraser = function () {
+           
+				console.log("eraser brush set");
+				currentBrushType = brushTypes[3];
+				context.strokeStyle = getCurrent();	
 			},
             getPattern = function (brushType) {
                 if (brushType === brushTypes[0]) {
@@ -104,6 +151,9 @@ define(function () {
             brushTypes: brushTypes,
             currentBrushType: currentBrushType,
             setBrushType: setBrushType,
+			setEraser: setEraser,
+			saveBrush: saveBrush,
+			restoreBrush: restoreBrush,
             toggle: toggle,
             getCurrent: getCurrent,
             getPattern: getPattern,
