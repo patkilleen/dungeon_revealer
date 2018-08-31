@@ -286,12 +286,19 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 				resetMap(fowContext, 'clear', fowBrush);
 			}else if(currBrush == indBrush){
+				if(confirm('Are you sure you want to clear away the map labels?')){			
+					//erase all labels
+					pushCanvasStack();
 				
-				if(confirm('Are you sure you want to clear away the map labels?')){
-				
-					//resetMap(indContext, 'player', indBrush);
 					indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
-					//resetMap(context, 'clear');
+					for (var label in labelMap){
+						if (labelMap.hasOwnProperty(label)) {					
+							if(!(labelMap[label] === undefined)){
+								labelMap[label].coords = undefined;												
+							}
+						}
+					}			
+					createRender();	
 				}
 			}
         }
