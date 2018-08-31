@@ -38,7 +38,16 @@ require(['common'], function(common) {
         
         checkForMapUpload();
         
+		function enableLoadingScreen(){
+				document.getElementById("loading_screen").setAttribute('class',"modal");
+		}
+			
+		function disableLoadingScreen(){
+			document.getElementById("loading_screen").removeAttribute('class');
+		}
+			
         function createTheMap() {
+			enableLoadingScreen();
             $('#upload').hide();
             dmMap.create(mapWrapper, {
                 callback: function() {
@@ -56,6 +65,8 @@ require(['common'], function(common) {
 			if(loadedNewMap == true){
 				location.reload();
 			}
+			
+			disableLoadingScreen();
         }
         
         
@@ -69,9 +80,7 @@ require(['common'], function(common) {
         
 	
 	$('#btn-send').click(function () {
-		
-		//save the canvasas for ctrlz functionality
-		
+		enableLoadingScreen();
             var imageData = document.getElementById('render').src;
 
             var jqxhr = $.post('/send',
@@ -85,6 +94,7 @@ require(['common'], function(common) {
                 .fail(function (e) {
                 })
                 .always(function (e) {
+					disableLoadingScreen();
                     if (e.success) {
                         console.log(e.responseText);
                     } else {

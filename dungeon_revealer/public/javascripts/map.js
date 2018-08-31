@@ -211,6 +211,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         }
 
+		function enableLoadingScreen(){
+			document.getElementById("loading_screen").setAttribute('class',"modal");
+		}
+			
+		function disableLoadingScreen(){
+			document.getElementById("loading_screen").removeAttribute('class');
+		}
+		
         function getMouseCoordinates(e) {
             var viewportOffset = fowCanvas.getBoundingClientRect(),
                 borderTop = parseInt($(fowCanvas).css('border-top-width')),
@@ -1041,29 +1049,34 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				labelMap[label].coords = undefined;
 				//repaint all but removed label
 				repaintLabels(label);
-				createRender();			
 			}
 			
 			//repaints a label except...
 			function repaintLabels(exception){
-				for (var label in labelMap){
-					if (labelMap.hasOwnProperty(label)) {
-						//not label to erase?
-						if(!(labelMap[label] === undefined)){
-							if(!(label === exception)){
-							//only if wasn't erased
-								if(!(labelMap[label].coords === undefined)){
-									restoreLabelState(label);
-									drawLabel(labelMap[label].coords);
-								}else{
-									
-									labelMap[label].coords = undefined;
-									
-								}// end ifmake sure the label hasn't already been erase
-							}//end if ignore label to erase
-						}//end if make sure it hasn't been delete
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					for (var label in labelMap){
+						if (labelMap.hasOwnProperty(label)) {
+							//not label to erase?
+							if(!(labelMap[label] === undefined)){
+								if(!(label === exception)){
+								//only if wasn't erased
+									if(!(labelMap[label].coords === undefined)){
+										restoreLabelState(label);
+										drawLabel(labelMap[label].coords);
+									}else{
+										
+										labelMap[label].coords = undefined;
+										
+									}// end ifmake sure the label hasn't already been erase
+								}//end if ignore label to erase
+							}//end if make sure it hasn't been delete
+						}
 					}
-				}			
+					createRender();
+					disableLoadingScreen();
+				},0);//end timeout (new thread)
 			}
 			
 			//repaints all the labels
@@ -1387,34 +1400,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				context.stroke();
 			} 
 			
-			function enableLoadingScreen(){
-				document.getElementById("loading_screen").setAttribute('class',"modal");
-			}
-			
-			function disableLoadingScreen(){
-				document.getElementById("loading_screen").removeAttribute('class');
-			}
-			
 			$('#btn-clear-other-labels').click(function () {
-				enableLoadingScreen();
-				document.body.style.cursor='wait';
 				pushCanvasStack();
                 clearLabelSelections('label_sel2');
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
 				repaintAllLabels();
-				createRender();
-				document.body.style.cursor='default';
-				disableLoadingScreen();
             });
 
 			$('#btn-clear-player-labels').click(function () {
-				document.body.style.cursor='wait';
 				pushCanvasStack();
                 clearLabelSelections('label_sel');				
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
 				repaintAllLabels();
-				createRender();
-				document.body.style.cursor='default';
             });
 
             document.addEventListener('mouseup', function () {
@@ -1434,8 +1431,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         //todo: move this functionality elsewher
         function createRender() {
+			enableLoadingScreen();
             removeRender();
             createPlayerMapImage(mapImageCanvas, fowCanvas);
+			disableLoadingScreen();
         }
 
         function removeRender() {
