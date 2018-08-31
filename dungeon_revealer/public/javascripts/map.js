@@ -1375,29 +1375,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			
 			function addGrid(canvas,squareSize,color){
-				
-				var numCols = canvas.width/squareSize;
-				var numRows = canvas.height/squareSize;
-				var context = canvas.getContext('2d');
-	
-				context.beginPath();
-				if(color != undefined){
-					context.strokeStyle = color;
-				}
-				context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-				
-				var row = 0;
-				var col = 0;
-				
-				while (row < numRows){
-					col=0;
-					while (col < numCols){
-						col++;
-						context.rect(row*squareSize, col*squareSize, squareSize, squareSize);
+				enableLoadingScreen();
+				//give chance for loading screen to pop up
+				setTimeout(function() {
+					var numCols = canvas.width/squareSize;
+					var numRows = canvas.height/squareSize;
+					var context = canvas.getContext('2d');
+		
+					context.beginPath();
+					if(color != undefined){
+						context.strokeStyle = color;
 					}
-					row++;
-				}
-				context.stroke();
+					context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					
+					var row = 0;
+					var col = 0;
+					
+					while (row < numRows){
+						col=0;
+						while (col < numCols){
+							col++;
+							context.rect(row*squareSize, col*squareSize, squareSize, squareSize);
+						}
+						row++;
+					}
+					context.stroke();
+					disableLoadingScreen();
+				},0);
 			} 
 			
 			$('#btn-clear-other-labels').click(function () {
