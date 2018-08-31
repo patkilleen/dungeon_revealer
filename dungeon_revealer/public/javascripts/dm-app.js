@@ -46,6 +46,7 @@ require(['common'], function(common) {
                     window.addEventListener('resize', function(event) {
                         dmMap.fitMapToWindow();
                     });
+					dmMap.restoreAllLabels();
                 },
                 error: function() {
                   console.error('error creating map');
@@ -60,11 +61,10 @@ require(['common'], function(common) {
         
             
         $('#btn-new-map').click(function() {
-			if(confirm("You may have unsaved labels. Make sure to save labels if you want to later restore them. Are you sure you want to proceed?")){
-				loadedNewMap=true;
-				dmMap.remove();
-				$('#upload').show();
-			}
+			loadedNewMap=true;
+			dmMap.saveAllLabels();
+			dmMap.remove();
+			$('#upload').show();
         });
         
 	

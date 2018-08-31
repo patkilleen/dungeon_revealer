@@ -122,6 +122,68 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             return container;
         }
 
+		function saveAllLabels(){
+			var savePlayers = document.getElementById('label_sel').innerHTML;
+			var saveOthers = document.getElementById('label_sel2').innerHTML;
+			console.log('saving: '+ savePlayers);
+			setCookie("pLabels",savePlayers,7);//save for 7 days
+			
+			setCookie("oLabels",saveOthers,7);//save for 7 days
+			
+			setCookie("labelMap",JSON.stringify(labelMap),7);//save for 7 days
+		}
+			
+		function restoreAllLabels(){
+			var savePlayers = getCookie("pLabels");
+			console.log('restoring: '+ savePlayers);
+			 document.getElementById('label_sel').innerHTML = savePlayers;
+			var saveOthers = getCookie("oLabels");
+			document.getElementById('label_sel2').innerHTML = saveOthers;
+			
+			labelMap = JSON.parse(getCookie("labelMap"));
+			//don't keep the old location of labels
+			eraseAllMapLabels();
+		}
+			
+		function setCookie(name,value,days) {
+			value = btoa(value);
+			var expires = "";
+			if (days) {
+				var date = new Date();
+				date.setTime(date.getTime() + (days*24*60*60*1000));
+				expires = "; expires=" + date.toUTCString();
+			}
+			document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		}
+		function getCookie(name) {
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0) return atob(c.substring(nameEQ.length,c.length));
+			}
+			return null;
+		}
+		function eraseCookie(name) {   
+			document.cookie = name+'=; Max-Age=-99999999;';  
+		}
+		
+		function eraseAllMapLabels(){
+			
+			pushCanvasStack();
+			
+			indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+			for (var label in labelMap){
+				if (labelMap.hasOwnProperty(label)) {					
+					if(!(labelMap[label] === undefined)){
+						labelMap[label].coords = undefined;												
+					}
+				}
+			}			
+			createRender();	
+			
+		}
         function createCanvases() {
 
             function createCanvas(type, zIndex) {
@@ -785,85 +847,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				indContext.restore();
 			}
             indCanvas.draw = function (points) {
-				/*var lineWidth= getLineWidth();
-                if (!isDrawing) return;
-
-                var pointPrevious, // the previous point
-                    pointCurrent = points[0]; //  the current point
-
-                // For each point create a quadraticCurve btweeen each point
-                if (brushShape == 'round') {
-
-                    // Start Path
-                    indContext.lineWidth = lineWidth;
-                    indContext.lineJoin = indContext.lineCap = 'round';
-                    indContext.beginPath();
-
-                    indContext.moveTo(pointCurrent.x, pointCurrent.y);
-                    for (var i = 1, len = points.length; i < len; i++) {
-                        // Setup points
-                        pointCurrent = points[i];
-                        pointPrevious = points[i - 1];
-
-                        // Coordinates
-                        var midPoint = midPointBtw(pointPrevious, pointCurrent);
-                        indContext.quadraticCurveTo(pointPrevious.x, pointPrevious.y, midPoint.x, midPoint.y);
-                        indContext.lineTo(pointCurrent.x, pointCurrent.y);
-                        indContext.stroke();
-                    }
-                }
-                else if (brushShape == 'square') {
-                    // The goal of this area is to draw lines with a square mask
-
-                    // The fundamental issue is that not every position of the mouse is recorded when it is moved
-                    // around the canvas (particularly when it is moved fast). If it were, we could simply draw a
-                    // square at every single coordinate
-
-                    // a simple approach is to draw an initial square then connect a line to a series of
-                    // central cords with a square lineCap. Unfortunately, this has undesirable behavior. When moving in
-                    // a diagonal, the square linecap rotates into a diamond, and "draws" outside of the square mask.
-
-                    // Using 'butt' lineCap lines to connect between squares drawn at each set of cords has unexpected behavior.
-                    // When moving in a diagonal fashion. The width does not correspond to the "face" of the cursor, which
-                    // maybe longer then the length / width (think hypotenuse) which results in weird drawing.
-
-                    // The current solution is two fold
-                    // 1. Draw a rectangle at every available cord
-                    // 2. Find and draw the optimal rhombus to connect each square
-
-                    indContext.lineWidth = 1
-                    indContext.beginPath();
-
-                    // The initial square mask is drawn by drawInitial, so we doing need to start at points[0].
-                    // Therefore we start point[1].
-                    for (var i = 1, len = points.length; i < len; i++) {
-                        // Setup points
-                        pointCurrent = points[i];
-                        pointPrevious = points[i - 1];
-
-                        if (!pointCurrent || !pointPrevious) {
-                            throw new Error('points are incorrect')
-                        }
-
-                        // draw rectangle at current point
-                        var fowMask = constructMask(pointCurrent);
-                        indContext.fillRect(
-                            fowMask.centerX,
-                            fowMask.centerY,
-                            fowMask.height,
-                            fowMask.width);
-
-                        // optimal polygon to draw to connect two square
-                        var optimalPoints = findOptimalRhombus(pointCurrent, pointPrevious);
-                        if (optimalPoints) {
-                            indContext.moveTo(optimalPoints[0].x, optimalPoints[0].y);
-                            indContext.lineTo(optimalPoints[1].x, optimalPoints[1].y);
-                            indContext.lineTo(optimalPoints[2].x, optimalPoints[2].y);
-                            indContext.lineTo(optimalPoints[3].x, optimalPoints[3].y);
-                            indContext.fill();
-                        }
-                    }
-                }*/
             };
 			updateMsg = function (){
 				var msgdom = document.getElementById('messages');
@@ -1148,22 +1131,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				labelMap[label].coords = undefined;
 				//repaint all but removed label
 				repaintLabels(label);
-				createRender();	
-				
-			}
-			
-			function eraseAllMapLabels(){
-				
-				pushCanvasStack();
-				
-				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
-				for (var label in labelMap){
-					if (labelMap.hasOwnProperty(label)) {					
-						if(!(labelMap[label] === undefined)){
-							labelMap[label].coords = undefined;												
-						}
-					}
-				}			
 				createRender();	
 				
 			}
@@ -1608,34 +1575,28 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             });
 			
 			$('#btn-save-labels').click(function () {
-                var savePlayers = document.getElementById('label_sel').innerHTML;
-				var saveOthers = document.getElementById('label_sel2').innerHTML;
-				console.log('saving: '+ savePlayers);
-				setCookie("pLabels",savePlayers,7);//save for 7 days
-				
-				setCookie("oLabels",saveOthers,7);//save for 7 days
-				
-				setCookie("labelMap",JSON.stringify(labelMap),7);//save for 7 days
+                saveAllLabels();
             });
 			
 			$('#btn-restore-labels').click(function () {
 				if(confirm('Are you sure you want to relaod the selection pane labels (all current labels will be lost)?')){
 					pushCanvasStack();
-					//document.body.style.cursor='wait';
-					var savePlayers = getCookie("pLabels");
-					console.log('restoring: '+ savePlayers);
-					 document.getElementById('label_sel').innerHTML = savePlayers;
-					var saveOthers = getCookie("oLabels");
-					document.getElementById('label_sel2').innerHTML = saveOthers;
-					
-					labelMap = JSON.parse(getCookie("labelMap"));
-					//don't keep the old location of labels
-					eraseAllMapLabels();
-					//repaintLabels(undefined);
-					//document.body.style.cursor='default';
+					restoreAllLabels();
 				}
 				
             });
+			
+			/*function restoreAllLabels(){
+				var savePlayers = getCookie("pLabels");
+				console.log('restoring: '+ savePlayers);
+				 document.getElementById('label_sel').innerHTML = savePlayers;
+				var saveOthers = getCookie("oLabels");
+				document.getElementById('label_sel2').innerHTML = saveOthers;
+				
+				labelMap = JSON.parse(getCookie("labelMap"));
+				//don't keep the old location of labels
+				eraseAllMapLabels();
+			}
 			
 			function setCookie(name,value,days) {
 				value = btoa(value);
@@ -1659,25 +1620,24 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			function eraseCookie(name) {   
 				document.cookie = name+'=; Max-Age=-99999999;';  
-			}
+			}*/
 
             document.addEventListener('mouseup', function () {
                 stopDrawing();	
-	if(currBrush == indBrush){		
-		indBrush.restoreBrush();
-		//updateMsg();		
-	}
+				if(currBrush == indBrush){		
+					indBrush.restoreBrush();
+				}
             });
-		document.addEventListener('contextmenu', function(ev) {
-if(currBrush == indBrush){		    
-			ev.preventDefault();
+			document.addEventListener('contextmenu', function(ev) {
+				if(currBrush == indBrush){		    
+					ev.preventDefault();
 
-		   indBrush.saveBrush();
-		   indBrush.setEraser();
-		   //updateMsg();
-}
-		    return false;
-		}, false);
+					indBrush.saveBrush();
+					indBrush.setEraser();
+
+				}
+				return false;
+			});
 
         }
 
@@ -1738,7 +1698,9 @@ if(currBrush == indBrush){
             toImage: toImage,
             resize: resize,
             remove: remove,
-            fitMapToWindow: fitMapToWindow
+            fitMapToWindow: fitMapToWindow,
+			restoreAllLabels: restoreAllLabels,
+			saveAllLabels: saveAllLabels
         };
     }
 
