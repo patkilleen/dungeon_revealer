@@ -642,11 +642,15 @@ select{
     display:    block;
     position:   fixed;
     z-index:    1000;
+	margin-left: auto;
+    margin-right: auto;
+	margin-top: auto;
+    margin-bottom: auto;
     top:        0;
     left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
+    height:     10%;
+    width:      10%;
+    background: rgba( 0, 0, 0, .4 ) 
                 url('http://i.stack.imgur.com/FhHRx.gif') 
                 50% 50% 
                 no-repeat;
