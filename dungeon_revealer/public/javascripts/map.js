@@ -219,6 +219,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			document.getElementById("loading_screen").removeAttribute('class');
 		}
 		
+		function setSendIconYellow(){
+			document.getElementById("icon-send-state").setAttribute('class',"yellow_dot");
+		}
+		
 		function renderGrid(){
 			enableLoadingScreen();
 			//give chance for loading screen to pop up
@@ -1464,10 +1468,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         //todo: move this functionality elsewher
         function createRender() {
-			enableLoadingScreen();
             removeRender();
             createPlayerMapImage(mapImageCanvas, fowCanvas);
-			disableLoadingScreen();
+			setSendIconYellow();
         }
 
         function removeRender() {

@@ -655,3 +655,23 @@ select{
                 50% 50% 
                 no-repeat;
 }
+
+
+.green_dot {
+	margin-left: 10px;
+	margin-top: 5px;
+    height: 25px;
+    width: 25px;
+    background-color: #2eff00;
+    border-radius: 50%;
+    display: inline-block;
+}
+.yellow_dot {
+	margin-left: 10px;
+	margin-top: 5px;
+    height: 25px;
+    width: 25px;
+    background-color: #edc217;
+    border-radius: 50%;
+    display: inline-block;
+}

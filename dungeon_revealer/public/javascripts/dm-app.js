@@ -45,7 +45,11 @@ require(['common'], function(common) {
 		function disableLoadingScreen(){
 			document.getElementById("loading_screen").removeAttribute('class');
 		}
-			
+		
+		function setSendIconGreen(){
+			document.getElementById("icon-send-state").setAttribute('class',"green_dot");
+		}
+		
         function createTheMap() {
 			enableLoadingScreen();
             $('#upload').hide();
@@ -95,6 +99,7 @@ require(['common'], function(common) {
                 })
                 .always(function (e) {
 					disableLoadingScreen();
+					setSendIconGreen();
                     if (e.success) {
                         console.log(e.responseText);
                     } else {
