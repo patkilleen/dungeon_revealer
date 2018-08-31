@@ -219,6 +219,45 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			document.getElementById("loading_screen").removeAttribute('class');
 		}
 		
+		function renderGrid(){
+			enableLoadingScreen();
+			//give chance for loading screen to pop up
+			setTimeout(function() {
+				squareSize = gridSlider.value
+				addGrid(gridCanvas,squareSize,'black')
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				var rmBtn = document.getElementById('btn-rm-grid');
+				rmBtn.style='display: inline-block !important;';
+				this.style='display: none';
+				createRender();
+				disableLoadingScreen();
+			},0);
+		}
+		
+		function addGrid(canvas,squareSize,color){
+			var numCols = width/squareSize;
+			var numRows = height/squareSize;
+			var context = canvas.getContext('2d');
+
+			context.beginPath();
+			if(color != undefined){
+				context.strokeStyle = color;
+			}
+			context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+			
+			var row = 0;
+			var col = 0;
+			
+			while (row < numRows){
+				col=0;
+				while (col < numCols){
+					col++;
+					context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
+				}
+				row++;
+			}
+			context.stroke();
+		} 		
         function getMouseCoordinates(e) {
             var viewportOffset = fowCanvas.getBoundingClientRect(),
                 borderTop = parseInt($(fowCanvas).css('border-top-width')),
@@ -600,9 +639,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				if(currContext===fowContext){
 					fowCanvas.drawInitial(cords);
 				}else if(currContext===indContext){
-					// Draw initial Shape
-					// set lineWidth to 0 for initial drawing of shape to prevent screwing up of size/placement
-					indCanvas.drawInitial(cords);
+					
+					//on grid brush?
+					if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
+						renderGrid();
+					}else{
+						//draw labels
+						indCanvas.drawInitial(cords);
+					}
 				}
 				
             };
@@ -1344,18 +1388,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             });
 			
 			$('#btn-add-grid').click(function () {	
-				enableLoadingScreen();
-				//give chance for loading screen to pop up
-				setTimeout(function() {
-					squareSize = gridSlider.value
-					addGrid(gridCanvas,squareSize,'black')
-					cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-					var rmBtn = document.getElementById('btn-rm-grid');
-					rmBtn.style='display: inline-block !important;';
-					this.style='display: none';
-					createRender();
-					disableLoadingScreen();
-				},0);
+				renderGrid();
             });
 			
 			$('#btn-rm-grid').click(function () {
@@ -1399,31 +1432,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 				}
 			}
-			
-			function addGrid(canvas,squareSize,color){
-				var numCols = width/squareSize;
-				var numRows = height/squareSize;
-				var context = canvas.getContext('2d');
-	
-				context.beginPath();
-				if(color != undefined){
-					context.strokeStyle = color;
-				}
-				context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-				
-				var row = 0;
-				var col = 0;
-				
-				while (row < numRows){
-					col=0;
-					while (col < numCols){
-						col++;
-						context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
-					}
-					row++;
-				}
-				context.stroke();
-			} 
 			
 			$('#btn-clear-other-labels').click(function () {
 				pushCanvasStack();
