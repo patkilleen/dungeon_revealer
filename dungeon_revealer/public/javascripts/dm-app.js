@@ -55,7 +55,7 @@ require(['common'], function(common) {
                     window.addEventListener('resize', function(event) {
                         dmMap.fitMapToWindow();
                     });
-					dmMap.restoreAllLabels();
+					dmMap.loadAllLabels();
                 },
                 error: function() {
                   console.error('error creating map');

@@ -129,7 +129,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			setCookie("labelMap",JSON.stringify(labelMap),7);//save for 7 days
 		}
 			
-		function restoreAllLabels(){
+		function loadAllLabels(){
 			var savePlayers = getCookie("pLabels");
 			 document.getElementById('label_sel').innerHTML = savePlayers;
 			var saveOthers = getCookie("oLabels");
@@ -1489,7 +1489,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             resize: resize,
             remove: remove,
             fitMapToWindow: fitMapToWindow,
-			restoreAllLabels: restoreAllLabels,
+			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels
         };
     }
