@@ -13,33 +13,34 @@ define(function () {
 			labelTexts = ["","","",""],
 			labelSizes = [settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth,settings.defaultLineWidth],
             currentPattern = null,
-            setBrushType = function (tmp) {
-                currentBrushType = tmp;
-				context.strokeStyle = getCurrent();
-            },
-            toggle = function () {
-                if (currentBrushType === brushTypes[0]) {
-                    currentBrushType = brushTypes[1];
-					hideGridButtons();
-					showLabelButtons();
-                } else if (currentBrushType === brushTypes[1]) {
-                    currentBrushType = brushTypes[2];
-					hideGridButtons();
-					showLabelButtons();
-				} else if (currentBrushType === brushTypes[2]) {
-                    currentBrushType = brushTypes[3];			
+            setBrushType = function (newBrushName) {
+				if(newBrushName === undefined){
+					console.log("setBrush: invalid brush type, null.");
+					return;
+				}			
+				if (newBrushName === "grid"){
 					showGridButtons();
 					hideLabelButtons();
-                } else if (currentBrushType === brushTypes[3]) {
-
-                    currentBrushType = brushTypes[0];
+				}else{
 					hideGridButtons();
 					showLabelButtons();
-                } else {
-                    console.log("error toggling brush");
-                    console.log(currentBrushType);
-                }
-                context.strokeStyle = getCurrent();
+				}
+				currentBrushType = newBrushName;
+				context.strokeStyle = getCurrent();
+				
+            },
+            toggle = function () {
+				var i = 0;
+				//find brush index, iterate each brush
+				while(i < brushTypes.length){
+					//found brush?
+					if (currentBrushType == brushTypes[i]){
+						break;
+					}
+					i++;
+				}
+				var nextBrush = (i+1) % brushTypes.length;
+				 setBrushType(brushTypes[nextBrush]);
             },
 			findIndexCurrentBrush = function(){
 			var i = -1;
