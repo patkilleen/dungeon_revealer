@@ -1337,76 +1337,45 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 			}
 			
-			$('#label_sel').click(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
-				
-				var e = document.getElementById('label_sel');
+			function getSelectedLabel(selectId){
+				var e = document.getElementById(selectId);
 				if(e.options[e.selectedIndex] === undefined){
 					return;
 				}
-				var label = e.options[e.selectedIndex].value;
-				restoreLabelState(label);
+				return e.options[e.selectedIndex].value;
+			}
+			$('#label_sel').click(function () {
 				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
+				var label = getSelectedLabel('label_sel');
+				if(label !== undefined){
+					restoreLabelState(label);
+				}	
             });
 			
 			$('#label_sel2').click(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel2');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel2');
+				if(label !== undefined){
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				restoreLabelState(label);
-				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			$('#label_sel').dblclick(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel');
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				eraseMapLabel(label);
-				restoreLabelState(label);
-				
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			$('#label_sel2').dblclick(function () {
-				//var e = document.getElementById('label_sel');
-                //var label = e.options[e.selectedIndex].value;
-				//document.getElementById('labelTextInput').value = label;
 				
-				
-				var e = document.getElementById('label_sel2');
-				if(e.options[e.selectedIndex] === undefined){
-					return;
+				var label = getSelectedLabel('label_sel2');
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
 				}
-				var label = e.options[e.selectedIndex].value;
-				eraseMapLabel(label);
-				restoreLabelState(label);
-				//sort the list
-				//sortSelect(document.getElementById('label_sel'));
-				
             });
 			
 			function findLabelIndex(label,dom_id){
@@ -1454,11 +1423,24 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 				
 			$('#label_sel').contextmenu(function(e,h) {
+				//erase the label first
+				var label = e.target.value;
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
+				}
 				removeLabelFromSelect(e.target.value,'label_sel');
+			
 				return false;
 			});
 			
 			$('#label_sel2').contextmenu(function(e,h) {
+				//erase the label first
+				var label = e.target.value;
+				if(label !== undefined){
+					eraseMapLabel(label);
+					restoreLabelState(label);
+				}
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
