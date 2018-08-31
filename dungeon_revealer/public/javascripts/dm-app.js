@@ -5,6 +5,7 @@ require(['common'], function(common) {
     require(['map', 'jquery', 'dropzone', 'settings'], function(map, jquery, Dropzone, settings) {
         var $ = jquery,
             mapWrapper = document.getElementById('map-wrapper'),
+			loadedNewMap = false,
             dmMap = map();
       /*  socket.on('testClient2', function (msg) {
 	   console.log('helloworld!');
@@ -50,13 +51,20 @@ require(['common'], function(common) {
                   console.error('error creating map');
                 }
             });
+			
+			if(loadedNewMap == true){
+				location.reload();
+			}
         }
         
         
             
         $('#btn-new-map').click(function() {
-            dmMap.remove();
-            $('#upload').show();
+			if(confirm("You may have unsaved labels. Make sure to save labels if you want to later restore them. Are you sure you want to proceed?")){
+				loadedNewMap=true;
+				dmMap.remove();
+				$('#upload').show();
+			}
         });
         
 	
