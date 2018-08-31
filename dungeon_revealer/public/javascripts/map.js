@@ -255,8 +255,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			while (row < numRows){
 				col=0;
 				while (col < numCols){
-					col++;
 					context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
+					col++;
 				}
 				row++;
 			}
