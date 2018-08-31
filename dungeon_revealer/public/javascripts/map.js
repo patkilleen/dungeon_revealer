@@ -24,7 +24,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             isDrawing = false,
 			currBrush,
             points = [],
-            //lineWidth = settings.defaultLineWidth,
             brushShape = settings.defaultBrushShape,
             fogOpacity = settings.fogOpacity,
             fogRGB = settings.fogRGB,
@@ -116,8 +115,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             container.style.top = '0';
             container.style.left = '0';
             container.style.margin = 'auto';
-            //container.style.width = width + 'px';
-            //container.style.height = height + 'px';
 
             return container;
         }
@@ -125,7 +122,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 		function saveAllLabels(){
 			var savePlayers = document.getElementById('label_sel').innerHTML;
 			var saveOthers = document.getElementById('label_sel2').innerHTML;
-			console.log('saving: '+ savePlayers);
 			setCookie("pLabels",savePlayers,7);//save for 7 days
 			
 			setCookie("oLabels",saveOthers,7);//save for 7 days
@@ -135,7 +131,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			
 		function restoreAllLabels(){
 			var savePlayers = getCookie("pLabels");
-			console.log('restoring: '+ savePlayers);
 			 document.getElementById('label_sel').innerHTML = savePlayers;
 			var saveOthers = getCookie("oLabels");
 			document.getElementById('label_sel2').innerHTML = saveOthers;
@@ -165,6 +160,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			return null;
 		}
+		
 		function eraseCookie(name) {   
 			document.cookie = name+'=; Max-Age=-99999999;';  
 		}
@@ -181,9 +177,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 				}
 			}			
-			createRender();	
-			
+			createRender();			
 		}
+		
         function createCanvases() {
 
             function createCanvas(type, zIndex) {
@@ -227,8 +223,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
         }
 
         function midPointBtw(p1, p2) {
-            //console.log(p1)
-            //console.log(p2)
 
             return {
                 x: p1.x + (p2.x - p1.x) / 2,
@@ -295,9 +289,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
         function fogMap() {
             resetMap(fowContext, 'fog', fowBrush);
         }
-
-		// need a control z to undo the stack stuff, and also everytime do send, or some other action, save stacte
 		
+		//push state of app onto undo/ctrl-z stack
 		function pushCanvasStack(){
 			var savePlayers = document.getElementById('label_sel').innerHTML;
 			var saveOthers = document.getElementById('label_sel2').innerHTML;
@@ -322,27 +315,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				return;
 			}
 			
-			//save max of 8 strokes
+			//save max of 8 states
 			if(stack.length >= 8){
 					stack.shift();
 			}
-		//	var tmpCanvas = document.createElement("CANVAS");
-		//grab the context from your destination canvas
-			//var tmpCtx = tmpCanvas.getContext('2d');
-
-			//call its drawImage() function passing it the source canvas directly
-			//tmpCtx.drawImage(canvas, 0, 0);
+		
 			var imgData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-			
-			//save the canvas
-			//stack.push(tmpCanvas);
 			
 			undoObj.imgData = imgData;
 				
-			//stack.push(imgData);
 			stack.push(undoObj);
-
 		}
+		
         function clearMap(currBrush) {
 			if(currBrush == fowBrush){
 				
@@ -350,17 +334,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}else if(currBrush == indBrush){
 				if(confirm('Are you sure you want to clear away the map labels?')){			
 					//erase all labels
-					pushCanvasStack();
-				
-					indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
-					for (var label in labelMap){
-						if (labelMap.hasOwnProperty(label)) {					
-							if(!(labelMap[label] === undefined)){
-								labelMap[label].coords = undefined;												
-							}
-						}
-					}			
-					createRender();	
+					eraseAllMapLabels();
 				}
 			}
         }
@@ -385,8 +359,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             resize(newDims.width, newDims.height);
         }
 
+		//merges all canvases into an image
         function toImage() {
-            //return convertCanvasToImage(mergeCanvas(mapImageCanvas, fowCanvas));
 			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(indCanvas,fowCanvas))));
         }
 
@@ -614,13 +588,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
                 // Get correct cords from mouse click
                 var cords = getMouseCoordinates(e);
-				console.log("current conext: "+currContext);
+
 				if(currContext===fowContext){
-					console.log("fow resolved");
-					//handleCustomClick(fowContext,cords);
 					fowCanvas.drawInitial(cords);
 				}else if(currContext===indContext){
-				console.log("ind resolved");
 					// Draw initial Shape
 					// set lineWidth to 0 for initial drawing of shape to prevent screwing up of size/placement
 					indCanvas.drawInitial(cords);
@@ -850,15 +821,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             };
 			updateMsg = function (){
 				var msgdom = document.getElementById('messages');
-				//var msgdom = this;
 				if(currBrush == fowBrush){
 					var currBrushStr = fowBrush.getCurrentBrush();
-					console.log("curr brush: "+fowBrush.toString());
 					var output = "<li>Current Canvas: <b>Fog of War</b></li><li>Current Brush: <b>"+currBrushStr+"</b></li>";
 					msgdom.innerHTML=output;
 				}else if (currBrush == indBrush){
 					var currBrushStr = indBrush.getCurrentBrush();
-					console.log("curr brush: "+currBrushStr);
 					var output = "<li>Current Canvas: <b>Indications Canvas</b></li><li>Current Brush: <span style='background:#000000;color:";
 					
 					if(currBrushStr === 'player'){
@@ -882,52 +850,22 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				var toggleButton = this;
 				//fog of war canvas?
 				if(currBrush == fowBrush){
-			/*			 
-					if (toggleButton.innerHTML === 'Clear Brush') {
-						toggleButton.innerHTML = 'Shadow Brush';
-					} else {
-						toggleButton.innerHTML = 'Clear Brush';
-					}*/
 					fowBrush.toggle();
-				}else if(currBrush == indBrush){//indica
-					/*if (toggleButton.innerHTML === 'Player Brush') {
-						toggleButton.innerHTML = 'Enemy Brush';
-					} else if (toggleButton.innerHTML === 'Enemy Brush') {
-						toggleButton.innerHTML = 'Target Brush';
-					}else if (toggleButton.innerHTML === 'Target Brush') {
-						toggleButton.innerHTML = 'Eraser Brush';
-					}else{
-						toggleButton.innerHTML = 'Player Brush';
-					}*/
+				}else if(currBrush == indBrush){//label canvas?
 					indBrush.toggle();
 					//are we on grid brush?
 					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
 						displayTempGrid();
-					}else{
+					}else{//remove the grid display 
 						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 					}
 				}
                updateMsg();
             });
-			/*
-			$('#btn-toggle-ind-brush').click(function () {
-                var toggleButton = this;
-                if (toggleButton.innerHTML === 'Player Brush') {
-                    toggleButton.innerHTML = 'Enemy Brush';
-                } else if (toggleButton.innerHTML === 'Enemy Brush') {
-                    toggleButton.innerHTML = 'Target Brush';
-                }else if (toggleButton.innerHTML === 'Target Brush') {
-                    toggleButton.innerHTML = 'Eraser Brush';
-                }else{
-                    toggleButton.innerHTML = 'Player Brush';
-                }
-                indBrush.toggle();
-				
-            });*/
 			
 			$('#btn-toggle-canvas').click(function() {
 				
-				//fog of war canvas?
+				//swapping to label/indicator canvas?
 				if(currBrush == fowBrush){
 					
 					//we on grid brush?
@@ -942,10 +880,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						btns = document.getElementById('label-btns');
 						btns.style='display: inline-block !important;';
 					}
-					//indBrush.updateSliderSize();
+					
 					//swap to indicator canvas
 					currBrush = indBrush;
 					currContext = indContext;
+					
+					//show the label canvas inputs
 					var dom = document.getElementById('btn-shroud-all');
 					dom.style='display: none';
 					dom = document.getElementById('labelText');
@@ -954,19 +894,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					dom.style='display: inline-block !important;';
 					dom = document.getElementById('label_mng_container');
 					dom.style='display: block !important;';
-					//var dom = $("btn-toggle-ind-brush"); 
-					//dom.css("display", dom.css("display") === 'none' ? '' : 'none');
-					console.log("context: indicator brush");
-					//this.innerHTML = "Toggle Canvas (Currently Indicator Canvas)";
 					
-					 //document.getElementById('btn-toggle-fow-brush').innerHTML = 'Player Brush';				
-					 indBrush.currentBrushType=indBrush.brushTypes[0];
+					indBrush.currentBrushType=indBrush.brushTypes[0];
 					
-					 
-				//	toggleButton.innerHTML = 'indicator Canvas';
-				}else if(currBrush == indBrush){
-					//save the current size of brush
-					//indBrush.saveLabelSize();
+				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
+
+					//hide the grid inputs
 					var btns = document.getElementById('grid-btns');
 					btns.style='display: none';
 					btns = document.getElementById('label-btns');
@@ -974,6 +907,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					
 					currBrush = fowBrush;
 					currContext=fowContext;
+					
+					//hide the label inputs
 					var dom = document.getElementById('btn-shroud-all');
 					dom.style='';
 					dom = document.getElementById('labelText');
@@ -983,13 +918,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					dom = document.getElementById('label_mng_container');
 					dom.style='display: none !important;';
 					
-					//var dom = $("btn-toggle-fow-brush"); 
-					//dom.css("display", dom.css("display") === 'none' ? '' : 'none');
-					console.log("context: fow brush");
-					//this.innerHTML = "Toggle Canvas (Currently FOW Canvas)";
-					//toggleButton.innerHTML = 'fow Canvas';
-					//document.getElementById('btn-toggle-fow-brush').innerHTML = 'Shadow Brush';
-					 fowBrush.currentBrushType=fowBrush.brushTypes[0];
+					fowBrush.currentBrushType=fowBrush.brushTypes[0];
 					 
 				}
 				updateMsg();
@@ -1009,10 +938,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 	
 					if(fowCanvasStack.length >=1){
 						var ctx = fowCanvas.getContext('2d');
-
-						//call its drawImage() function passing it the source canvas directly
-						//tmpCtx.drawImage(fowCanvasStack.pop(), 0, 0);
-			
 						ctx.putImageData(fowCanvasStack.pop().imgData, 0, 0);
 						createRender();
 					}
@@ -1020,8 +945,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					if(indCanvasStack.length >=1){
 						var ctx = indCanvas.getContext('2d');
 
-						//call its drawImage() function passing it the source canvas directly
-						//tmpCtx.drawImage(fowCanvasStack.pop(), 0, 0);
 						var undoObj = indCanvasStack.pop();
 						document.getElementById('label_sel').innerHTML = undoObj.savePlayers;						
 						document.getElementById('label_sel2').innerHTML = undoObj.saveOthers;
@@ -1033,42 +956,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}
 			}
 			
+			//apply fog of war
             $('#btn-shroud-all').click(function () {
                 pushCanvasStack();
 				fogMap(fowContext);
                 createRender();
             });
-
-            $('#btn-clear-all').click(function () {
-				
-				pushCanvasStack();
-				
-				clearMap(currBrush);
-                
-				
-                createRender();
-				//document.body.style.cursor='default';
-            });
-			$('#btn-undo').click(function () {
-				
-				undo();
-				
-            });
-
 			
+			//clear map
+            $('#btn-clear-all').click(function () {			
+				pushCanvasStack();			
+				clearMap(currBrush);              				
+                createRender();
+            });
+			
+			$('#btn-undo').click(function () {				
+				undo();			
+            });
+
+			//update the width of cursor when slide bar size changed
             $('#size_input').click(function () {
-                // If the new width would be over 200, set it to 200
-                //lineWidth = (lineWidth * 2 > 200) ? 200 : lineWidth * 2;
 				var slider = document.getElementById("size_input");
-				//slider.value = slider.value+1;
 				lineWidth = slider.value;
             });
 			
             $('#btn-enlarge-brush').click(function () {
                 // If the new width would be over 200, set it to 200
-                //lineWidth = (lineWidth * 2 > 200) ? 200 : lineWidth * 2;
 				var slider = document.getElementById("size_input");
-				console.log("size slider value: "+slider.value);
 				slider.value = parseInt(slider.value)+10;
 				lineWidth = slider.value;
             });
@@ -1091,7 +1005,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                         true
                     );
 					l=fowMask.r;
-					//indCanvas.drawText(fowMask.x,fowMask.y,fowMask.r);
                 }
                 else if (brushShape == 'square') {
                     indContext.rect(
@@ -1100,15 +1013,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                         fowMask.height,
                         fowMask.width);
 					l=fowMask.height/2;
-						//indCanvas.drawText(fowMask.x,fowMask.y,fowMask.height);
                 }
 				
-				
-				//indContext.font = "12px Arial";
-				//indContext.fillText("Hello World",fowMask.x,fowMask.y);
-				
-                //indContext.fill();
 				var currBrushStr = indBrush.getCurrentBrush();
+				
+				//choose which select pane to add label reference to
 				if(currBrushStr === 'player'){
 					addLabelToList('label_sel',coords);
 				}else{
@@ -1116,14 +1025,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}
 				 
                 indContext.stroke();
+				//TODO: varying size text depending ui
 				indCanvas.drawText(fowMask.x,fowMask.y,l);
 			}
+			
+			//erase label from label canvas
 			function eraseMapLabel(label){
 				if((label === undefined) || (labelMap[label] === undefined)){
 					return;
-				}
-				
-				
+				}		
 				pushCanvasStack();
 				
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
@@ -1131,8 +1041,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				labelMap[label].coords = undefined;
 				//repaint all but removed label
 				repaintLabels(label);
-				createRender();	
-				
+				createRender();			
 			}
 			
 			//repaints a label except...
@@ -1157,10 +1066,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}			
 			}
 			
-			//repaints a label except...
+			//repaints all the labels
 			function repaintAllLabels(){
 				repaintLabels(undefined);		
 			}
+			
 			function addLabelToList(dom_id,coords){
 				var e = document.getElementById('label_sel');
 				var options = e.options;
@@ -1176,12 +1086,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						return;
 					}
 				}
-
-				
+			
 				e = document.getElementById('label_sel2');
 				options = e.options;
-				
-				
+						
 				//iterate options, don't add duplicate
 				for (var i = 0; i < options.length; i++) {
 					
@@ -1199,6 +1107,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 				var option = document.createElement("option");
 				option.text = label;
+				
+				//choose label color
 				if(indBrush.getCurrentBrush() === 'player'){
 					option.style = "color:#42f445;";	
 				}else if(indBrush.getCurrentBrush() === 'enemy'){
@@ -1206,6 +1116,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}else if(indBrush.getCurrentBrush() === 'target'){
 					option.style = "color:yellow;";
 				}else{
+					console.log("error, indicator brush has invalid drawing brush");
 					option.style = "color:white;";
 				}
 				
@@ -1217,9 +1128,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				saveLabelState(label,coords);
 			}
 			
+			//saves the labels as cookie
 			function saveLabelState(label,coords){
 				
-				console.log("saving state");
 				var slider = document.getElementById("size_input");
 				var size = slider.value;
 				
@@ -1232,44 +1143,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				labelMap[label] = token;
 			}
 			
-			function sortSelect(selElem) {
-				console.log("sorting");
-				var tmpAry = new Array();
-				var cpyAry = new Array();
-				for (var i=0;i<selElem.options.length;i++) {
-					//tmpAry[i] = new Array();
-					//tmpAry[i][0] = i;
-					tmpAry[i] = selElem.options[i];
-					
-					cpyAry[i] = new Array();
-					cpyAry[i][0] = selElem.options[i].text;
-					cpyAry[i][1] = selElem.options[i].data;
-					cpyAry[i][2] = selElem.options[i].style;
-					cpyAry[i][3] = i;
-					console.log('cpy: '+cpyAry[i]);
-				}
-				cpyAry.sort(function(a, b){
-					
-					// Compare the 2 dates
-					if(a[1] > b[1]) return -1;
-					if(a[1] < b[1]) return 1;
-					return 0;
-				});
-				/*while (selElem.options.length > 0) {
-					selElem.options[0] = null;
-				}*/
-				for (var i=0;i<cpyAry.length;i++) {
-					//var op = new Option(cpyAry[i][0], cpyAry[i][1]);
-					//selElem.options[i].text = cpyAry[i][0];
-					//selElem.options[i].data = cpyAry[i][1];
-					///selElem.options[i].style = cpyAry[i][2];
-					selElem.options[i] = tmpAry[cpyAry[i][3]];
-				}
-				
-				console.log("done sorting");
-				return;
-			}
-
+			//sets the ui elements given a label (size, squre/circle brush, type...)
 			function restoreLabelState(label){
 				
 					var token = labelMap[label];
@@ -1290,12 +1164,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						console.log("error brush shape lookup");
 						return;
 					}
-					
-					//var clicks = parseInt(e.options[e.selectedIndex].data);
-					//e.options[e.selectedIndex].data =  (clicks + 1);
-					//update number of clicks
-					
-					
+
 					//update the size
 					var slider = document.getElementById("size_input");
 					slider.value = newsize;
@@ -1317,6 +1186,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 			}
 			
+			//gets name of selected label given selection pane id
 			function getSelectedLabel(selectId){
 				var e = document.getElementById(selectId);
 				if(e.options[e.selectedIndex] === undefined){
@@ -1324,6 +1194,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}
 				return e.options[e.selectedIndex].value;
 			}
+			
 			$('#label_sel').click(function () {
 				
 				var label = getSelectedLabel('label_sel');
@@ -1381,25 +1252,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				if(!confirm('Are you sure you want to delete the label "'+label+'" from the list?')){
 					return;
 				}
-				/*
-				*sel.removeChild( sel.options[1] ); 
-				*/
+
 				var targetIndex = findLabelIndex(label,dom_id);		
 				
 				var selection = document.getElementById(dom_id);
 				var options = selection.options;
 				
 				selection.removeChild(options[targetIndex]);
-				labelMap[label] = undefined;
-                //var label = e.options[e.selectedIndex].value;
-				
-				//var option = document.createElement("option")
-				//option.text = label;
-				//e.add(option);
-				
-				
-				return false;
-				
+				labelMap[label] = undefined;			
+				return false;	
 			}
 				
 			$('#label_sel').contextmenu(function(e,h) {
@@ -1429,20 +1290,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				squareSize = gridSlider.value;
 				addGrid(cursorCanvas,squareSize,undefined);
 			}
+			
             $('#btn-shrink-brush').click(function () {
-                // If the new width would be less than 1, set it to 1
-                //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
 				var slider = document.getElementById("size_input");
-				console.log("size slider value: "+slider.value);
 				slider.value = parseInt(slider.value)-10;
 				lineWidth = slider.value;
             });
 			
 			$('#btn-smaller-grid').click(function () {
-                // If the new width would be less than 1, set it to 1
-                //lineWidth = (lineWidth / 2 < 1) ? 1 : lineWidth / 2;
 				var slider = document.getElementById("grid_size_input");
-				//console.log("size slider value: "+slider.value);
 				slider.value = parseInt(slider.value)-1;
 				displayTempGrid();
             });
@@ -1452,6 +1308,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				slider.value = parseInt(slider.value)+1;
 				displayTempGrid();
             });
+			
 			$('#btn-add-grid').click(function () {	
 				squareSize = gridSlider.value
 				addGrid(gridCanvas,squareSize,'black')
@@ -1461,6 +1318,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				this.style='display: none';
 				createRender();
             });
+			
 			$('#btn-rm-grid').click(function () {
 				
 				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
@@ -1469,13 +1327,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				this.style='display: none';
 				createRender();
             });
-			
-			
-			//size of grid changed?
-			gridSlider.onchange = function(e){
-				
+					
+			//size of grid changed, display the light blue candidate grid?
+			gridSlider.onchange = function(e){		
 				displayTempGrid();
 			}
+			
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;
                 if (toggleButton.innerHTML === 'Square Brush') {
@@ -1485,7 +1342,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                     toggleButton.innerHTML = 'Square Brush';
                     brushShape = 'round'
                 }
-
             });
 
             $('#btn-render').click(function () {
@@ -1497,18 +1353,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 					var selection = document.getElementById(dom_id);
 
-					
 					while (selection.firstChild) {
-						
-						console.log("selection: "+selection.firstChild.innerHTML);
 						//get label value and remove from map
-						labelMap[selection.firstChild.innerHTML] = undefined;
-						
-						
+						labelMap[selection.firstChild.innerHTML] = undefined;						
 						selection.removeChild(selection.firstChild);
 					}
 				}
-				
 			}
 			
 			function addGrid(canvas,squareSize,color){
@@ -1516,40 +1366,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				var numCols = canvas.width/squareSize;
 				var numRows = canvas.height/squareSize;
 				var context = canvas.getContext('2d');
-				console.log("numRows: " + numRows);
-				console.log("numCols: " + numCols);
+	
 				context.beginPath();
 				if(color != undefined){
 					context.strokeStyle = color;
 				}
 				context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-				//canvas.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 				
 				var row = 0;
 				var col = 0;
 				
-				//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
-				
 				while (row < numRows){
 					col=0;
 					while (col < numCols){
-						//context.fillRect(row*squareSize, col*squareSize, squareSize, squareSize);
 						col++;
 						context.rect(row*squareSize, col*squareSize, squareSize, squareSize);
-						//context.fillStyle = 'rgba(0,255,0,1)';
-						
 					}
 					row++;
 				}
 				context.stroke();
 			} 
+			
 			function enableLoadingScreen(){
-				console.log("hello world");
 				document.getElementById("loading_screen").setAttribute('class',"modal");
 			}
+			
 			function disableLoadingScreen(){
 				document.getElementById("loading_screen").removeAttribute('class');
-				console.log("hello world");
 			}
 			
 			$('#btn-clear-other-labels').click(function () {
@@ -1573,61 +1416,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				createRender();
 				document.body.style.cursor='default';
             });
-			
-			
-			/*function restoreAllLabels(){
-				var savePlayers = getCookie("pLabels");
-				console.log('restoring: '+ savePlayers);
-				 document.getElementById('label_sel').innerHTML = savePlayers;
-				var saveOthers = getCookie("oLabels");
-				document.getElementById('label_sel2').innerHTML = saveOthers;
-				
-				labelMap = JSON.parse(getCookie("labelMap"));
-				//don't keep the old location of labels
-				eraseAllMapLabels();
-			}
-			
-			function setCookie(name,value,days) {
-				value = btoa(value);
-				var expires = "";
-				if (days) {
-					var date = new Date();
-					date.setTime(date.getTime() + (days*24*60*60*1000));
-					expires = "; expires=" + date.toUTCString();
-				}
-				document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-			}
-			function getCookie(name) {
-				var nameEQ = name + "=";
-				var ca = document.cookie.split(';');
-				for(var i=0;i < ca.length;i++) {
-					var c = ca[i];
-					while (c.charAt(0)==' ') c = c.substring(1,c.length);
-					if (c.indexOf(nameEQ) == 0) return atob(c.substring(nameEQ.length,c.length));
-				}
-				return null;
-			}
-			function eraseCookie(name) {   
-				document.cookie = name+'=; Max-Age=-99999999;';  
-			}*/
 
             document.addEventListener('mouseup', function () {
                 stopDrawing();	
-				if(currBrush == indBrush){		
-					indBrush.restoreBrush();
-				}
             });
-			document.addEventListener('contextmenu', function(ev) {
-				if(currBrush == indBrush){		    
-					ev.preventDefault();
-
-					indBrush.saveBrush();
-					indBrush.setEraser();
-
-				}
-				return false;
-			});
-
         }
 
         function stopDrawing() {
@@ -1651,37 +1443,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
         }
 
         function createPlayerMapImage(bottomCanvas, topCanvas) {
-            //var mergedCanvas = mergeCanvas(bottomCanvas, topCanvas),
-              //  mergedImage = convertCanvasToImage(mergedCanvas);
-			  var mergedImage = toImage();
+			var mergedImage = toImage();
 
             mergedImage.id = 'render';
 
             //todo: refactor this functionality outside
             document.querySelector('#map-wrapper').appendChild(mergedImage);
         }
-		/*
-		*******Flag*******************************************************************************
-		*/
-		function handleCustomClick(fowContext, cords){
-			//console.log("mouse click, write circle");
-			//fowContext.globalCompositeOperation = '';
-				//	fowContext.fillStyle="red";
-					//fowContext.fillRect(cords.x, cords.y, 100, 100);
-					//fowContext.fill();
-				//http://jsfiddle.net/bnwpS/15/	
-				/*
-			var canvas = document.createElement('canvas');
-			canvas.id     = "CursorLayer";
-			canvas.width  = 1224;
-			canvas.height = 768;
-			canvas.style.zIndex   = 8;
-			canvas.style.position = "absolute";
-			canvas.style.border   = "1px solid";*/
-			var ctx = dmPointCanvas.getContext("2d");
-			ctx.fillStyle ="red";
-			ctx.fillRect(cords.x, cords.y, 100, 100);
-		}
+
         return {
             create: create,
             toImage: toImage,
