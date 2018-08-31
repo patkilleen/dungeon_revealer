@@ -1129,9 +1129,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				indCanvas.drawText(fowMask.x,fowMask.y,l);
 			}
 			function eraseMapLabel(label){
-				if(label === undefined){
+				if((label === undefined) || (labelMap[label] === undefined)){
 					return;
 				}
+				
+				
 				pushCanvasStack();
 				
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
@@ -1297,6 +1299,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			function restoreLabelState(label){
 				
 					var token = labelMap[label];
+					
+					if(token === undefined){
+						return;
+					}
 					
 					var newsize = token.size;
 					var newbrushType = token.brushType;
