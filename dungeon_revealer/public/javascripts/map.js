@@ -1378,8 +1378,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				enableLoadingScreen();
 				//give chance for loading screen to pop up
 				setTimeout(function() {
-					var numCols = canvas.width/squareSize;
-					var numRows = canvas.height/squareSize;
+					var numCols = width/squareSize;
+					var numRows = height/squareSize;
 					var context = canvas.getContext('2d');
 		
 					context.beginPath();
@@ -1395,7 +1395,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						col=0;
 						while (col < numCols){
 							col++;
-							context.rect(row*squareSize, col*squareSize, squareSize, squareSize);
+							context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
 						}
 						row++;
 					}
