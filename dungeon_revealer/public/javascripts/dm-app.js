@@ -81,6 +81,7 @@ require(['common'], function(common) {
 			dmMap.remove();
 			$('#upload').show();
         });
+		
         
 	
 	$('#btn-send').click(function () {

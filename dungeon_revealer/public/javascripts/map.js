@@ -24,6 +24,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             isDrawing = false,
 			currBrush,
             points = [],
+			imgUrl,
             brushShape = settings.defaultBrushShape,
             fogOpacity = settings.fogOpacity,
             fogRGB = settings.fogRGB,
@@ -51,9 +52,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
         function create(parentElem, opts) {
             opts = extend(opts, settings);
 
-            var imgUrl = opts.imgUrl || opts.mapImage,
-                callback = opts.callback || nop,
-                error = opts.error || nop;
+            imgUrl = opts.imgUrl || opts.mapImage;
+            var callback = opts.callback || nop;
+            var error = opts.error || nop;
 
             mapImage = new Image();
             mapImage.onerror = error;
@@ -106,6 +107,16 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             mapImage.src = imgUrl;
         }
 
+		function loadImage(){
+			//mapImage = new Image();
+			mapImage.onload = function(){
+				console.log("reloaded map, img: "+ imgUrl);
+				//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
+				copyCanvas(mapImageContext, createImageCanvas(mapImage));
+			};
+            mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
+            mapImage.src = imgUrl;
+		}
         // TODO: account for multiple containers
         function getContainer() {
             var container = document.getElementById('canvasContainer') || document.createElement('div');
@@ -224,9 +235,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 		}
 		
 		function renderGrid(){
-			enableLoadingScreen();
+			//enableLoadingScreen();
 			//give chance for loading screen to pop up
-			setTimeout(function() {
+			//setTimeout(function() {
 				squareSize = gridSlider.value
 				addGrid(gridCanvas,squareSize,'black')
 				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
@@ -234,8 +245,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				rmBtn.style='display: inline-block !important;';
 				this.style='display: none';
 				createRender();
-				disableLoadingScreen();
-			},0);
+				//disableLoadingScreen();
+			//},0);
 		}
 		
 		function addGrid(canvas,squareSize,color){
@@ -367,8 +378,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			}
 			
 			//save max of 8 states
-			if(stack.length >= 8){
-					stack.shift();
+			if(stack.length >= 4){
+					var objToDelete = stack.shift();
+					delete objToDelete.imgData;
+					delete objToDelete.jsonLabelMap;
+					delete objToDelete;
 			}
 		
 			var imgData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
@@ -835,9 +849,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             };
 	
 			indCanvas.drawInitial = function (coords) {
-				enableLoadingScreen();
+				//enableLoadingScreen();
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					var labelValue = document.getElementById('labelTextInput').value;
 					
 					//label exists?
@@ -848,8 +862,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					
 					drawLabel(coords);
 					
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
             };
 			
 			//draws text to top right corner of shape
@@ -1132,12 +1146,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			
 			//repaints all the labels
 			function repaintAllLabels(){
-				enableLoadingScreen();
+				//enableLoadingScreen();
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					repaintLabels(undefined);	
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
 			}
 			
 			function addLabelToList(dom_id,coords){
@@ -1281,29 +1295,33 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             });
 			
 			$('#label_sel').dblclick(function () {
-				enableLoadingScreen();			
+				//enableLoadingScreen();			
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					var label = getSelectedLabel('label_sel');
 					if(label !== undefined){
 						eraseMapLabel(label);
 					}
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
             });
 			
 			$('#label_sel2').dblclick(function () {
-				enableLoadingScreen();			
+				//enableLoadingScreen();			
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					var label = getSelectedLabel('label_sel2');
 					if(label !== undefined){
 						eraseMapLabel(label);
 					}
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
             });
 			
+			$('#btn-fix-map').click(function() {
+				console.log("reload map.")
+				loadImage();
+			});
 			function findLabelIndex(label,dom_id){
 				
 			var targetIndex = -1;
@@ -1331,9 +1349,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				if(!confirm('Are you sure you want to delete the label "'+label+'" from the list?')){
 					return;
 				}
-				enableLoadingScreen();
+				//enableLoadingScreen();
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					var targetIndex = findLabelIndex(label,dom_id);		
 					
 					var selection = document.getElementById(dom_id);
@@ -1343,8 +1361,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					//erase the label first
 					eraseMapLabel(label);
 					labelMap[label] = undefined;			
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
 				return false;	
 			}
 				
@@ -1364,13 +1382,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			});
 			
 			function displayTempGrid(){
-				enableLoadingScreen();
+				//enableLoadingScreen();
 				//give chance for loading screen to pop up
-				setTimeout(function() {
+				//setTimeout(function() {
 					squareSize = gridSlider.value;
 					addGrid(cursorCanvas,squareSize,undefined);
-					disableLoadingScreen();
-				},0);
+					//disableLoadingScreen();
+				//},0);
 			}
 			
             $('#btn-shrink-brush').click(function () {
