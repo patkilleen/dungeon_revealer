@@ -6,11 +6,13 @@ The original project the core of this project was based on is found here: https:
 
 What the DM Sees
 ----------------
-![alt text](http://apclary.github.io/dungeon-revealer/img/example_dm_1.jpeg "DM's view")
+![alt text](http://github.com/patkilleen/dungeon-revealer/public/imgages/dm-example-fow.PNG "DM's Fog of war view")
+![alt text](http://github.com/patkilleen/dungeon-revealer/public/imgages/dm-example-labels.PNG "DM's Label view")
+![alt text](http://github.com/patkilleen/dungeon-revealer/public/imgages/dm-example-grid.PNG "DM's Grid view")
 
 What the players see
 --------------------
-![alt text](https://apclary.github.io/dungeon-revealer/img/example_player_1.jpeg "Player's view")
+![alt text](http://github.com/patkilleen/dungeon-revealer/public/imgages/player-example.PNG "Player's view")
 
 
 Installation
