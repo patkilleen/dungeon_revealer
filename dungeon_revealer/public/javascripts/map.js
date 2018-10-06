@@ -133,11 +133,24 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 		function saveAllLabels(){
 			var savePlayers = document.getElementById('label_sel').innerHTML;
 			var saveOthers = document.getElementById('label_sel2').innerHTML;
-			setCookie("pLabels",savePlayers,7);//save for 7 days
+			setCookie("pLabels",savePlayers,365);//save for 365 days
 			
-			setCookie("oLabels",saveOthers,7);//save for 7 days
+			setCookie("oLabels",saveOthers,365);//save for 365 days
 			
-			setCookie("labelMap",JSON.stringify(labelMap),7);//save for 7 days
+			setCookie("labelMap",JSON.stringify(labelMap),365);//save for 7 days
+		}
+			
+		function JSONToLabelMap(json){
+			if (json === undefined){
+				return new Object();
+			}else{
+				var tmp = JSON.parse(json); 
+				if (tmp != undefined){
+					return tmp;
+				}else{
+					return new Object();
+				}
+			}
 		}
 			
 		function loadAllLabels(){
@@ -145,8 +158,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			 document.getElementById('label_sel').innerHTML = savePlayers;
 			var saveOthers = getCookie("oLabels");
 			document.getElementById('label_sel2').innerHTML = saveOthers;
-			
-			labelMap = JSON.parse(getCookie("labelMap"));
+			labelMap = JSONToLabelMap(getCookie("labelMap"));
 			//don't keep the old location of labels
 			eraseAllMapLabels();
 		}
@@ -1023,8 +1035,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 						var undoObj = indCanvasStack.pop();
 						document.getElementById('label_sel').innerHTML = undoObj.savePlayers;						
 						document.getElementById('label_sel2').innerHTML = undoObj.saveOthers;
-					
-						labelMap = JSON.parse(undoObj.jsonLabelMap);
+						labelMap = JSONToLabelMap(undoObj.jsonLabelMap);
+						
 						ctx.putImageData(undoObj.imgData, 0, 0);
 						createRender();
 					}
@@ -1103,6 +1115,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//TODO: varying size text depending ui
 				indCanvas.drawText(fowMask.x,fowMask.y,l);
 			}
+			
 			
 			//erase label from label canvas
 			function eraseMapLabel(label){
