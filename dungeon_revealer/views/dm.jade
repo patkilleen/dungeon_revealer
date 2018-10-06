@@ -19,18 +19,18 @@ block content
         #upload-wrapper
           form#upload.dropzone
 
-        #map-wrapper
+        #map-wrapper(data-toggle='tooltip',title='Click to draw using current brush.')
         #dm-toolbar
             .toolbar-wrapper
                 .btn-toolbar
                     .btn-group
-                        a#btn-toggle-canvas.btn.btn-default Toggle Canvas
-                        a#btn-toggle-fow-brush.btn.btn-default Toggle Brush
+                        a#btn-toggle-canvas.btn.btn-default(data-toggle='tooltip',title='toggle between labels and fog of war') Toggle Canvas
+                        a#btn-toggle-fow-brush.btn.btn-default(data-toggle='tooltip',title='changes the type of brush') Toggle Brush
                     .btn-group
-                        a#btn-shroud-all.btn.btn-default Shroud All
-                        a#btn-clear-all.btn.btn-default Clear All
+                        a#btn-shroud-all.btn.btn-default(data-toggle='tooltip',title='Fogs all the map') Shroud All
+                        a#btn-clear-all.btn.btn-default(data-toggle='tooltip',title='Clears/erases the current canvas') Clear All
                     .btn-group
-                        a#btn-undo.btn.btn-default Undo
+                        a#btn-undo.btn.btn-default(data-toggle='tooltip',title='Undoes last action') Undo
                     .btn-group#label-btns
                         div#slidecontainer
                             input#size_input(type='Range',min="1",max="1024", value="15")
@@ -40,23 +40,23 @@ block content
                     .btn-group#grid-btns(style='display: none;')
                         div#gridslidecontainer
                             input#grid_size_input(type='Range',min="10",max="200", value="75")
-                        a#btn-smaller-grid.btn.btn-default Srink Grid				
+                        a#btn-smaller-grid.btn.btn-default Shrink Grid				
                         a#btn-bigger-grid.btn.btn-default Enlarge Grid
-                        a#btn-add-grid.btn.btn-default Add Grid
-                        a#btn-rm-grid.btn.btn-default(style='display: none;') Remove Grid
+                        a#btn-add-grid.btn.btn-default(data-toggle='tooltip',title='Adds grid to map') Add Grid
+                        a#btn-rm-grid.btn.btn-default(style='display: none;',data-toggle='tooltip',title='Removes the current grid from map') Remove Grid
                     .btn-group
-                        a#btn-fix-map.btn.btn-default Fix Map
+                        a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes, this reloads it.') Fix Map
                         a#btn-send.btn.btn-default Send
-                        span#icon-send-state.yellow_dot
+                        span#icon-send-state.yellow_dot(data-toggle='tooltip',title='Green when sent. Yellow when changes pending to be sent.')
             ul#messages.navbar-text
             .form-group.navbar-text
                 label#labelText Label
                 input#labelTextInput.form-control
             div#label_mng_container(style='display: none;')
-                select#label_sel.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;')
-                select#label_sel2.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;')
+                select#label_sel.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;',data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
+                select#label_sel2.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;',data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
                 .btn-group
-                    a#btn-clear-other-labels.btn.btn-default Delete Other Labels
-                    a#btn-clear-player-labels.btn.btn-default Delete Player Labels
+                    a#btn-clear-other-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all target and enemy labels') Delete Other Labels
+                    a#btn-clear-player-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all player labels') Delete Player Labels
 block js
     script(data-main='/javascripts/dm-app.js', src='/javascripts/require.js')
