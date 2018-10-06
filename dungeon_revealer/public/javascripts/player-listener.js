@@ -1,4 +1,4 @@
-define(['settings', 'jquery', 'io'], function (settings, jquery, io) {
+define(['settings', 'jquery', 'socket.io'], function (settings, jquery, io) {
     console.log('player.js starting');
     var $ = jquery,
         socket = io();
