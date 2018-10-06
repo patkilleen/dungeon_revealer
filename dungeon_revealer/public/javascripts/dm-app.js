@@ -58,6 +58,10 @@ require(['common'], function(common) {
                 callback: function() {
 					//add prompt on page-unload (refresh/close window)
 					window.onbeforeunload = function (e) {
+						
+						//save labels just incase app exits
+						dmMap.saveAllLabels();
+						
 						e = e || window.event;
 
 						// For IE and Firefox prior to version 4
