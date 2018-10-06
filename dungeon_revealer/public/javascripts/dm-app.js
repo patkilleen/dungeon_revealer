@@ -6,6 +6,7 @@ require(['common'], function(common) {
         var $ = jquery,
             mapWrapper = document.getElementById('map-wrapper'),
 			loadedNewMap = false,
+			newMapSet = false,
             dmMap = map();
       /*  socket.on('testClient2', function (msg) {
 	   console.log('helloworld!');
@@ -55,6 +56,19 @@ require(['common'], function(common) {
             $('#upload').hide();
             dmMap.create(mapWrapper, {
                 callback: function() {
+					//add prompt on page-unload (refresh/close window)
+					window.onbeforeunload = function (e) {
+						e = e || window.event;
+
+						// For IE and Firefox prior to version 4
+						if (e) {
+							e.returnValue = 'Sure?';
+						}
+
+						// For Safari
+						return 'Sure?';
+						
+					};
                     dmMap.fitMapToWindow();
                     window.addEventListener('resize', function(event) {
                         dmMap.fitMapToWindow();
@@ -67,6 +81,7 @@ require(['common'], function(common) {
             });
 			
 			if(loadedNewMap == true){
+				window.onbeforeunload = undefined;
 				location.reload();
 			}
 			
@@ -76,6 +91,9 @@ require(['common'], function(common) {
         
             
         $('#btn-new-map').click(function() {
+			if(confirm("Are you sure you want a new map (you will lose all fog-of-war and labels on current map)?")!=1){
+				return
+			}
 			loadedNewMap=true;
 			dmMap.saveAllLabels();
 			dmMap.remove();
