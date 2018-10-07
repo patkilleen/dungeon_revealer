@@ -6,13 +6,13 @@ The original project the core of this project was based on is found here: https:
 
 What the DM Sees
 ----------------
-![alt text](http://github.com/patkilleen/dungeon_revealer/tree/master/dungeon_revealer/public/images/dm-example-fow.PNG "DM's Fog of war view")
-![alt text](http://github.com/patkilleen/dungeon_revealer/tree/master/dungeon_revealer/public/images/dm-example-labels.PNG "DM's Label view")
-![alt text](http://github.com/patkilleen/dungeon_revealer/tree/master/dungeon_revealer/public/images/dm-example-grid.PNG "DM's Grid view")
+![alt text](https://raw.githubusercontent.com/patkilleen/dungeon_revealer/master/dungeon_revealer/public/images/dm-example-fow.PNG "DM's Fog of war view")
+![alt text](https://raw.githubusercontent.com/patkilleen/dungeon_revealer/master/dungeon_revealer/public/images/dm-example-labels.PNG "DM's Label view")
+![alt text](https://raw.githubusercontent.com/patkilleen/dungeon_revealer/master/dungeon_revealer/public/images/dm-example-grid.PNG "DM's Grid view")
 
 What the players see
 --------------------
-![alt text](http://github.com/patkilleen/dungeon_revealer/tree/master/dungeon_revealer/public/images/player-example.PNG "Player's view")
+![alt text](https://raw.githubusercontent.com/patkilleen/dungeon_revealer/master/dungeon_revealer/public/images/player-example.PNG "Player's view")
 
 
 Installation
