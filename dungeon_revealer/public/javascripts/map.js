@@ -186,6 +186,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			return null;
 		}
 		
+		
 		function eraseCookie(name) {   
 			document.cookie = name+'=; Max-Age=-99999999;';  
 		}
@@ -1058,6 +1059,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			});
 			
 			
+		
+			
 			//set up ctrl z undo
 			window.onkeyup = function(e) {
 			   var key = e.keyCode ? e.keyCode : e.which;
@@ -1120,52 +1123,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				lineWidth = slider.value;
             });
 			
-			function drawLabel(label){
-
-				//save the state o
-				if (label.coords === undefined){
-					return;
-				}
-				var lineWidth = label.size;
-                // Construct mask dimensions
-                var fowMask = constructIndMask(label);
-                indContext.lineWidth = fowMask.lineWidth;
-				var l =0;
-                indContext.beginPath();
-                if (label.brushShape == 'round') {
-                    indContext.arc(
-                        fowMask.x,
-                        fowMask.y,
-                        fowMask.r,
-                        fowMask.startingAngle,
-                        fowMask.endingAngle,
-                        true
-                    );
-					l=fowMask.r;
-                }
-                else if (label.brushShape == 'square') {
-                    indContext.rect(
-                        fowMask.centerX,
-                        fowMask.centerY,
-                        fowMask.height,
-                        fowMask.width);
-					l=fowMask.height/2;
-                }
-				
-				//var currBrushStr = indBrush.getCurrentBrush();
-				
-				
-				var strokeStyle = indBrush.getPattern(label.brushType);
-				if (label.invisible == true){
-					indContext.setLineDash([5]);
-				}else{
-					indContext.setLineDash([]);
-				}
-				indContext.strokeStyle = strokeStyle
-                indContext.stroke();
-				indCanvas.drawText(label,l);
-			}
-			
 			
 			//erase label from label canvas
 			function eraseMapLabel(label){
@@ -1190,39 +1147,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//restoreLabelState(label);	
 			}
 			
-			//repaints a label except...
-			function repaintLabels(exception){
-				for (var label in labelMap){				
-					if (labelMap.hasOwnProperty(label)) {						
-						var labelObj = labelMap[label];
-						//not label to erase?
-						if(!(labelObj === undefined)){
-							if(!(label === exception)){
-							//only if wasn't erased
-								if(!(labelObj.coords === undefined)){
-									drawLabel(labelObj);								
-								}else{
-									
-									labelObj.coords = undefined;
-									
-								}// end ifmake sure the label hasn't already been erase
-							}//end if ignore label to erase
-						}//end if make sure it hasn't been delete
-					}
-				}
-				createRender();
-			}
 			
-			//repaints all the labels
-			function repaintAllLabels(){
-				//enableLoadingScreen();
-				//give chance for loading screen to pop up
-				//setTimeout(function() {
-					repaintLabels(undefined);	
-					//disableLoadingScreen();
-				//},0);
-			}
 			
+			
+		
 			function addLabelToList(dom_id,coords){
 				var e = document.getElementById('label_sel');
 				var options = e.options;
@@ -1422,6 +1350,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				return targetIndex;
 			}
 			
+			
+			
 			function removeLabelFromSelect(label,dom_id){
 				if((label === undefined) || (dom_id === undefined)){
 					return false;
@@ -1570,11 +1500,118 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			setSendIconYellow();
         }
 		
-		function createRender2() {
-            removeRender();
-            createPlayerMapImage(mapImageCanvas, fowCanvas);
-        }
+			//repaints all the labels
+			function repaintAllLabels(){
+				//enableLoadingScreen();
+				//give chance for loading screen to pop up
+				//setTimeout(function() {
+					repaintLabels(undefined);	
+					//disableLoadingScreen();
+				//},0);
+			}
+			
+				//repaints a label except...
+			function repaintLabels(exception){
+				for (var label in labelMap){				
+					if (labelMap.hasOwnProperty(label)) {						
+						var labelObj = labelMap[label];
+						//not label to erase?
+						if(!(labelObj === undefined)){
+							if(!(label === exception)){
+							//only if wasn't erased
+								if(!(labelObj.coords === undefined)){
+									drawLabel(labelObj);								
+								}else{
+									
+									labelObj.coords = undefined;
+									
+								}// end ifmake sure the label hasn't already been erase
+							}//end if ignore label to erase
+						}//end if make sure it hasn't been delete
+					}
+				}
+				createRender();
+			}
+			
+			
+		function drawLabel(label){
 
+				//save the state o
+				if (label.coords === undefined){
+					return;
+				}
+				var lineWidth = label.size;
+                // Construct mask dimensions
+                var fowMask = constructIndMask(label);
+                indContext.lineWidth = fowMask.lineWidth;
+				var l =0;
+                indContext.beginPath();
+                if (label.brushShape == 'round') {
+                    indContext.arc(
+                        fowMask.x,
+                        fowMask.y,
+                        fowMask.r,
+                        fowMask.startingAngle,
+                        fowMask.endingAngle,
+                        true
+                    );
+					l=fowMask.r;
+                }
+                else if (label.brushShape == 'square') {
+                    indContext.rect(
+                        fowMask.centerX,
+                        fowMask.centerY,
+                        fowMask.height,
+                        fowMask.width);
+					l=fowMask.height/2;
+                }
+				
+				//var currBrushStr = indBrush.getCurrentBrush();
+				
+				
+				var strokeStyle = indBrush.getPattern(label.brushType);
+				if (label.invisible == true){
+					indContext.setLineDash([5]);
+				}else{
+					indContext.setLineDash([]);
+				}
+				indContext.strokeStyle = strokeStyle
+                indContext.stroke();
+				indCanvas.drawText(label,l);
+			}
+			
+			function createRender2() {
+				removeRender();
+				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+				for (var label in labelMap){				
+					if (labelMap.hasOwnProperty(label)) {						
+						var labelObj = labelMap[label];
+						//not label to erase?
+						if(!(labelObj === undefined)){
+							if(labelObj.invisible === false){
+							//only if wasn't erased
+								if(!(labelObj.coords === undefined)){
+									drawLabel(labelObj);								
+								}else{
+									
+									labelObj.coords = undefined;
+									
+								}// end ifmake sure the label hasn't already been erase
+							}//end if ignore label to erase
+						}//end if make sure it hasn't been delete
+					}
+				}
+					createRender();
+				createPlayerMapImage(mapImageCanvas, fowCanvas);
+			}
+			
+			
+			
+			
+		function repaintAllHiddenLabels(){
+			indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+			repaintAllLabels();
+		}
         function removeRender() {
             $('#render').remove();
         }
@@ -1594,6 +1631,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             toImage: toImage,
             resize: resize,
             remove: remove,
+			repaintAllHiddenLabels: repaintAllHiddenLabels,
             fitMapToWindow: fitMapToWindow,
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels

@@ -127,6 +127,7 @@ require(['common'], function(common) {
                 .fail(function (e) {
                 })
                 .always(function (e) {
+					dmMap.repaintAllHiddenLabels();
 					disableLoadingScreen();
 					setSendIconGreen();
                     if (e.success) {
