@@ -871,18 +871,29 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					
 					//label exists?
 					if(!(label === undefined)){
+						//change the size and shape if dm changed it before drawing
+				
+						
 						if (!(label.coords === undefined)){
 							//only erase the label if already on map 
 							eraseMapLabel(labelValue);
 						}
+							
 					}else{
-						saveLabelState(labelValue,coords);
-						label = labelMap[labelValue]
+						//add the label to map
+						saveLabelState(labelValue,coords);	
 					}
 					
-					label.coords = coords;
-					drawLabel(label);
+					label = labelMap[labelValue]
 					
+					var slider = document.getElementById("size_input"); 
+					label.size =  slider.value;
+					label.brushShape = brushShape;
+					
+					
+					label.coords = coords;
+					//label.coords = coords;
+					drawLabel(label);
 					
 					//choose which select pane to add label reference to
 					if(label.brushType === 'player'){
@@ -890,10 +901,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}else{
 						addLabelToList('label_sel2',label.coords);
 					}
-					//repaintAllLabels();
 					
-					//disableLoadingScreen();
-				//},0);
+					restoreLabelState(labelValue);
+					
             };
 			
 			//draws text to top right corner of shape
@@ -1156,7 +1166,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//repaint all but removed label
 				repaintAllLabels();
 				
-				restoreLabelState(label);	
+				//restoreLabelState(label);	
 			}
 			
 			//repaints a label except...
