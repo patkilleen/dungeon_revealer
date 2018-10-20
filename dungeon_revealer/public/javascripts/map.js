@@ -980,6 +980,22 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                updateMsg();
             });
 			
+			$('#btn-visibility-brush').click(function (){
+				
+				var labelValue = document.getElementById('labelTextInput').value;
+					
+				var label = labelMap[labelValue]
+				if (document.getElementById('btn-visibility-brush').innerHTML == 'Hide'){
+					document.getElementById('btn-visibility-brush').innerHTML = "Reveal";
+					label.invisible = true
+				}else{
+					document.getElementById('btn-visibility-brush').innerHTML = "Hide";
+					label.invisible = false
+				}
+				//update the map with reavealer/hidden label
+				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+				repaintAllLabels();
+			});
 			$('#btn-toggle-canvas').click(function() {
 				
 				//swapping to label/indicator canvas?
@@ -1139,7 +1155,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//var currBrushStr = indBrush.getCurrentBrush();
 				
 				
-				var strokeStyle = indBrush.getPattern(label.brushType);;
+				var strokeStyle = indBrush.getPattern(label.brushType);
+				if (label.invisible == true){
+					indContext.setLineDash([5]);
+				}else{
+					indContext.setLineDash([]);
+				}
 				indContext.strokeStyle = strokeStyle
                 indContext.stroke();
 				indCanvas.drawText(label,l);
@@ -1264,6 +1285,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				
 				var slider = document.getElementById("size_input");
 				var size = slider.value;
+				var invisible = false;	
+				
+				if (document.getElementById('btn-visibility-brush').innerHTML == 'Reveal'){
+					invisible=true;
+				}
 				
 				var token = new Object();
 				token.size = size;
@@ -1271,6 +1297,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				token.brushType = indBrush.getCurrentBrush();
 				token.brushShape = brushShape;
 				token.coords = coords;
+				token.invisible = invisible;
 				labelMap[label] = token;
 			}
 			
@@ -1287,6 +1314,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					var newbrushType = token.brushType;
 					var newbrushShape = token.brushShape;
 					
+					if (token.invisible == true){
+						document.getElementById('btn-visibility-brush').innerHTML = 'Reveal';
+					}else{
+						document.getElementById('btn-visibility-brush').innerHTML = 'Hide';
+					}
 					//make sure brushshape is round or square
 					if((token.brushShape === 'round') || (token.brushShape === 'square')){
 						brushShape = token.brushShape;
