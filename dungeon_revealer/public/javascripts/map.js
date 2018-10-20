@@ -69,7 +69,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 dimensions = getOptimalDimensions(mapImage.width, mapImage.height, opts.maxWidth, opts.maxHeight);
                 width = dimensions.width;
                 height = dimensions.height;
-                console.log('width: ' + width + ', height: ' + height);
                 container = getContainer();
                 canvases = createCanvases();
                 parentElem.appendChild(container);
@@ -107,10 +106,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             mapImage.src = imgUrl;
         }
 
+		function labelVisibilityChange(){
+			
+		}
+		
 		function loadImage(){
 			//mapImage = new Image();
 			mapImage.onload = function(){
-				console.log("reloaded map, img: "+ imgUrl);
 				//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
 				copyCanvas(mapImageContext, createImageCanvas(mapImage));
 			};
@@ -208,7 +210,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
             function createCanvas(type, zIndex) {
                 var canvas = document.createElement('canvas');
 
-                console.log('creating canvas ' + type);
                 canvas.width = width;
                 canvas.height = height;
                 canvas.id = type + Math.floor(Math.random() * 100000);
@@ -483,22 +484,22 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         }
 		
-		function constructIndMask(cords) {
-			var lineWidth = getLineWidth();
+		function constructIndMask(label) {
+			var lineWidth = label.size;
             var maskDimensions = {
-                x: cords.x,
-                y: cords.y,
+                x: label.coords.x,
+                y: label.coords.y,
                 lineWidth: 2,
                 line: '',
                 fill: ''
             };
 
-            if (brushShape == 'round') {
+            if (label.brushShape == 'round') {
                 maskDimensions.r = lineWidth / 2;
                 maskDimensions.startingAngle = 0;
                 maskDimensions.endingAngle = Math.PI * 2
             }
-            else if (brushShape == 'square') {
+            else if (label.brushShape == 'square') {
 
                 maskDimensions.centerX = maskDimensions.x - lineWidth / 2;
                 maskDimensions.centerY = maskDimensions.y - lineWidth / 2;
@@ -866,21 +867,40 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				//setTimeout(function() {
 					var labelValue = document.getElementById('labelTextInput').value;
 					
+					var label = labelMap[labelValue]
+					
 					//label exists?
-					if(!(labelMap[labelValue] === undefined)){
-						//only erase the label if already on map 
-						eraseMapLabel(labelValue);
+					if(!(label === undefined)){
+						if (!(label.coords === undefined)){
+							//only erase the label if already on map 
+							eraseMapLabel(labelValue);
+						}
+					}else{
+						saveLabelState(labelValue,coords);
+						label = labelMap[labelValue]
 					}
 					
-					drawLabel(coords);
+					label.coords = coords;
+					drawLabel(label);
+					
+					
+					//choose which select pane to add label reference to
+					if(label.brushType === 'player'){
+						addLabelToList('label_sel',label.coords);
+					}else{
+						addLabelToList('label_sel2',label.coords);
+					}
+					//repaintAllLabels();
 					
 					//disableLoadingScreen();
 				//},0);
             };
 			
 			//draws text to top right corner of shape
-			indCanvas.drawText = function (x,y,l) {
-				var lineWidth= getLineWidth();
+			indCanvas.drawText = function (label,l) {
+				var x = label.coords.x;
+				var y = label.coords.y;
+				var lineWidth= label.size;
 				var newX = x + l;
 				var newY = y - l;
 				if(newX<0){
@@ -893,15 +913,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				}else if(newY>indCanvas.height){
 					newY=indCanvas.height;
 				}
-				var label = document.getElementById('labelTextInput').value;
+	
 				indContext.save();
 				indContext.shadowColor = "black";
 				indContext.shadowOffsetX = 3; 
 				indContext.shadowOffsetY = 3; 
 				indContext.shadowBlur = 1;
 				indContext.fillStyle="white"
-				indContext.font = "20px Arial";
-				indContext.fillText(label,newX,newY);
+				indContext.font = (20 + (lineWidth/10))+"px Arial";
+				indContext.fillText(label.label,newX,newY);
 				indContext.restore();
 			}
             indCanvas.draw = function (points) {
@@ -1042,7 +1062,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					}
 				}
 			}
-			
+
 			//apply fog of war
             $('#btn-shroud-all').click(function () {
                 pushCanvasStack();
@@ -1074,15 +1094,19 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				lineWidth = slider.value;
             });
 			
-			function drawLabel(coords){
+			function drawLabel(label){
+
 				//save the state o
-				var lineWidth= getLineWidth();
+				if (label.coords === undefined){
+					return;
+				}
+				var lineWidth = label.size;
                 // Construct mask dimensions
-                var fowMask = constructIndMask(coords);
+                var fowMask = constructIndMask(label);
                 indContext.lineWidth = fowMask.lineWidth;
 				var l =0;
                 indContext.beginPath();
-                if (brushShape == 'round') {
+                if (label.brushShape == 'round') {
                     indContext.arc(
                         fowMask.x,
                         fowMask.y,
@@ -1093,7 +1117,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                     );
 					l=fowMask.r;
                 }
-                else if (brushShape == 'square') {
+                else if (label.brushShape == 'square') {
                     indContext.rect(
                         fowMask.centerX,
                         fowMask.centerY,
@@ -1102,18 +1126,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					l=fowMask.height/2;
                 }
 				
-				var currBrushStr = indBrush.getCurrentBrush();
+				//var currBrushStr = indBrush.getCurrentBrush();
 				
-				//choose which select pane to add label reference to
-				if(currBrushStr === 'player'){
-					addLabelToList('label_sel',coords);
-				}else{
-					addLabelToList('label_sel2',coords);
-				}
-				 
+				
+				var strokeStyle = indBrush.getPattern(label.brushType);;
+				indContext.strokeStyle = strokeStyle
                 indContext.stroke();
-				//TODO: varying size text depending ui
-				indCanvas.drawText(fowMask.x,fowMask.y,l);
+				indCanvas.drawText(label,l);
 			}
 			
 			
@@ -1122,32 +1141,38 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					
 				if((label === undefined) || (labelMap[label] === undefined)){
 					return;
-				}		
+				}
+				var labelObj = labelMap[label];				
 				pushCanvasStack();
 				
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+					
 				
-				labelMap[label].coords = undefined;
+				
+			/*	if (labelObj.coords === undefined){
+					return;
+				}*/
+				labelObj.coords = undefined;
 				//repaint all but removed label
-				repaintLabels(label);
+				repaintAllLabels();
 				
 				restoreLabelState(label);	
 			}
 			
 			//repaints a label except...
 			function repaintLabels(exception){
-				for (var label in labelMap){
-					if (labelMap.hasOwnProperty(label)) {
+				for (var label in labelMap){				
+					if (labelMap.hasOwnProperty(label)) {						
+						var labelObj = labelMap[label];
 						//not label to erase?
-						if(!(labelMap[label] === undefined)){
+						if(!(labelObj === undefined)){
 							if(!(label === exception)){
 							//only if wasn't erased
-								if(!(labelMap[label].coords === undefined)){
-									restoreLabelState(label);
-									drawLabel(labelMap[label].coords);
+								if(!(labelObj.coords === undefined)){
+									drawLabel(labelObj);								
 								}else{
 									
-									labelMap[label].coords = undefined;
+									labelObj.coords = undefined;
 									
 								}// end ifmake sure the label hasn't already been erase
 							}//end if ignore label to erase
@@ -1280,6 +1305,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 					} else {
 						document.getElementById('btn-shape-brush').innerHTML = 'Square Brush';
 					}
+					
 			}
 			
 			//gets name of selected label given selection pane id
