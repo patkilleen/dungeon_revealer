@@ -107,7 +107,13 @@ require(['common'], function(common) {
         
 	
 	$('#btn-send').click(function () {
-		enableLoadingScreen();
+			
+			enableLoadingScreen();
+			setTimeout(function() {
+				
+				
+			dmMap.createRender2();
+			
             var imageData = document.getElementById('render').src;
 
             var jqxhr = $.post('/send',
@@ -129,7 +135,8 @@ require(['common'], function(common) {
                         console.error(e.responseText);
                     }
                 });
-        });
+        },0);
+		});
 
     });
 

@@ -1525,9 +1525,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         //todo: move this functionality elsewher
         function createRender() {
+			setSendIconYellow();
+        }
+		
+		function createRender2() {
             removeRender();
             createPlayerMapImage(mapImageCanvas, fowCanvas);
-			setSendIconYellow();
         }
 
         function removeRender() {
@@ -1545,6 +1548,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 
         return {
             create: create,
+			createRender2: createRender2,
             toImage: toImage,
             resize: resize,
             remove: remove,
