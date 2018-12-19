@@ -104,8 +104,19 @@ require(['common'], function(common) {
 			$('#upload').show();
         });
 		
+		$('#btn-zoom-in').click(function() {
+			dmMap.zoomIn();
+        });
         
 	
+		$('#btn-zoom-out').click(function() {
+			dmMap.zoomOut();
+        });
+		
+		$('#btn-map-reset').click(function() {
+			dmMap.resetMapImage();
+        });
+		
 	$('#btn-send').click(function () {
 			
 			enableLoadingScreen();

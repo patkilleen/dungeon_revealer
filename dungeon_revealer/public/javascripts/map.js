@@ -1495,6 +1495,22 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
             });
         }
 
+		function zoomIn(){
+			
+			zoomer.zoom(2);
+			
+		}
+		
+		function zoomOut(){
+			
+			zoomer.zoom(-2);
+			
+		}
+		
+		
+		function resetMapImage(){
+			zoomer.resetMapImage();
+		}
         function stopDrawing() {
 			
 			if (isDrawing) {
@@ -1644,7 +1660,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 			repaintAllHiddenLabels: repaintAllHiddenLabels,
             fitMapToWindow: fitMapToWindow,
 			loadAllLabels: loadAllLabels,
-			saveAllLabels: saveAllLabels
+			saveAllLabels: saveAllLabels,
+			zoomIn: zoomIn,
+			zoomOut: zoomOut,
+			resetMapImage: resetMapImage
         };
     }
 

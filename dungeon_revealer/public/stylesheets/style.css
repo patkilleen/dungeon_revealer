@@ -26,6 +26,10 @@ html, body, #wrapper {
   /*padding-bottom: 1100px;*/
 }
 
+#zoom_btn_group{
+	position: relative;
+	left: 550px;
+}
 #canvasContainer{
     position: relative;
     top: 0;
@@ -38,7 +42,6 @@ html, body, #wrapper {
 max-height: 512px;
 	max-width: 512px;*/
 	overflow : scroll;
-	resize:both;
 }
 
 #messages{
