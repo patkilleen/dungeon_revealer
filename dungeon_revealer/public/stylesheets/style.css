@@ -54,12 +54,14 @@ html, body, #wrapper {
   left: 0;
   width: 100%;
   z-index: 100;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 #display-toolbar {
   display: block !important;
   width: 100%;
   z-index: 99;
+
 }
 .toolbar-wrapper {
   text-align: center;
