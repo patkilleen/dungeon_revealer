@@ -1,5 +1,5 @@
 var indicatorFlag = false;
-define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jquery, fow_brush,ind_brush) {
+define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom) {
     console.log('map module loaded');
     return function () {
         var $ = jquery,
@@ -13,6 +13,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			labelMap = new Object(),
 			indContext,
             mapImageContext,
+			zoomer,
             mapImageCanvas,
 			currContext,
             fowBrush,
@@ -77,6 +78,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
                 cursorCanvas = canvases.cursorCanvas;
 				indCanvas = canvases.indCanvas;
 				gridCanvas = canvases.gridCanvas;
+				zoomer = canvas_zoom(mapImageCanvas,mapImage);
+				zoomer.init(cursorCanvas);
                 container.appendChild(mapImageCanvas);
                 container.appendChild(gridCanvas);
 				container.appendChild(indCanvas);
@@ -661,6 +664,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 			var lineWidth = getLineWidth();
             // Mouse Click
             cursorCanvas.onmousedown = function (e) {
+				
+				//don't hadnle right clicks
+				if(e.which == 3){
+					event.preventDefault();
+					return false;
+				}
+				
 				pushCanvasStack();
                 // Start drawing
                 isDrawing = true;
@@ -1479,9 +1489,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush'], function (settings, jque
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
 				repaintAllLabels();
             });
-
-            document.addEventListener('mouseup', function () {
-                stopDrawing();	
+			document.addEventListener('contextmenu', event => event.preventDefault());
+            document.addEventListener('mouseup', function (e) {
+			    stopDrawing();	
             });
         }
 
