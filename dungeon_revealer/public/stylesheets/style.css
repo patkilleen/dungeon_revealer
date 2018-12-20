@@ -45,7 +45,6 @@ max-height: 512px;
 }
 
 #messages{
-	
 	font-size: 150%;
 	background-color: white;
 }
@@ -58,7 +57,6 @@ max-height: 512px;
   font-size: 150%;
 }
 #labelText{
-	
 	background-color: #FFFFFF;
 	display: none;
 }
@@ -82,7 +80,7 @@ max-height: 512px;
 
 }
 .toolbar-wrapper {
-	padding-top: 10px;
+  padding-top: 10px;
   text-align: center
 }
 
