@@ -81,10 +81,8 @@ define(function () {
 					},false);
 			},
 			zoom = function(clicks){
-			//	ctx.translate(lastX,lastY);
 				var factor = Math.pow(scaleFactor,clicks);
 				ctx.scale(factor,factor);
-				//ctx.translate(-lastX,-lastY);
 				redraw();
 			},
 			handleScroll = function(evt){
@@ -93,12 +91,10 @@ define(function () {
 				return evt.preventDefault() && false;
 			},
 			lockPan = function(){
-				console.log("locking pan");
 				panLocked = true;
 			},
 			unlockPan = function(){
 				panLocked = false;
-				console.log("unlocking pan");
 			},	
 
 			resetMapImage = function(){

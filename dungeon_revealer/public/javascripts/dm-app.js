@@ -120,7 +120,9 @@ require(['common'], function(common) {
 			if(confirm("Are you sure you want to reset the base map to its default size and zoom?")!=1){
 				return
 			}
+			
 			var zoomer = dmMap.getZoomer();
+			zoomer.resetMapImage();
         });
 		
 		$('#check-box-pan-lock').click(function() {
