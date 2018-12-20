@@ -38,7 +38,6 @@ define(function () {
 				scaleFactor=1.1;
 			},
 			init = function(mouseEventDOM){
-				
 				initValues();
 					mouseEventDOM.addEventListener('mousedown',function(evt){
 						//only handle right click
@@ -101,8 +100,8 @@ define(function () {
 			},		
 			resetMapImage = function(){
 				initValues();
-				ctx.setTransform(1,0,0,1,0,0);
 				ctx.clearRect(0,0,canvas.width,canvas.height);
+				ctx.setTransform(1,0,0,1,0,0);
 				ctx.drawImage(image,0,0);
 			}
 					

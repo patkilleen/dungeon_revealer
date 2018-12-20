@@ -103,6 +103,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
+				zoomer.resetMapImage();
                 callback();
             };
             mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
