@@ -268,8 +268,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 		}
 		
 		function addGrid(canvas,squareSize,color){
-			var numCols = width/squareSize;
-			var numRows = height/squareSize;
+			var numCols = canvas.width/squareSize;
+			var numRows = canvas.height/squareSize;
 			var context = canvas.getContext('2d');
 
 			context.beginPath();
@@ -290,7 +290,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 				row++;
 			}
 			context.stroke();
-		} 		
+		}	
         function getMouseCoordinates(e) {
             var viewportOffset = fowCanvas.getBoundingClientRect(),
                 borderTop = parseInt($(fowCanvas).css('border-top-width')),
