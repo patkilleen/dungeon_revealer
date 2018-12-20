@@ -18,6 +18,7 @@ define(function () {
 			dragStartY,
 			dragged,
 			scaleFactor=1.1,
+			dragFactor=0.4,
 			panLocked = false,
 			redraw = function(){
 			// Clear the entire canvas
@@ -35,7 +36,8 @@ define(function () {
 				dragStartX=null;
 				dragStartY=null;
 				dragged=null;
-				scaleFactor=1.1;
+				scaleFactor=1.05;
+				dragFactor=0.3;
 			},
 			init = function(mouseEventDOM){
 				initValues();
@@ -63,7 +65,7 @@ define(function () {
 						dragged = true;
 						//only draw if dragging
 						if ((dragStartX != null) || (dragStartY != null)){
-							ctx.translate(lastX-dragStartX,lastY-dragStartY);
+							ctx.translate((dragFactor)*(lastX-dragStartX),dragFactor*(lastY-dragStartY));
 							redraw();
 						}
 					},false);
