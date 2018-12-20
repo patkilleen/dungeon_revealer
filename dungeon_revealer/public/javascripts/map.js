@@ -259,7 +259,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//give chance for loading screen to pop up
 			//setTimeout(function() {
 				squareSize = gridSlider.value
-				gridBrush.addGrid(gridCanvas,squareSize,'black')
+				gridBrush.addGrid(gridCanvas,squareSize,'black');
+				gridBrush.setGridAdded(true);
 				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 				var rmBtn = document.getElementById('btn-rm-grid');
 				rmBtn.style='display: inline-block !important;';
@@ -640,7 +641,19 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             }
             return limitedPointsSorted
         }
+		function handleGridDistance(x,y){
 
+			var squareSize = gridSlider.value;
+			gridBrush.highlightCell(cursorCanvas,x,y,squareSize);
+			var dist = gridBrush.distanceFromLastClick(x,y,squareSize);
+			if(dist == -1){
+				gridBrush.addPointClicked(x,y);
+			}else{
+				alert("Distance between these cells is  "+Math.ceil(dist)+" ft (5ft squares).");
+				gridBrush.clearPointClicked();
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+			}
+		}
         function setupCursorTracking() {
 			var lineWidth = getLineWidth();
             // Mouse Click
@@ -666,18 +679,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					//on grid brush?
 					if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
 					//	renderGrid();
-						var x = cords.x;
-						var y = cords.y;
-						var squareSize = gridSlider.value;
-						gridBrush.highlightCell(cursorCanvas,x,y,squareSize);
-						var dist = gridBrush.distanceFromLastClick(x,y,squareSize);
-						if(dist == -1){
-							gridBrush.addPointClicked(x,y);
-						}else{
-							alert("Distance between these cells is  "+dist+" ft (5ft squares).");
-							gridBrush.clearPointClicked();
-							cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-						}
+						handleGridDistance(cords.x,cords.y);
 						//var pt = gridBrush.findCellClicked(cords.x,cords.y,gridSlider.value);
 						//console.log("["+pt.row+","+pt.col+"]");
 					}else{
@@ -1398,13 +1400,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			});
 			
 			function displayTempGrid(){
-				//enableLoadingScreen();
-				//give chance for loading screen to pop up
-				//setTimeout(function() {
+				//only display blue grid that will be painted if added if no grid on map
+				if(!gridBrush.hasGrid()){
 					squareSize = gridSlider.value;
 					gridBrush.addGrid(cursorCanvas,squareSize,undefined);
-					//disableLoadingScreen();
-				//},0);
+
+				}
 			}
 			
             $('#btn-shrink-brush').click(function () {
@@ -1431,11 +1432,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			
 			$('#btn-rm-grid').click(function () {
 				
+				gridBrush.setGridAdded(false);
 				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 				var addBtn = document.getElementById('btn-add-grid');
 				addBtn.style='display: inline-block !important;';
 				this.style='display: none';
 				createRender();
+				displayTempGrid();
             });
 					
 			//size of grid changed, display the light blue candidate grid?
