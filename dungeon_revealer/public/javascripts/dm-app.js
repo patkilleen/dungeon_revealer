@@ -7,6 +7,7 @@ require(['common'], function(common) {
             mapWrapper = document.getElementById('map-wrapper'),
 			loadedNewMap = false,
 			newMapSet = false,
+			zoomFactor = 2,
             dmMap = map();
       /*  socket.on('testClient2', function (msg) {
 	   console.log('helloworld!');
@@ -105,16 +106,29 @@ require(['common'], function(common) {
         });
 		
 		$('#btn-zoom-in').click(function() {
-			dmMap.zoomIn();
+			var zoomer = dmMap.getZoomer();
+			zoomer.zoom(zoomFactor);
         });
         
 	
 		$('#btn-zoom-out').click(function() {
-			dmMap.zoomOut();
+			var zoomer = dmMap.getZoomer();
+			zoomer.zoom(-zoomFactor);
         });
 		
 		$('#btn-map-reset').click(function() {
-			dmMap.resetMapImage();
+			var zoomer = dmMap.getZoomer();
+			zoomer.resetMapImage();
+        });
+		
+		$('#check-box-pan-lock').click(function() {
+			
+			var zoomer = dmMap.getZoomer();
+			if(this.checked){
+				zoomer.lockPan();
+			}else{
+				zoomer.unlockPan();
+			}
         });
 		
 	$('#btn-send').click(function () {

@@ -18,6 +18,7 @@ define(function () {
 			dragStartY,
 			dragged,
 			scaleFactor=1.1,
+			panLocked = false,
 			redraw = function(){
 			// Clear the entire canvas
 
@@ -53,10 +54,15 @@ define(function () {
 						}
 					},false);
 					mouseEventDOM.addEventListener('mousemove',function(evt){
+						//only pan is unlocked
+						if(panLocked){
+							return;
+						}
 						
 						lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
 						lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
 						dragged = true;
+						//only draw if dragging
 						if ((dragStartX != null) || (dragStartY != null)){
 							ctx.translate(lastX-dragStartX,lastY-dragStartY);
 							redraw();
@@ -85,7 +91,14 @@ define(function () {
 				if (delta) zoom(delta);
 				return evt.preventDefault() && false;
 			},
-			
+			lockPan = function(){
+				console.log("locking pan");
+				panLocked = true;
+			},
+			unlockPan = function(){
+				panLocked = false;
+				console.log("unlocking pan");
+			},		
 			resetMapImage = function(){
 				initValues();
 				ctx.setTransform(1,0,0,1,0,0);
@@ -96,7 +109,9 @@ define(function () {
 			return {
 				init: init,
 				zoom: zoom,
-				resetMapImage: resetMapImage
+				resetMapImage: resetMapImage,
+				lockPan: lockPan,
+				unlockPan: unlockPan
 			}
     };
 });
