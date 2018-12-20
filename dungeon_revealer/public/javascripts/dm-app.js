@@ -121,7 +121,6 @@ require(['common'], function(common) {
 				return
 			}
 			var zoomer = dmMap.getZoomer();
-			zoomer.resetMapImage();
         });
 		
 		$('#check-box-pan-lock').click(function() {
@@ -133,6 +132,8 @@ require(['common'], function(common) {
 				zoomer.unlockPan();
 			}
         });
+		
+		
 		
 	$('#btn-send').click(function () {
 			

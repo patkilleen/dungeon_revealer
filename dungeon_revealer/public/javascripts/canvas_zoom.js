@@ -17,8 +17,8 @@ define(function () {
 			dragStartX,
 			dragStartY,
 			dragged,
-			scaleFactor=1.1,
-			dragFactor=0.4,
+			scaleFactor=1.05,
+			dragFactor=0.3,
 			panLocked = false,
 			redraw = function(){
 			// Clear the entire canvas
@@ -81,10 +81,10 @@ define(function () {
 					},false);
 			},
 			zoom = function(clicks){
-				ctx.translate(lastX,lastY);
+			//	ctx.translate(lastX,lastY);
 				var factor = Math.pow(scaleFactor,clicks);
 				ctx.scale(factor,factor);
-				ctx.translate(-lastX,-lastY);
+				//ctx.translate(-lastX,-lastY);
 				redraw();
 			},
 			handleScroll = function(evt){
@@ -99,11 +99,12 @@ define(function () {
 			unlockPan = function(){
 				panLocked = false;
 				console.log("unlocking pan");
-			},		
+			},	
+
 			resetMapImage = function(){
 				initValues();
 				ctx.clearRect(0,0,canvas.width,canvas.height);
-				ctx.setTransform(1,0,0,1,0,0);
+				ctx.resetTransform();
 				ctx.drawImage(image,0,0);
 			}
 					
