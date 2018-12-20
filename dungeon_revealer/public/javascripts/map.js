@@ -1,5 +1,5 @@
 var indicatorFlag = false;
-define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom) {
+define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid) {
     console.log('map module loaded');
     return function () {
         var $ = jquery,
@@ -17,6 +17,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
             mapImageCanvas,
 			currContext,
             fowBrush,
+			gridBrush,
 			updateMsg,
 			indBrush,
             mapImage,
@@ -95,6 +96,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext, opts);
 				indBrush = ind_brush(indContext, opts);
+				gridBrush = grid();
                 fowContext.strokeStyle = fowBrush.getCurrent();
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
@@ -257,7 +259,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 			//give chance for loading screen to pop up
 			//setTimeout(function() {
 				squareSize = gridSlider.value
-				addGrid(gridCanvas,squareSize,'black')
+				gridBrush.addGrid(gridCanvas,squareSize,'black')
 				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 				var rmBtn = document.getElementById('btn-rm-grid');
 				rmBtn.style='display: inline-block !important;';
@@ -267,30 +269,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 			//},0);
 		}
 		
-		function addGrid(canvas,squareSize,color){
-			var numCols = canvas.width/squareSize;
-			var numRows = canvas.height/squareSize;
-			var context = canvas.getContext('2d');
-
-			context.beginPath();
-			if(color != undefined){
-				context.strokeStyle = color;
-			}
-			context.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-			
-			var row = 0;
-			var col = 0;
-			
-			while (row < numRows){
-				col=0;
-				while (col < numCols){
-					context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
-					col++;
-				}
-				row++;
-			}
-			context.stroke();
-		}	
+		
+		
         function getMouseCoordinates(e) {
             var viewportOffset = fowCanvas.getBoundingClientRect(),
                 borderTop = parseInt($(fowCanvas).css('border-top-width')),
@@ -685,7 +665,21 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 					
 					//on grid brush?
 					if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
-						renderGrid();
+					//	renderGrid();
+						var x = cords.x;
+						var y = cords.y;
+						var squareSize = gridSlider.value;
+						gridBrush.highlightCell(cursorCanvas,x,y,squareSize);
+						var dist = gridBrush.distanceFromLastClick(x,y,squareSize);
+						if(dist == -1){
+							gridBrush.addPointClicked(x,y);
+						}else{
+							alert("Distance between these cells is  "+dist+" ft (5ft squares).");
+							gridBrush.clearPointClicked();
+							cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+						}
+						//var pt = gridBrush.findCellClicked(cords.x,cords.y,gridSlider.value);
+						//console.log("["+pt.row+","+pt.col+"]");
 					}else{
 						//draw labels
 						indCanvas.drawInitial(cords);
@@ -1408,7 +1402,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom'], function (
 				//give chance for loading screen to pop up
 				//setTimeout(function() {
 					squareSize = gridSlider.value;
-					addGrid(cursorCanvas,squareSize,undefined);
+					gridBrush.addGrid(cursorCanvas,squareSize,undefined);
 					//disableLoadingScreen();
 				//},0);
 			}
