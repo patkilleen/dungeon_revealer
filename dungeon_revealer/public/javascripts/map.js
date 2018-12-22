@@ -437,7 +437,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         }
 
         function getMapDisplayRatio() {
-            return parseFloat(mapImageCanvas.style.width, 10) / mapImageCanvas.width;
+         //   return parseFloat(mapImageCanvas.style.width, 10) / mapImageCanvas.width;
+		 return 1;
         }
 
         function constructMask(cords) {
@@ -725,7 +726,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
                 // Construct circle dimensions
                 var cursorMask = constructMask(cords);
-
+				console.log("c:(" + parseInt(cursorMask.x)+","+parseInt(cursorMask.y)+")");
                 cursorContext.strokeStyle = cursorMask.line;
                 cursorContext.fillStyle = cursorMask.fill;
                 cursorContext.lineWidth = cursorMask.lineWidth;
@@ -762,6 +763,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				var lineWidth= getLineWidth();
                 // Construct mask dimensions
                 var fowMask = constructMask(coords);
+				console.log("fog:(" + parseInt(fowMask.x)+","+parseInt(fowMask.y)+")");
                 fowContext.lineWidth = fowMask.lineWidth;
 
                 fowContext.beginPath();
@@ -807,7 +809,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                         // Setup points
                         pointCurrent = points[i];
                         pointPrevious = points[i - 1];
-
                         // Coordinates
                         var midPoint = midPointBtw(pointPrevious, pointCurrent);
                         fowContext.quadraticCurveTo(pointPrevious.x, pointPrevious.y, midPoint.x, midPoint.y);
