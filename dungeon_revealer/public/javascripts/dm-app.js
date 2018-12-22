@@ -116,6 +116,17 @@ require(['common'], function(common) {
 			zoomer.zoom(-zoomFactor);
         });
 		
+		$('#btn-zoom-in-more').click(function() {
+			var zoomer = dmMap.getZoomer();
+			zoomer.zoom(zoomFactor*10);
+        });
+        
+	
+		$('#btn-zoom-out-more').click(function() {
+			var zoomer = dmMap.getZoomer();
+			zoomer.zoom(-zoomFactor*10);
+        });
+		
 		$('#btn-map-reset').click(function() {
 			if(confirm("Are you sure you want to reset the base map to its default size and zoom?")!=1){
 				return

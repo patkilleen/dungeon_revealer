@@ -16,11 +16,14 @@ block content
               form.navbar-form.navbar-left(role='search')
                 button#btn-new-map.btn.btn-default(type='button') New Map
                 .btn-group#zoom_btn_group
-                    button#btn-zoom-in.btn.btn-default(type='button') Zoom In
-                    button#btn-zoom-out.btn.btn-default(type='button') Zoom Out
-                    button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
+                    button#btn-zoom-in.btn.btn-default(type='button') +
+                    button#btn-zoom-in-more.btn.btn-default(type='button') ++
+                    button#btn-zoom-out.btn.btn-default(type='button') -
+                    button#btn-zoom-out-more.btn.btn-default(type='button') --
+                    label Zoom
                 input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.')
                 label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
+                button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
                 span#loading_screen
         #upload-wrapper
           form#upload.dropzone
