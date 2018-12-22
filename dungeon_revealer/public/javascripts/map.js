@@ -273,9 +273,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		
 		
         function getMouseCoordinates(e) {
-            var viewportOffset = fowCanvas.getBoundingClientRect(),
-                borderTop = parseInt($(fowCanvas).css('border-top-width')),
-                borderLeft = parseInt($(fowCanvas).css('border-left-width'));
+            var viewportOffset = cursorCanvas.getBoundingClientRect(),
+                borderTop = parseInt($(cursorCanvas).css('border-top-width')),
+                borderLeft = parseInt($(cursorCanvas).css('border-left-width'));
 
             return {
                 x: (e.clientX - viewportOffset.left - borderLeft) / getMapDisplayRatio(),
@@ -404,14 +404,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         }
 
         function resize(displayWidth, displayHeight) {
-            fowCanvas.style.width = displayWidth + 'px';
+          /*  fowCanvas.style.width = displayWidth + 'px';
             fowCanvas.style.height = displayHeight + 'px';
 			indCanvas.style.width = displayWidth + 'px';
 			indCanvas.style.height = displayHeight + 'px';
 			gridCanvas.style.width = displayWidth + 'px';
 			gridCanvas.style.height = displayHeight + 'px';
             mapImageCanvas.style.width = displayWidth + 'px';
-            mapImageCanvas.style.height = displayHeight + 'px';
+            mapImageCanvas.style.height = displayHeight + 'px';*/
         }
 
         // Maybe having this here violates cohesion
@@ -672,7 +672,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
                 // Get correct cords from mouse click
                 var cords = getMouseCoordinates(e);
-
 				if(currContext===fowContext){
 					fowCanvas.drawInitial(cords);
 				}else if(currContext===indContext){
@@ -726,7 +725,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
                 // Construct circle dimensions
                 var cursorMask = constructMask(cords);
-				console.log("c:(" + parseInt(cursorMask.x)+","+parseInt(cursorMask.y)+")");
                 cursorContext.strokeStyle = cursorMask.line;
                 cursorContext.fillStyle = cursorMask.fill;
                 cursorContext.lineWidth = cursorMask.lineWidth;
@@ -763,7 +761,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				var lineWidth= getLineWidth();
                 // Construct mask dimensions
                 var fowMask = constructMask(coords);
-				console.log("fog:(" + parseInt(fowMask.x)+","+parseInt(fowMask.y)+")");
                 fowContext.lineWidth = fowMask.lineWidth;
 
                 fowContext.beginPath();

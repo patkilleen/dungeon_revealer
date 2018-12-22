@@ -36,8 +36,9 @@ html, body, #wrapper {
     left: 0;
     margin:auto;
 	height: 800px;
-	width:90%;
+	width:80%;
 	float: left;
+	border-style: dotted;
 	/*width: 2048px;
 	height: 1024px;
 	width: 1024px;
@@ -98,11 +99,14 @@ max-height: 512px;
 
 .fow-canvas {
   opacity: 0.5;
+  padding: 10px;
+  border-style: solid;
 }
 
 .map-canvas {
-  margin-bottom: 450px; /* to leave room for the control panel */
+  margin-bottom: 450px;  /*to leave room for the control panel */
   /*max-width: 100%;*/
+  border-style: double;
 }
 
 #render {
