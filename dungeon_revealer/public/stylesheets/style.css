@@ -85,18 +85,23 @@ html, body, #wrapper {
 #control-panel-column{
 }
 
+#label-group{
+	padding-top:10px;
+}
 #main-container{
 	width: 10%;
 	float: left;
 	 display: inline-block;
 }
 #canvasContainer{
+	border-style:solid;
+	border-color: gray;
     position: relative;
     top: 0;
     left: 0;
     margin:auto;
 	height: 800px;
-	width:85%;
+	width:90%;
 	float: right;
 	/*width: 2048px;
 	height: 1024px;
