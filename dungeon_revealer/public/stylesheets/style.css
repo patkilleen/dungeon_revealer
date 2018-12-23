@@ -30,14 +30,23 @@ html, body, #wrapper {
 	position: relative;
 	left: 550px;
 }
+#control-panel-column{
+	width: 100px;
+	 display: inline-block;
+}
+
+#main-container{
+	width: 100%;
+	 display: inline-block;
+}
 #canvasContainer{
     position: relative;
     top: 0;
     left: 0;
     margin:auto;
 	height: 800px;
-	width:100%;
-	float: left;
+	width:80%;
+	float: right;
 	/*width: 2048px;
 	height: 1024px;
 	width: 1024px;
@@ -65,7 +74,9 @@ max-height: 512px;
 #labelTextInput{
 	display: none;
 }
-
+/*#map-wrapper{
+	 width:100%;
+ }*/
 #dm-toolbar {
   position: fixed;
   bottom: 0;
