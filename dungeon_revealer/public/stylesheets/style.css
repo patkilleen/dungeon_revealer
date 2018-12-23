@@ -26,9 +26,21 @@ html, body, #wrapper {
   /*padding-bottom: 1100px;*/
 }
 .btn{
-	background-color: rgba(10,50, 255);
+	background-color: rgba(66, 134, 244);
 	color: rgba(255,255, 255);
 }
+
+.closable:before {
+  content: '✕';
+}
+.closable {
+  position: relative;
+  top: 0;
+  right: -140px;
+  cursor: pointer;
+  z-index: 100;
+}
+
 #btn-zoom-in{
 	font-size: 25px;
 }
@@ -38,13 +50,15 @@ html, body, #wrapper {
 #btn-zoom-out{
 	font-size: 25px;
 }
+#selector-seperator{
+	padding-left: 10px;
+}
 #btn-zoom-out-more{
 	font-size: 25px;
 }
 #label_sel{
 	background:#000000;
-	width: 220px;
-	
+	width: 150px;	
 	height: 200px;
     margin-left: 10px;
     padding-bottom: 10px;
@@ -53,7 +67,7 @@ html, body, #wrapper {
 	background:#000000;
 	float: left; 
 	height: 200px;
-	width: 220px;
+	width: 150px;
 	padding-top: 10px;
 	margin-left: 10px;
     padding-bottom: 10px;
@@ -112,6 +126,7 @@ max-height: 512px;
 	display: none;
 	border-color: gray;
 	border-width: 2px;
+	width: 90px;
 }
 /*#map-wrapper{
 	 width:100%;

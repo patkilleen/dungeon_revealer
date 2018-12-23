@@ -30,13 +30,14 @@ block content
         div#main-container
             div#control-panel-column
                 div#label_mng_container(style='display: none;')
-                    select#label_sel.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
                     div
-                    a#btn-clear-player-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all player labels') Delete Player Labels
+                        span#btn-clear-player-labels.closable(data-toggle='tooltip',title='Deletes all player labels')
+                        select#label_sel.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')              
                     div#selector-seperator
-                    select#label_sel2.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
+                        span#btn-clear-other-labels.closable(data-toggle='tooltip',title='Deletes all target and enemy labels')
                     div
-                    a#btn-clear-other-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all target and enemy labels') Delete Other Labels
+                        select#label_sel2.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
+                    div
                     div
                     .btn-group
                         label#labelText Label
