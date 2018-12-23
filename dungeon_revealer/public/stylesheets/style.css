@@ -25,18 +25,55 @@ html, body, #wrapper {
   margin: 0px;
   /*padding-bottom: 1100px;*/
 }
+.btn{
+	background-color: rgba(10,50, 255);
+	color: rgba(255,255, 255);
+}
+#btn-zoom-in{
+	font-size: 25px;
+}
+#btn-zoom-in-more{
+	font-size: 25px;
+}
+#btn-zoom-out{
+	font-size: 25px;
+}
+#btn-zoom-out-more{
+	font-size: 25px;
+}
+#label_sel{
+	background:#000000;
+	width: 220px;
+	
+	height: 200px;
+    margin-left: 10px;
+    padding-bottom: 10px;
+}
+#label_sel2{
+	background:#000000;
+	float: left; 
+	height: 200px;
+	width: 220px;
+	padding-top: 10px;
+	margin-left: 10px;
+    padding-bottom: 10px;
+}
 
+#selector-seperator{
+	padding: 5px;
+}
+#map-wrapper{
+}
 #zoom_btn_group{
 	position: relative;
 	left: 550px;
 }
 #control-panel-column{
-	width: 100px;
-	 display: inline-block;
 }
 
 #main-container{
-	width: 100%;
+	width: 10%;
+	float: left;
 	 display: inline-block;
 }
 #canvasContainer{
@@ -45,7 +82,7 @@ html, body, #wrapper {
     left: 0;
     margin:auto;
 	height: 800px;
-	width:80%;
+	width:85%;
 	float: right;
 	/*width: 2048px;
 	height: 1024px;
@@ -73,6 +110,8 @@ max-height: 512px;
 }
 #labelTextInput{
 	display: none;
+	border-color: gray;
+	border-width: 2px;
 }
 /*#map-wrapper{
 	 width:100%;
@@ -145,6 +184,14 @@ max-height: 512px;
   font-family: folkard, palitino, serif;
   font-size: 25px;
   line-height: 40px;
+}
+
+#labelText{
+	margin-left: 10px;
+}
+
+#labelTextInput{
+	margin-left: 10px;
 }
 
 .btn {

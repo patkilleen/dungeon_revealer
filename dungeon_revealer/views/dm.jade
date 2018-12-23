@@ -28,8 +28,21 @@ block content
         #upload-wrapper
           form#upload.dropzone   
         div#main-container
-            div#control-panel-column hello
-            #map-wrapper
+            div#control-panel-column
+                div#label_mng_container(style='display: none;')
+                    select#label_sel.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
+                    div
+                    a#btn-clear-player-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all player labels') Delete Player Labels
+                    div#selector-seperator
+                    select#label_sel2.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
+                    div
+                    a#btn-clear-other-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all target and enemy labels') Delete Other Labels
+                    div
+                    .btn-group
+                        label#labelText Label
+                        input#labelTextInput(type='input')
+
+        #map-wrapper
         #dm-toolbar
             .toolbar-wrapper
                 .btn-toolbar
@@ -60,14 +73,5 @@ block content
                         a#btn-send.btn.btn-default Send
                         span#icon-send-state.yellow_dot(data-toggle='tooltip',title='Green when sent. Yellow when changes pending to be sent.')
             ul#messages.navbar-text
-            .form-group.navbar-text
-                label#labelText Label
-                input#labelTextInput.form-control
-            div#label_mng_container(style='display: none;')
-                select#label_sel.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px;',data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
-                select#label_sel2.row.form-control(multiple,style='background:#000000;float: left; width: 15%; height: 200px; margin-left: 30px',data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
-                .btn-group
-                    a#btn-clear-other-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all target and enemy labels') Delete Other Labels
-                    a#btn-clear-player-labels.btn.btn-default(data-toggle='tooltip',title='Deletes all player labels') Delete Player Labels
 block js
     script(data-main='/javascripts/dm-app.js', src='/javascripts/require.js')
