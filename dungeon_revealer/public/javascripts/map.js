@@ -950,7 +950,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					msgdom.innerHTML=output;
 				}else if (currBrush == indBrush){
 					var currBrushStr = indBrush.getCurrentBrush();
-					var output = "<li>Current Canvas: <b>Indications Canvas</b></li><li>Current Brush: <span style='background:#000000;color:";
+					var output = "<li>Current Canvas: <b>Labels</b></li><li>Current Brush: <span style='background:#000000;color:";
 					
 					if(currBrushStr === 'player'){
 						output+="#42f445;";	
