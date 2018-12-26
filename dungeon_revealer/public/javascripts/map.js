@@ -348,15 +348,21 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             return imageCanvas;
         }
 
-        function resetMap(context, brushType, brush) {
+        function resetMap(context, brushType, fillStyle) {
             context.save();
-            context.fillStyle = brush.getPattern(brushType);
+            //context.fillStyle = brush.getPattern(brushType);
+            context.fillStyle = fillStyle;
             context.fillRect(0, 0, width, height);
             context.restore();
         }
 
         function fogMap() {
-            resetMap(fowContext, 'fog', fowBrush);
+			if(fowBrush.getBrushContext() == dimContext){
+				resetMap(dimContext, 'fog', fowBrush.getCurrent().dim);
+			}else{
+				resetMap(fowContext, 'fog', fowBrush.getCurrent().dark);	
+			}
+            
         }
 		
 		//push state of app onto undo/ctrl-z stack
@@ -402,7 +408,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         function clearMap(currBrush) {
 			if(currBrush == fowBrush){
 				
-				resetMap(fowContext, 'clear', fowBrush);
+				resetMap(fowContext, 'clear', fowBrush.getCurrent.dark);
+				resetMap(dimContext, 'clear', fowBrush.getCurrent.dim);
 			}else if(currBrush == indBrush){
 				if(confirm('Are you sure you want to clear away the map labels?')){			
 					//erase all labels
@@ -1139,7 +1146,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//apply fog of war
             $('#btn-shroud-all').click(function () {
                 pushCanvasStack();
-				fogMap(fowContext);
+				fogMap(fowBrush.getBrushContext());
                 createRender();
             });
 			

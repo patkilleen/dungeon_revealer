@@ -49,6 +49,13 @@ define(function () {
                 }
 
             },
+			getBrushContext = function(){
+				if(currentBrushType === DIM_IX){
+					return dimCanvasContext;
+				}else{
+					return darkCanvasContext;
+				}
+			},
             getCurrent = function () {
                 return getPattern(currentBrushType);
             }
@@ -63,7 +70,8 @@ define(function () {
             toggle: toggle,
             getCurrent: getCurrent,
             getPattern: getPattern,
-			getCurrentBrush: getCurrentBrush
+			getCurrentBrush: getCurrentBrush,
+			getBrushContext:getBrushContext
         }
     };
 });
