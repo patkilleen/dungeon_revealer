@@ -108,7 +108,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-                fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
+                fowBrush.fogMap(width,height);
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
@@ -355,7 +355,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             context.fillRect(0, 0, width, height);
             context.restore();
         }
-		
+	
 		//push state of app onto undo/ctrl-z stack
 		function pushCanvasStack(){
 			var savePlayers = document.getElementById('label_sel').innerHTML;
@@ -1133,10 +1133,44 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				}
 			}
 
+				
+		function dimMap(){
+			var fillStyle = fowBrush.getPattern(fowBrush.DIM_IX);
+			 dimContext.save();
+			 fowContext.save();
+			dimContext.fillStyle = fillStyle.dim;
+			fowContext.fillStyle = fillStyle.dark;
+           // context.fillStyle = fillStyle;
+            dimContext.fillRect(0, 0, width, height);
+            fowContext.fillRect(0, 0, width, height);
+            dimContext.restore();
+            fowContext.restore();
+		}
+		
+		function fogMap(){
+			var fillStyle = fowBrush.getPattern(fowBrush.DARK_IX);
+			 dimContext.save();
+			 fowContext.save();
+			dimContext.fillStyle = fillStyle.dim;
+			fowContext.fillStyle = fillStyle.dark;
+           // context.fillStyle = fillStyle;
+            dimContext.fillRect(0, 0, width, height);
+            fowContext.fillRect(0, 0, width, height);
+            dimContext.restore();
+            fowContext.restore();
+		}
+		
+		
 			//apply fog of war
             $('#btn-shroud-all').click(function () {
                 pushCanvasStack();
-				fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
+				var ctx = fowBrush.getBrushContext()
+				if (ctx == dimContext){
+					dimMap();
+				}else{
+					fogMap();
+				}
+				//fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
                 createRender();
             });
 			
