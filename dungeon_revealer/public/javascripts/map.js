@@ -9,6 +9,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             fowCanvas,
 			fowCanvasStack = [],
 			indCanvas,
+			dimCanvas,
+			dimContext,
 			indCanvasStack = [],
 			labelMap = new Object(),
 			indContext,
@@ -79,25 +81,30 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 cursorCanvas = canvases.cursorCanvas;
 				indCanvas = canvases.indCanvas;
 				gridCanvas = canvases.gridCanvas;
+				dimCanvas = canvases.dimCanvas;
 				zoomer = canvas_zoom(mapImageCanvas,mapImage);
 				zoomer.init(cursorCanvas);
                 container.appendChild(mapImageCanvas);
                 container.appendChild(gridCanvas);
 				container.appendChild(indCanvas);
 				container.appendChild(fowCanvas);
+				container.appendChild(dimCanvas);
                 container.appendChild(cursorCanvas);
                 mapImageContext = mapImageCanvas.getContext('2d');
+				playerDimCanvasOpacity = opts.playerDimCanvasOpacity;
                 fowContext = fowCanvas.getContext('2d');
 				indContext = indCanvas.getContext('2d');
 				gridContext = gridCanvas.getContext('2d');
+				dimContext = dimCanvas.getContext('2d');
 				gridContext.save();
 				gridSlider = document.getElementById("grid_size_input");
                 cursorContext = cursorCanvas.getContext('2d');
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
-                fowBrush = fow_brush(fowContext, opts);
+                fowBrush = fow_brush(fowContext,dimContext, opts);
 				indBrush = ind_brush(indContext, opts);
 				gridBrush = grid();
-                fowContext.strokeStyle = fowBrush.getCurrent();
+                fowContext.strokeStyle = fowBrush.getCurrent().dark;
+				dimContext.strokeStyle = fowBrush.getCurrent().dim;
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
@@ -233,9 +240,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             return {
                 mapImageCanvas: createCanvas('map-image-canvas', 1),
                 gridCanvas: createCanvas('grid-canvas', 2),
-				indCanvas: createCanvas('indicator-canvas', 3),
-				fowCanvas: createCanvas('fow-canvas', 4),
-				cursorCanvas: createCanvas('cursor-canvas', 5)
+				dimCanvas: createCanvas('dim-canvas', 3),
+				indCanvas: createCanvas('indicator-canvas', 4),
+				fowCanvas: createCanvas('fow-canvas', 5),
+				cursorCanvas: createCanvas('cursor-canvas', 6)
 				
 				
             };
@@ -425,13 +433,26 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
 		//merges all canvases into an image
         function toImage() {
-			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(indCanvas,fowCanvas))));
+			//make sure to take the dim canvas and make it transparent for player (dm side transparent only with css)
+			var playerDimCanvas = document.createElement('canvas');
+			var pcontext = playerDimCanvas.getContext('2d');
+
+			//set dimensions
+			playerDimCanvas.width = dimCanvas.width;
+			playerDimCanvas.height = dimCanvas.height;
+
+			//draw dim canvas transparantly for players
+			pcontext.globalAlpha = playerDimCanvasOpacity;
+			pcontext.drawImage(dimCanvas, 0, 0);
+			
+			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(playerDimCanvas,mergeCanvas(indCanvas,fowCanvas)))));
         }
 
         function remove() {
             // won't work in IE
             mapImageCanvas.remove();
             fowCanvas.remove();
+			dimCanvas.remove();
 			indCanvas.remove();
 			gridCanvas.remove();
         }
@@ -674,6 +695,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 var cords = getMouseCoordinates(e);
 				if(currContext===fowContext){
 					fowCanvas.drawInitial(cords);
+					dimCanvas.drawInitial(cords);
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -703,7 +725,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 				if(currContext==fowContext){
 				
-					 fowCanvas.draw(points)
+					 fowCanvas.draw(points);
+					 dimCanvas.draw(points);
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
@@ -755,17 +778,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
         }
 
-        function setUpDrawingEvents() {
-			
-            fowCanvas.drawInitial = function (coords) {
+		function drawInitial (ctx,coords) {
 				var lineWidth= getLineWidth();
                 // Construct mask dimensions
                 var fowMask = constructMask(coords);
-                fowContext.lineWidth = fowMask.lineWidth;
+                ctx.lineWidth = fowMask.lineWidth;
 
-                fowContext.beginPath();
+                ctx.beginPath();
                 if (brushShape == 'round') {
-                    fowContext.arc(
+                    ctx.arc(
                         fowMask.x,
                         fowMask.y,
                         fowMask.r,
@@ -775,18 +796,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                     );
                 }
                 else if (brushShape == 'square') {
-                    fowContext.rect(
+                    ctx.rect(
                         fowMask.centerX,
                         fowMask.centerY,
                         fowMask.height,
                         fowMask.width);
                 }
 
-                fowContext.fill();
-                fowContext.stroke();
-            };
-
-            fowCanvas.draw = function (points) {
+                ctx.fill();
+                ctx.stroke();
+            }
+			
+		 function drawPointsOnCanvas(ctx,points) {
 				var lineWidth= getLineWidth();
                 if (!isDrawing) return;
 
@@ -797,20 +818,20 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 if (brushShape == 'round') {
 
                     // Start Path
-                    fowContext.lineWidth = lineWidth;
-                    fowContext.lineJoin = fowContext.lineCap = 'round';
-                    fowContext.beginPath();
+                    ctx.lineWidth = lineWidth;
+                    ctx.lineJoin = ctx.lineCap = 'round';
+                    ctx.beginPath();
 
-                    fowContext.moveTo(pointCurrent.x, pointCurrent.y);
+                    ctx.moveTo(pointCurrent.x, pointCurrent.y);
                     for (var i = 1, len = points.length; i < len; i++) {
                         // Setup points
                         pointCurrent = points[i];
                         pointPrevious = points[i - 1];
                         // Coordinates
                         var midPoint = midPointBtw(pointPrevious, pointCurrent);
-                        fowContext.quadraticCurveTo(pointPrevious.x, pointPrevious.y, midPoint.x, midPoint.y);
-                        fowContext.lineTo(pointCurrent.x, pointCurrent.y);
-                        fowContext.stroke();
+                        ctx.quadraticCurveTo(pointPrevious.x, pointPrevious.y, midPoint.x, midPoint.y);
+                        ctx.lineTo(pointCurrent.x, pointCurrent.y);
+                        ctx.stroke();
                     }
                 }
                 else if (brushShape == 'square') {
@@ -832,8 +853,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                     // 1. Draw a rectangle at every available cord
                     // 2. Find and draw the optimal rhombus to connect each square
 
-                    fowContext.lineWidth = 1
-                    fowContext.beginPath();
+                    ctx.lineWidth = 1
+                    ctx.beginPath();
 
                     // The initial square mask is drawn by drawInitial, so we doing need to start at points[0].
                     // Therefore we start point[1].
@@ -848,7 +869,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
                         // draw rectangle at current point
                         var fowMask = constructMask(pointCurrent);
-                        fowContext.fillRect(
+                        ctx.fillRect(
                             fowMask.centerX,
                             fowMask.centerY,
                             fowMask.height,
@@ -857,16 +878,34 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                         // optimal polygon to draw to connect two square
                         var optimalPoints = findOptimalRhombus(pointCurrent, pointPrevious);
                         if (optimalPoints) {
-                            fowContext.moveTo(optimalPoints[0].x, optimalPoints[0].y);
-                            fowContext.lineTo(optimalPoints[1].x, optimalPoints[1].y);
-                            fowContext.lineTo(optimalPoints[2].x, optimalPoints[2].y);
-                            fowContext.lineTo(optimalPoints[3].x, optimalPoints[3].y);
-                            fowContext.fill();
+                            ctx.moveTo(optimalPoints[0].x, optimalPoints[0].y);
+                            ctx.lineTo(optimalPoints[1].x, optimalPoints[1].y);
+                            ctx.lineTo(optimalPoints[2].x, optimalPoints[2].y);
+                            ctx.lineTo(optimalPoints[3].x, optimalPoints[3].y);
+                            ctx.fill();
                         }
                     }
                 }
+            }
+
+        function setUpDrawingEvents() {
+			
+            fowCanvas.drawInitial = function (coords) {
+				drawInitial(fowContext,coords);
+            };
+
+			dimCanvas.drawInitial = function (coords) {
+				drawInitial(dimContext,coords);
+            };
+			
+            fowCanvas.draw = function (points) {
+				drawPointsOnCanvas(fowContext,points);
             };
 	
+			dimCanvas.draw = function (points) {
+				drawPointsOnCanvas(dimContext,points);
+            };
+			
 			indCanvas.drawInitial = function (coords) {
 				//enableLoadingScreen();
 				//give chance for loading screen to pop up
