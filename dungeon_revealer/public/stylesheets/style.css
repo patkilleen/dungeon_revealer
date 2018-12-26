@@ -166,6 +166,10 @@ max-height: 512px;
   /*margin-bottom: 1000px;  to leave room for the control panel */
 }
 
+#btn-shroud-all{
+		display: none;
+}
+
 .fow-canvas {
   opacity: 0.5;
 }

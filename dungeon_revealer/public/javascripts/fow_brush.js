@@ -7,7 +7,7 @@ define(function () {
         if (!darkCanvasContext || !dimCanvasContext || !settings) {
             throw new Error('Invalid args');
         }
-
+					
         var brushTypes = ["Light", "Dim", "Dark"],
 			LIGHT_IX = 0,
 			DIM_IX = 1,
@@ -20,10 +20,47 @@ define(function () {
             toggle = function () {
                 currentBrushType = (currentBrushType +1) % brushTypes.length;
                 var strokeStyle = getCurrent();
-				darkCanvasContext.strokeStyle = strokeStyle;
-				dimCanvasContext.strokeStyle = strokeStyle;
+				darkCanvasContext.strokeStyle = strokeStyle.dark;
+				dimCanvasContext.strokeStyle = strokeStyle.dim;
+				
+				//hide or show fog all button
+				var dom = document.getElementById('btn-shroud-all');
+				if(currentBrushType == LIGHT_IX){
+					dom.style='display: none';	//hide
+				}else{
+					dom.style='display: inline-block !important;';
+				}
 				
             },
+			fogMap = function(width,height){
+				var currCtx = getBrushContext();
+				var otherCtx = undefined;
+				var fillStyle =  getCurrent();
+				if(currCtx == dimCanvasContext){
+					otherCtx = darkCanvasContext;
+					currCtx.fillStyle =fillStyle.dim;
+					
+				}else{
+					otherCtx = dimCanvasContext;
+					currCtx.fillStyle =fillStyle.dark;
+				}
+				
+				currCtx.fillRect(0, 0, width, height);
+				otherCtx.fillRect(0, 0, width, height);
+			},
+			
+			clearMap = function(width,height){
+				
+				//change the brush to light temporarily
+				var fillStyle = getPattern(LIGHT_IX);
+				dimCanvasContext.fillStyle = fillStyle.dim;
+				darkCanvasContext.fillStyle = fillStyle.dark;
+				dimCanvasContext.fillRect(0, 0, width, height);
+				darkCanvasContext.fillRect(0, 0, width, height);
+				
+				//reset to old brush
+				fillStyle = getCurrent();
+			}
             getPattern = function (brushType) {
                 if (brushType === LIGHT_IX) {
                     darkCanvasContext.globalCompositeOperation = 'destination-out';
@@ -71,7 +108,9 @@ define(function () {
             getCurrent: getCurrent,
             getPattern: getPattern,
 			getCurrentBrush: getCurrentBrush,
-			getBrushContext:getBrushContext
+			getBrushContext:getBrushContext,
+			fogMap: fogMap,
+			clearMap: clearMap
         }
     };
 });

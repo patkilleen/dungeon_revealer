@@ -108,7 +108,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-                fogMap();
+                fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
@@ -348,21 +348,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             return imageCanvas;
         }
 
-        function resetMap(context, brushType, fillStyle) {
+        function resetMap(context, brushType, brush) {
             context.save();
-            //context.fillStyle = brush.getPattern(brushType);
-            context.fillStyle = fillStyle;
+            context.fillStyle = brush.getPattern(brushType);
+           // context.fillStyle = fillStyle;
             context.fillRect(0, 0, width, height);
             context.restore();
-        }
-
-        function fogMap() {
-			if(fowBrush.getBrushContext() == dimContext){
-				resetMap(dimContext, 'fog', fowBrush.getCurrent().dim);
-			}else{
-				resetMap(fowContext, 'fog', fowBrush.getCurrent().dark);	
-			}
-            
         }
 		
 		//push state of app onto undo/ctrl-z stack
@@ -408,8 +399,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         function clearMap(currBrush) {
 			if(currBrush == fowBrush){
 				
-				resetMap(fowContext, 'clear', fowBrush.getCurrent.dark);
-				resetMap(dimContext, 'clear', fowBrush.getCurrent.dim);
+				fowBrush.clearMap(width,height);
 			}else if(currBrush == indBrush){
 				if(confirm('Are you sure you want to clear away the map labels?')){			
 					//erase all labels
@@ -1146,7 +1136,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//apply fog of war
             $('#btn-shroud-all').click(function () {
                 pushCanvasStack();
-				fogMap(fowBrush.getBrushContext());
+				fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
                 createRender();
             });
 			
