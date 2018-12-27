@@ -363,7 +363,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 			var jsonLabelMap = JSON.stringify(labelMap);
 			var stack;
-			var canvas;
 			var undoObj = new Object();
 			if(currBrush == fowBrush){
 				stack = fowCanvasStack;
@@ -390,9 +389,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			}
 		
 			var imgData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+			var dimCanvasImgData = dimContext.getImageData(0, 0, dimCanvas.width, dimCanvas.height);
 			
 			undoObj.imgData = imgData;
-				
+			undoObj.dimImgData = dimCanvasImgData;	
 			stack.push(undoObj);
 		}
 		
@@ -1140,7 +1140,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 	
 					if(fowCanvasStack.length >=1){
 						var ctx = fowCanvas.getContext('2d');
-						ctx.putImageData(fowCanvasStack.pop().imgData, 0, 0);
+						var undoItem = fowCanvasStack.pop();
+						ctx.putImageData(undoItem.imgData, 0, 0);
+						dimContext.putImageData(undoItem.dimImgData, 0, 0);
 						createRender();
 					}
 				}else if(currBrush == indBrush){
