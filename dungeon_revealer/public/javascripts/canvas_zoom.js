@@ -71,6 +71,10 @@ define(function () {
 					},false);
 					mouseEventDOM.addEventListener('mouseup',function(evt){
 						if(evt.which == 3){
+							//show the reset map button
+							var resetButton = document.getElementById('btn-map-reset');
+							resetButton.style='display: inline-block !important;';
+							
 							evt.preventDefault();
 							dragStartX = null;
 							dragStartY = null;

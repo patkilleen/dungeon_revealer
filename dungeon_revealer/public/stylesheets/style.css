@@ -30,6 +30,10 @@ html, body, #wrapper {
 	color: rgba(255,255, 255);
 }
 
+#btn-map-reset{
+	display: none;
+}
+
 .closable:before {
   content: '✕';
 }
