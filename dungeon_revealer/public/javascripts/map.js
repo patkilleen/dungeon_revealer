@@ -108,7 +108,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-                fogMap(width,height);
+                fogMap();
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
@@ -433,14 +433,40 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//make sure to take the dim canvas and make it transparent for player (dm side transparent only with css)
 			var playerDimCanvas = document.createElement('canvas');
 			var pcontext = playerDimCanvas.getContext('2d');
+			
+			//convert dim pixels to black
+			var imageData = dimContext.getImageData(0,0,dimCanvas.width, dimCanvas.height);
+			
+			//0 is tranparent, 255 is opaque
+			var tranparentPixel = playerDimCanvasOpacity  * 255;
+			
+			for (j=0; j<imageData.data.length; j+=4)
+			{
+				//blacken the player's pixel only if it exists on canvas
+				imageData.data[j]=0;
+				imageData.data[j+1]=0;
+				imageData.data[j+2]=0;
+				
+				//only make tranparent if exists
+				if(imageData.data[j+3] > 0){
+					imageData.data[j+3]=tranparentPixel;
+				}
+				//imageData.data[j+3]=200;//tranparancy
+				
+			}
 
+			/*
+			for (var i = 0; i < imageData.length; i++) {
+				imageData[i] = 255;				
+			  }
+*/
 			//set dimensions
 			playerDimCanvas.width = dimCanvas.width;
 			playerDimCanvas.height = dimCanvas.height;
 
 			//draw dim canvas transparantly for players
+			pcontext.putImageData(imageData, 0, 0);
 			pcontext.globalAlpha = playerDimCanvasOpacity;
-			pcontext.drawImage(dimCanvas, 0, 0);
 			
 			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(playerDimCanvas,mergeCanvas(indCanvas,fowCanvas)))));
         }

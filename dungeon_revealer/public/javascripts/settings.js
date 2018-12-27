@@ -7,7 +7,7 @@ define({
 	indOpacity:1,
 	playerDimCanvasOpacity:0.7,
     fogDarkRGB: "0,0,0",
-	fogDimRGB: "0,0,0",
+	fogDimRGB: "50,0,50",
 	playerRGB: "0,255,0",
 	enemyRGB: "255,0,0",
 	targetRGB: "255,255,0",
