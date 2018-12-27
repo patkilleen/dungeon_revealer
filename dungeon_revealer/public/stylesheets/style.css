@@ -175,7 +175,7 @@ max-height: 512px;
 }
 
 .dim-canvas {
-  opacity: 0.8;
+  opacity: 0.3;
 }
 .map-canvas {
   margin-bottom: 450px;  /*to leave room for the control panel */

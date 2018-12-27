@@ -1139,7 +1139,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			dimContext.save();
 			fowBrush.clearMap(width,height);
 			var dimIx = fowBrush.getDimIx();
-			console.log("dim ix: "+ dimIx)
 			var fillStyle = fowBrush.getPattern(dimIx);
 
 			
@@ -1156,19 +1155,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		}
 		
 		function fogMap(){
-			//dimContext.save();
+			dimContext.save();
 			fowContext.save();
-			fowBrush.clearMap(width,height);
+			//fowBrush.clearMap(width,height);
 			var darkIx = fowBrush.getDarkIx();
-			console.log("dark ix: "+ darkIx)
 			var fillStyle = fowBrush.getPattern(darkIx);
 			
-		//	dimContext.fillStyle = fillStyle.dim;
+			dimContext.fillStyle = fillStyle.dim;
 			fowContext.fillStyle = fillStyle.dark;
             
-          //  dimContext.fillRect(0, 0, width, height);
+            dimContext.fillRect(0, 0, width, height);
             fowContext.fillRect(0, 0, width, height);
-            //dimContext.restore();
+            dimContext.restore();
             fowContext.restore();
 		}
 		
