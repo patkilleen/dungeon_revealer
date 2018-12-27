@@ -684,15 +684,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		function handleGridDistance(x,y){
 
 			var squareSize = gridSlider.value;
-			gridBrush.highlightCell(cursorCanvas,x,y,squareSize);
-			var dist = gridBrush.distanceFromLastClick(x,y,squareSize);
-			if(dist == -1){
-				gridBrush.addPointClicked(x,y);
-			}else{
-				alert("Distance between these cells is  "+Math.ceil(dist)+" ft (5ft squares).");
-				gridBrush.clearPointClicked();
-				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-			}
+			gridBrush.handleGridDistance(x,y,cursorCanvas,squareSize);
 		}
         function setupCursorTracking() {
 			var lineWidth = getLineWidth();

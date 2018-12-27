@@ -28,10 +28,33 @@ define(function () {
 				}
 				context.stroke();
 			},	
+			handleGridDistance = function(x,y,cursorCanvas,squareSize){
+
+				var squareSize = gridSlider.value;
+				
+				
+				var dist = distanceFromLastClick(x,y,squareSize);
+				if(dist == -1){
+					addPointClicked(x,y);
+					if(addedGrid == true){
+						cursorCanvas.getContext('2d').clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+						highlightCell(cursorCanvas,x,y,squareSize);
+					}
+				}else{
+					alert("Distance between these cells is  "+Math.ceil(dist)+" ft (5ft squares).");
+					clearPointClicked();
+					
+					//do we have a grid?
+					if(addedGrid == true){
+						highlightCell(cursorCanvas,x,y,squareSize);
+					}
+				}
+			},
 			highlightCell = function(canvas,x,y,squareSize,color){
 				
 				var cell = findCellClicked(x,y,squareSize);
 				var context = canvas.getContext('2d');
+				
 				context.beginPath();
 				if(color != undefined){
 					context.strokeStyle = color;
@@ -39,6 +62,7 @@ define(function () {
 				context.rect(cell.col*squareSize, cell.row*squareSize, squareSize, squareSize);
 				
 				context.stroke();
+				context.restore();
 			},
 			//identifies row and column clicked
 			findCellClicked = function (x,y, squareSize){
@@ -94,7 +118,8 @@ define(function () {
 		   getPointClicked:getPointClicked,
 		   addPointClicked:addPointClicked,
 		   hasGrid:hasGrid,
-		   setGridAdded:setGridAdded
+		   setGridAdded:setGridAdded,
+		   handleGridDistance:handleGridDistance
         }
     };
 });
