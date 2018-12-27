@@ -455,11 +455,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 			}
 
-			/*
-			for (var i = 0; i < imageData.length; i++) {
-				imageData[i] = 255;				
-			  }
-*/
 			//set dimensions
 			playerDimCanvas.width = dimCanvas.width;
 			playerDimCanvas.height = dimCanvas.height;
@@ -1087,7 +1082,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					currContext = indContext;
 					
 					//show the label canvas inputs
-					var dom = document.getElementById('btn-shroud-all');
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='display: none';
+					dom = document.getElementById('btn-dim-all');
 					dom.style='display: none';
 					dom = document.getElementById('labelText');
 					dom.style='display: inline-block !important;';
@@ -1110,7 +1107,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					currContext=fowContext;
 					
 					//hide the label inputs
-					var dom = document.getElementById('btn-shroud-all');
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='';
+					dom = document.getElementById('btn-dim-all');
 					dom.style='';
 					dom = document.getElementById('labelText');
 					dom.style='display: none !important;';
@@ -1196,20 +1195,17 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             fowContext.restore();
 		}
 		
-		
-			//apply fog of war
-            $('#btn-shroud-all').click(function () {
+            $('#btn-dark-all').click(function () {
                 pushCanvasStack();
-				var ctx = fowBrush.getBrushContext()
-				if (ctx == dimContext){
-					dimMap();
-				}else{
-					fogMap();
-				}
-				//fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
-                //createRender();
+				fogMap();
             });
 			
+			
+			$('#btn-dim-all').click(function () {
+                pushCanvasStack();
+				dimMap();
+            });
+
 			//clear map
             $('#btn-clear-all').click(function () {			
 				pushCanvasStack();			

@@ -20,26 +20,15 @@ define(function () {
             toggle = function () {
                 currentBrushType = (currentBrushType +1) % brushTypes.length;
                console.log("current brush type: "+currentBrushType);
-				refreshBrushState();
+				updateContextStrokeStyle();
 				
             },
-			refreshBrushState = function(){
-				
-				updateContextStrokeStyle();
-				//hide or show fog all button
-				var dom = document.getElementById('btn-shroud-all');
-				if(currentBrushType == LIGHT_IX){
-					dom.style='display: none';	//hide
-				}else{
-					dom.style='display: inline-block !important;';
-				}
-			},
 			setBrushType = function (type){
 				if((type < LIGHT_IX) ||  (type > DARK_IX)){
 					return;
 				}
 				currentBrushType = type;
-				refreshBrushState();
+				updateContextStrokeStyle();
 			}
 			updateContextStrokeStyle = function (){
 				
@@ -52,25 +41,10 @@ define(function () {
 			fogMap = function(width,height){
 				updateContextStrokeStyle();
 				var currCtx = getBrushContext();
-				/*var otherCtx = undefined;
-				var fillStyle =  getCurrent();
-				if(currCtx == dimCanvasContext){
-					otherCtx = darkCanvasContext;
-					otherCtx.fillStyle = fillStyle.dark;
-					currCtx.fillStyle = fillStyle.dim;
-					
-				}else{
-					otherCtx = dimCanvasContext;
-					otherCtx.fillStyle = fillStyle.dim;
-					currCtx.fillStyle = fillStyle.dark;
-				}
-				*/
+				
 				currCtx.save();
 				currCtx.fillRect(0, 0, width, height);
 				currCtx.restore();
-				//otherCtx.save();
-				//otherCtx.fillRect(0, 0, width, height);
-				//otherCtx.restore();
 			},
 			
 			clearMap = function(width,height){
