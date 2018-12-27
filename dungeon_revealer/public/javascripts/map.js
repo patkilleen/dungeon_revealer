@@ -108,7 +108,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-                fogMap();
+                
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();

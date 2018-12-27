@@ -57,8 +57,11 @@ require(['common'], function(common) {
             $('#upload').hide();
             dmMap.create(mapWrapper, {
                 callback: function() {
+					//darkens the map
+					$('#btn-dark-all').click();
 					//add prompt on page-unload (refresh/close window)
 					window.onbeforeunload = function (e) {
+						
 						
 						//save labels just incase app exits
 						dmMap.saveAllLabels();
