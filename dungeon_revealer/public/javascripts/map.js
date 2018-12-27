@@ -102,7 +102,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext,dimContext, opts);
 				indBrush = ind_brush(indContext, opts);
-				gridBrush = grid();
+				gridBrush = grid(opts);
                 fowContext.strokeStyle = fowBrush.getCurrent().dark;
 				dimContext.strokeStyle = fowBrush.getCurrent().dim;
 				indContext.strokeStyle = indBrush.getCurrent();
@@ -1494,12 +1494,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			});
 			
 			function displayTempGrid(){
-				//only display blue grid that will be painted if added if no grid on map
-				if(!gridBrush.hasGrid()){
-					squareSize = gridSlider.value;
-					gridBrush.addGrid(cursorCanvas,squareSize,undefined);
-
-				}
+				gridBrush.displayTempGrid(gridSlider.value,cursorCanvas)
 			}
 			
             $('#btn-shrink-brush').click(function () {

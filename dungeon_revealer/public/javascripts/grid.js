@@ -1,7 +1,7 @@
 define(function () {
     console.log('grid.js starting');
 
-    return function () {
+    return function (opts) {
         console.log('creating grid object');
 
         var x1,y1,
@@ -11,6 +11,7 @@ define(function () {
 				var numRows = canvas.height/squareSize;
 				var context = canvas.getContext('2d');
 
+				context.save();
 				context.beginPath();
 				if(color != undefined){
 					context.strokeStyle = color;
@@ -27,7 +28,15 @@ define(function () {
 					row++;
 				}
 				context.stroke();
-			},	
+				context.restore();
+			},
+				
+			displayTempGrid = function(squareSize,cursorCanvas){
+				//only display blue grid that will be painted if added if no grid on map
+				if(!hasGrid()){
+					addGrid(cursorCanvas,squareSize,undefined);
+				}
+			},
 			handleGridDistance = function(x,y,cursorCanvas,squareSize){
 
 				var squareSize = gridSlider.value;
@@ -36,17 +45,26 @@ define(function () {
 				var dist = distanceFromLastClick(x,y,squareSize);
 				if(dist == -1){
 					addPointClicked(x,y);
-					if(addedGrid == true){
+					if(hasGrid()){
 						cursorCanvas.getContext('2d').clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 						highlightCell(cursorCanvas,x,y,squareSize);
+					}else{
+						displayTempGrid(squareSize,cursorCanvas);
+						//only color with specifide color if not added grid
+						var color = 'rgba(' + opts.gridSelectedRGB + ',' + opts.gridSelectedOpacity + ')';
+						highlightCell(cursorCanvas,x,y,squareSize,color);
 					}
 				}else{
 					alert("Distance between these cells is  "+Math.ceil(dist)+" ft (5ft squares).");
 					clearPointClicked();
 					
 					//do we have a grid?
-					if(addedGrid == true){
+					if(hasGrid()){
 						highlightCell(cursorCanvas,x,y,squareSize);
+					}else{
+						//only color with specifide color if not added grid
+						var color = 'rgba(' + opts.gridSelectedRGB + ',' + opts.gridSelectedOpacity + ')';
+						highlightCell(cursorCanvas,x,y,squareSize,color);
 					}
 				}
 			},
@@ -55,6 +73,7 @@ define(function () {
 				var cell = findCellClicked(x,y,squareSize);
 				var context = canvas.getContext('2d');
 				
+				context.save();
 				context.beginPath();
 				if(color != undefined){
 					context.strokeStyle = color;
@@ -119,6 +138,7 @@ define(function () {
 		   addPointClicked:addPointClicked,
 		   hasGrid:hasGrid,
 		   setGridAdded:setGridAdded,
+		   displayTempGrid:displayTempGrid,
 		   handleGridDistance:handleGridDistance
         }
     };
