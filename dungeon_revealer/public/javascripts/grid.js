@@ -55,7 +55,7 @@ define(function () {
 						highlightCell(cursorCanvas,x,y,squareSize,color);
 					}
 				}else{
-					alert("Distance between these cells is  "+Math.ceil(dist)+" ft (5ft squares).");
+					alert("Distance between these cells is  "+(Math.ceil(dist/5)*5)+" ft (5ft squares).");
 					clearPointClicked();
 					
 					//do we have a grid?
