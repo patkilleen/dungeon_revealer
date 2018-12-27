@@ -19,7 +19,7 @@ define(function () {
             },
             toggle = function () {
                 currentBrushType = (currentBrushType +1) % brushTypes.length;
-               
+               console.log("current brush type: "+currentBrushType);
 				refreshBrushState();
 				
             },
@@ -46,6 +46,8 @@ define(function () {
 				var strokeStyle = getCurrent();
 				darkCanvasContext.strokeStyle = strokeStyle.dark;
 				dimCanvasContext.strokeStyle = strokeStyle.dim;
+				darkCanvasContext.fillStyle = strokeStyle.dark;
+				dimCanvasContext.fillStyle = strokeStyle.dim;
 			},
 			fogMap = function(width,height){
 				updateContextStrokeStyle();
@@ -73,7 +75,10 @@ define(function () {
 			
 			clearMap = function(width,height){
 				
+				dimCanvasContext.save();
+				darkCanvasContext.save();
 				//change the brush to light temporarily
+				
 				var fillStyle = getPattern(LIGHT_IX);
 				dimCanvasContext.fillStyle = fillStyle.dim;
 				darkCanvasContext.fillStyle = fillStyle.dark;
@@ -82,8 +87,12 @@ define(function () {
 				
 				//reset to old brush
 				fillStyle = getCurrent();
-			}
+				
+				darkCanvasContext.restore();
+				dimCanvasContext.restore();
+			},
             getPattern = function (brushType) {
+				console.log("burhstype: "+brushType);
                 if (brushType === LIGHT_IX) {
                     darkCanvasContext.globalCompositeOperation = 'destination-out';
 					dimCanvasContext.globalCompositeOperation = 'destination-out';
@@ -117,10 +126,19 @@ define(function () {
 			},
             getCurrent = function () {
                 return getPattern(currentBrushType);
-            }
+            },
 			getCurrentBrush = function () {
                 return brushTypes[currentBrushType];
-            }
+            },
+			getDarkIx = function(){
+				return DARK_IX;
+			},
+			getDimIx = function(){
+				return DIM_IX;
+			},
+			getLightIx = function(){
+				return LIGHT_IX;
+			}
 
         return {
             brushTypes: brushTypes,
@@ -132,7 +150,10 @@ define(function () {
 			getCurrentBrush: getCurrentBrush,
 			getBrushContext:getBrushContext,
 			fogMap: fogMap,
-			clearMap: clearMap
+			clearMap: clearMap,
+			getDarkIx: getDarkIx,
+			getDimIx: getDimIx,
+			getLightIx: getLightIx
         }
     };
 });

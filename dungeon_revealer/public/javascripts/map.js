@@ -108,7 +108,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-                fowBrush.fogMap(width,height);
+                fogMap(width,height);
                 createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
@@ -1135,28 +1135,40 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
 				
 		function dimMap(){
-			var fillStyle = fowBrush.getPattern(fowBrush.DIM_IX);
-			 dimContext.save();
-			 fowContext.save();
+			//fowContext.save();
+			dimContext.save();
+			fowBrush.clearMap(width,height);
+			var dimIx = fowBrush.getDimIx();
+			console.log("dim ix: "+ dimIx)
+			var fillStyle = fowBrush.getPattern(dimIx);
+
+			
 			dimContext.fillStyle = fillStyle.dim;
-			fowContext.fillStyle = fillStyle.dark;
+			//fowContext.fillStyle = fillStyle.dark;
            // context.fillStyle = fillStyle;
             dimContext.fillRect(0, 0, width, height);
-            fowContext.fillRect(0, 0, width, height);
             dimContext.restore();
-            fowContext.restore();
+			
+			
+			//fowContext.fillStyle = fillStyle.dark;
+			//fowContext.fillRect(0, 0, width, height);
+            //fowContext.restore();
 		}
 		
 		function fogMap(){
-			var fillStyle = fowBrush.getPattern(fowBrush.DARK_IX);
-			 dimContext.save();
-			 fowContext.save();
-			dimContext.fillStyle = fillStyle.dim;
+			//dimContext.save();
+			fowContext.save();
+			fowBrush.clearMap(width,height);
+			var darkIx = fowBrush.getDarkIx();
+			console.log("dark ix: "+ darkIx)
+			var fillStyle = fowBrush.getPattern(darkIx);
+			
+		//	dimContext.fillStyle = fillStyle.dim;
 			fowContext.fillStyle = fillStyle.dark;
-           // context.fillStyle = fillStyle;
-            dimContext.fillRect(0, 0, width, height);
+            
+          //  dimContext.fillRect(0, 0, width, height);
             fowContext.fillRect(0, 0, width, height);
-            dimContext.restore();
+            //dimContext.restore();
             fowContext.restore();
 		}
 		
@@ -1171,7 +1183,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					fogMap();
 				}
 				//fowBrush.fogMap(fowCanvas.width,fowCanvas.heigth);
-                createRender();
+                //createRender();
             });
 			
 			//clear map
