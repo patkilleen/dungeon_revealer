@@ -721,10 +721,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
 					//only repaint the solid if not on solidarea brush
-					if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
-						drawSolidAreaFoW()
-					}
-					saveFogOfWar();
+					/*if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
+						//drawSolidAreaFoW()
+					}*/
+					//saveFogOfWar();
 					//repaintAllLabels();
 				}else if(currContext===indContext){
 					
@@ -754,14 +754,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 cursorCanvas.drawCursor(cords,getLineWidth());
 				
 				if(currContext==fowContext){
-					 restoreFogOfWar();
+					 //restoreFogOfWar();
 					 fowCanvas.draw(points,getLineWidth());
 					 dimCanvas.draw(points,getLineWidth());
 					 //only repaint the solid if not on solidarea brush
-					if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
+					/*if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
 						drawSolidAreaFoW()
-					}
-					 saveFogOfWar();
+					}*/
+				//	 saveFogOfWar();
 					 //repaintAllLabels();
 				}else if(currContext==indContext){
 				
@@ -1642,9 +1642,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				areaState.brushShape = brushShape;
 				solidAreaPointSets.push(areaState);
 				
+			}else{
+				drawSolidAreaFoW()	
 			}
-			//saveFogOfWar();
-			repaintAllLabels();
+			
+			saveFogOfWar();
+			//repaintAllLabels();
             isDrawing = false;
             points = []
             points.length = 0;
@@ -1700,6 +1703,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				return;
 			}
 				fowContext.save();
+				dimContext.save();
 				//change the brush to light temporarily
 				
 				var fillStyle = fowBrush.getPattern(fowBrush.getDarkIx());
@@ -1713,8 +1717,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					if(areaState.points.length > 0){
 						var brushShapeBckp = brushShape;
 						brushShape = areaState.brushShape; 
-						console.log("size repaint solid: "+areaState.brushSize);
+
 						fowCanvas.draw(areaState.points,areaState.brushSize);
+						dimCanvas.draw(areaState.points,areaState.brushSize);
 						brushShape = brushShapeBckp; 
 					}
 				}
@@ -1724,7 +1729,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				fillStyle = fowBrush.getCurrent();
 				
 				fowContext.restore();
-		
+				dimContext.restore();
 				
 			
 		}
@@ -1794,6 +1799,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 				//restore the brush
 				brushShape = tmpBrush;
+				
+				drawSolidAreaFoW();
 			}
 			
 			function drawLight(coords,lineWidth,lightType){
