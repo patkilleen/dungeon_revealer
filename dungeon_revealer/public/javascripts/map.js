@@ -1618,6 +1618,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			/*if (isDrawing) {
                 createRender();
             }*/
+			//TODO: CREATE THE LOGIC HERE TO STORE  POINTS DRAWN ON A NEW BRUSH, THAT IS USED TO DARKEN TERRAIN SUCH AS WALLS BOLDER, ETC.
+			//IN DUNGEON, A WALL SEGMENT WILL NEVER BE VISIBLE WITH A LIGHT SOURCE, SO USING THESE POINTS COULD MAKE A STATE OF PERMA DARKNESS
+			//TO DRAW EACH LABEL DRAW UPDATE, SO THEIR VISION CAN'T SEE TRHOUGH WALLS
             isDrawing = false;
             points = []
             points.length = 0;
