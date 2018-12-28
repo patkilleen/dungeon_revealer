@@ -110,7 +110,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				currBrush=fowBrush;
 				currContext=fowContext;
                 
-                createRender();
+              //  createRender();
                 setUpDrawingEvents();
                 setupCursorTracking();
 				zoomer.resetMapImage();
@@ -217,7 +217,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					}
 				}
 			}			
-			createRender();			
+			//createRender();			
 		}
 		
         function createCanvases() {
@@ -274,7 +274,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				var rmBtn = document.getElementById('btn-rm-grid');
 				rmBtn.style='display: inline-block !important;';
 				this.style='display: none';
-				createRender();
+				//createRender();
 				//disableLoadingScreen();
 			//},0);
 		}
@@ -1227,7 +1227,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             $('#btn-clear-all').click(function () {			
 				pushCanvasStack();			
 				clearMap(currBrush);              				
-                createRender();
+              //  createRender();
             });
 			
 			$('#btn-undo').click(function () {				
@@ -1558,7 +1558,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				var addBtn = document.getElementById('btn-add-grid');
 				addBtn.style='display: inline-block !important;';
 				this.style='display: none';
-				createRender();
+				//createRender();
 				displayTempGrid();
             });
 					
@@ -1579,7 +1579,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             });
 
             $('#btn-render').click(function () {
-                createRender();
+                //createRender();
             });
 			
 			function clearLabelSelections(dom_id){
@@ -1615,9 +1615,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         }
         function stopDrawing() {
 			
-			if (isDrawing) {
+			/*if (isDrawing) {
                 createRender();
-            }
+            }*/
             isDrawing = false;
             points = []
             points.length = 0;
@@ -1659,7 +1659,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						}//end if make sure it hasn't been delete
 					}
 				}
-				createRender();
+				//createRender();
 			}
 			
 			
