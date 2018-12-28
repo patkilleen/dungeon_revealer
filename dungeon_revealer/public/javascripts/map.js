@@ -27,7 +27,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             height,
 			fowMapImageData = new Object(),
             isDrawing = false,
-			saveFowFlag=true,
 			currBrush,
             points = [],
 			solidAreaPointSets = [],
@@ -693,8 +692,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		}
 		
 		function saveFogOfWar(){
-			fowMapImageData.fow = fowContext.getImageData(0, 0, canvas.width, canvas.height);
-			fowMapImageData.dim = dimContext.getImageData(0, 0, canvas.width, canvas.height);
+			fowMapImageData.fow = fowContext.getImageData(0, 0, width, height);
+			fowMapImageData.dim = dimContext.getImageData(0, 0, width, height);
 		}
 		
 		function restoreFogOfWar(){
@@ -723,13 +722,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
 					points.push(cords);
-					//saveFogOfWar();
-					//only repaint the solid if not on solidarea brush
-					/*if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
-						//drawSolidAreaFoW()
-					}*/
-					//saveFogOfWar();
-					//repaintAllLabels();
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -761,12 +753,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					 //restoreFogOfWar();
 					 fowCanvas.draw(points,getLineWidth());
 					 dimCanvas.draw(points,getLineWidth());
-					 //only repaint the solid if not on solidarea brush
-					/*if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
-						drawSolidAreaFoW()
-					}*/
-				//	 saveFogOfWar();
-					 //repaintAllLabels();
+
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
@@ -1628,9 +1615,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
         }
         function stopDrawing() {
 			
-			/*if (isDrawing) {
-                createRender();
-            }*/
+			if (!isDrawing) {
+                return;
+            }
 			//TODO: CREATE THE LOGIC HERE TO STORE  POINTS DRAWN ON A NEW BRUSH, THAT IS USED TO DARKEN TERRAIN SUCH AS WALLS BOLDER, ETC.
 			//IN DUNGEON, A WALL SEGMENT WILL NEVER BE VISIBLE WITH A LIGHT SOURCE, SO USING THESE POINTS COULD MAKE A STATE OF PERMA DARKNESS
 			//TO DRAW EACH LABEL DRAW UPDATE, SO THEIR VISION CAN'T SEE TRHOUGH WALLS
@@ -1640,7 +1627,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//console.log("solid area: "+fowBrush.getSolidAreaIx());
 			
 			//only save if not label context
-			if(currContext != indContext){
+			if(currContext == fowContext){
 			
 				if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx())){
 					var areaState = new Object()
@@ -1650,17 +1637,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					solidAreaPointSets.push(areaState);
 					
 				}else{
-					
+					console.log("draw solid area after applying new fog of war");
 					drawSolidAreaFoW();
 				}
 				saveFogOfWar();
 			}else{
+				console.log("draw solid area after painting label");
 				drawSolidAreaFoW();
 			}
-			//if(saveFowFlag){
-				//console.log("save fog of ware");
-				//saveFogOfWar();
-			//}
+
 			//repaintAllLabels();
             isDrawing = false;
             points = []
@@ -1669,7 +1654,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
         //todo: move this functionality elsewher
         function createRender() {
-			setSendIconYellow();
+			//setSendIconYellow();
         }
 		
 			//repaints all the labels
@@ -1707,7 +1692,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				//only draw solid surface overtop light if it exists
 				
 				
-					drawSolidAreaFoW();
+					//drawSolidAreaFoW();
 				
 				//createRender();
 			}
@@ -1793,8 +1778,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 indContext.stroke();
 				indCanvas.drawText(label,l);
 				
-				//make sure we don't save the fow from the label's lightsource
-				saveFowFlag=false;
 				//make sure the light is spherical
 				var tmpBrush = brushShape;
 				brushShape = 'round';
@@ -1813,8 +1796,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					drawDarkLight(label.coords,label.dark);
 				}
 				
-				//reset flag
-				saveFowFlag=true;
 				//restore the brush
 				brushShape = tmpBrush;
 				
@@ -1877,7 +1858,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						}//end if make sure it hasn't been delete
 					}
 				}
-				drawSolidAreaFoW();
+				//drawSolidAreaFoW();
 				createRender();
 				createPlayerMapImage(mapImageCanvas, fowCanvas);
 				
