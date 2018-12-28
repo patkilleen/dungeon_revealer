@@ -25,6 +25,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             mapImage,
             width,
             height,
+			fowMapImageData = new Object(),
             isDrawing = false,
 			currBrush,
             points = [],
@@ -400,6 +401,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			if(currBrush == fowBrush){
 				
 				fowBrush.clearMap(width,height);
+				saveFogOfWar();
 			}else if(currBrush == indBrush){
 				if(confirm('Are you sure you want to clear away the map labels?')){			
 					//erase all labels
@@ -686,6 +688,16 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			var squareSize = gridSlider.value;
 			gridBrush.handleGridDistance(x,y,cursorCanvas,squareSize);
 		}
+		
+		function saveFogOfWar(){
+			fowMapImageData.fow = fowContext.getImageData(0, 0, canvas.width, canvas.height);
+			fowMapImageData.dim = dimContext.getImageData(0, 0, canvas.width, canvas.height);
+		}
+		
+		function restoreFogOfWar(){
+			fowContext.putImageData(fowMapImageData.fow, 0, 0);
+			dimContext.putImageData(fowMapImageData.dim, 0, 0);
+		}
         function setupCursorTracking() {
 			var lineWidth = getLineWidth();
             // Mouse Click
@@ -706,6 +718,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				if(currContext===fowContext){
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
+					saveFogOfWar();
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -737,6 +750,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 					 fowCanvas.draw(points,getLineWidth());
 					 dimCanvas.draw(points,getLineWidth());
+					 saveFogOfWar();
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
@@ -948,6 +962,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					
 					label.coords = coords;
 					//label.coords = coords;
+					
 					drawLabel(label);
 					
 					//choose which select pane to add label reference to
@@ -1135,7 +1150,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						var undoItem = fowCanvasStack.pop();
 						ctx.putImageData(undoItem.imgData, 0, 0);
 						dimContext.putImageData(undoItem.dimImgData, 0, 0);
-						createRender();
+						//createRender();
 					}
 				}else if(currBrush == indBrush){
 					if(indCanvasStack.length >=1){
@@ -1147,7 +1162,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						labelMap = JSONToLabelMap(undoObj.jsonLabelMap);
 						
 						ctx.putImageData(undoObj.imgData, 0, 0);
-						createRender();
+						//createRender();
 					}
 				}
 			}
@@ -1166,7 +1181,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
            // context.fillStyle = fillStyle;
             dimContext.fillRect(0, 0, width, height);
             dimContext.restore();
-			
+			saveFogOfWar();
 			
 			//fowContext.fillStyle = fillStyle.dark;
 			//fowContext.fillRect(0, 0, width, height);
@@ -1187,6 +1202,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             fowContext.fillRect(0, 0, width, height);
             dimContext.restore();
             fowContext.restore();
+			
+			saveFogOfWar();
 		}
 		
             $('#btn-dark-all').click(function () {
@@ -1614,6 +1631,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			
 				//repaints a label except...
 			function repaintLabels(exception){
+				restoreFogOfWar();
 				for (var label in labelMap){				
 					if (labelMap.hasOwnProperty(label)) {						
 						var labelObj = labelMap[label];
@@ -1642,6 +1660,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				if (label.coords === undefined){
 					return;
 				}
+				
 				var lineWidth = label.size;
                 // Construct mask dimensions
                 var fowMask = constructIndMask(label);
