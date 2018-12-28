@@ -94,7 +94,7 @@ html, body, #wrapper {
 	padding-top:10px;
 }
 #main-container{
-	width: 10%;
+	width: 15%;
 	float: left;
 	 display: inline-block;
 	 overflow: scroll;
@@ -107,7 +107,7 @@ html, body, #wrapper {
     left: 0;
     margin:auto;
 	height: 800px;
-	width:90%;
+	width:85%;
 	float: right;
 	/*width: 2048px;
 	height: 1024px;

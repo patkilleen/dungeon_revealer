@@ -716,9 +716,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 // Get correct cords from mouse click
                 var cords = getMouseCoordinates(e);
 				if(currContext===fowContext){
+					restoreFogOfWar();
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
 					saveFogOfWar();
+					repaintAllLabels();
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -747,10 +749,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 cursorCanvas.drawCursor(cords,getLineWidth());
 				
 				if(currContext==fowContext){
-				
+					 restoreFogOfWar();
 					 fowCanvas.draw(points,getLineWidth());
 					 dimCanvas.draw(points,getLineWidth());
 					 saveFogOfWar();
+					 repaintAllLabels();
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
