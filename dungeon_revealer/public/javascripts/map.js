@@ -958,10 +958,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					
 					label = labelMap[labelValue]
 					
+					//update the size, brush type, and lighting of label given dm input
 					var slider = document.getElementById("size_input"); 
 					label.size =  slider.value;
 					label.brushShape = brushShape;
-					
+					label.light = document.getElementById("bright-light-input").value;
+					label.dim = document.getElementById("dim-light-input").value;
+					label.dark = document.getElementById("dark-light-input").value;
 					
 					label.coords = coords;
 					//label.coords = coords;
@@ -1369,6 +1372,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					var newbrushType = token.brushType;
 					var newbrushShape = token.brushShape;
 					
+					document.getElementById("bright-light-input").value=token.light;
+					document.getElementById("dim-light-input").value = token.dim;
+					document.getElementById("dark-light-input").value = token.dark;;
 					if (token.invisible == true){
 						document.getElementById('btn-visibility-brush').innerHTML = 'Reveal';
 					}else{
