@@ -87,6 +87,7 @@ html, body, #wrapper {
 	left: 550px;
 }
 #control-panel-column{
+	
 }
 
 #label-group{
@@ -96,6 +97,7 @@ html, body, #wrapper {
 	width: 10%;
 	float: left;
 	 display: inline-block;
+	 overflow: scroll;
 }
 #canvasContainer{
 	border-style:solid;
@@ -146,7 +148,7 @@ max-height: 512px;
   left: 0;
   width: 100%;
   z-index: 100;
-  background-color: rgba(255,255, 255);
+  background-color: rgba(255,255, 255,0.9);
 }
 
 #display-toolbar {

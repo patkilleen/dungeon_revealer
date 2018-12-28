@@ -42,6 +42,16 @@ block content
                     .btn-group#label-group
                         label#labelText Label
                         input#labelTextInput(type='input')
+                        div
+                        label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Light Shedding
+                        input#bright-light-input(type='input',value='0')
+                        div
+                        label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Dim Shedding
+                        input#dim-light-input(type='input',value='0')
+                        div
+                        label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Dark Shedding
+                        input#dark-light-input(type='input',value='0')
+
 
         #map-wrapper
         #dm-toolbar

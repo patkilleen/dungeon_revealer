@@ -480,8 +480,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		 return 1;
         }
 
-        function constructMask(cords) {
-			var lineWidth= getLineWidth();
+        function constructMask(cords,lineWidth) {
+			//var lineWidth= getLineWidth();
             var maskDimensions = {
                 x: cords.x,
                 y: cords.y,
@@ -704,8 +704,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 // Get correct cords from mouse click
                 var cords = getMouseCoordinates(e);
 				if(currContext===fowContext){
-					fowCanvas.drawInitial(cords);
-					dimCanvas.drawInitial(cords);
+					fowCanvas.drawInitial(cords,getLineWidth());
+					dimCanvas.drawInitial(cords,getLineWidth());
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -731,12 +731,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 }
 
                 // Draw cursor and fow
-                cursorCanvas.drawCursor(cords);
+                cursorCanvas.drawCursor(cords,getLineWidth());
 				
 				if(currContext==fowContext){
 				
-					 fowCanvas.draw(points);
-					 dimCanvas.draw(points);
+					 fowCanvas.draw(points,getLineWidth());
+					 dimCanvas.draw(points,getLineWidth());
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
@@ -744,7 +744,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                
             };
 
-            cursorCanvas.drawCursor = function (cords) {
+            cursorCanvas.drawCursor = function (cords,lineWidth) {
 				
 				//only draw the cursor if not in grid brush
 				//are we on grid brush?
@@ -757,7 +757,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 
                 // Construct circle dimensions
-                var cursorMask = constructMask(cords);
+                var cursorMask = constructMask(cords,lineWidth);
                 cursorContext.strokeStyle = cursorMask.line;
                 cursorContext.fillStyle = cursorMask.fill;
                 cursorContext.lineWidth = cursorMask.lineWidth;
@@ -788,10 +788,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
         }
 
-		function drawInitial (ctx,coords) {
-				var lineWidth= getLineWidth();
+		function drawInitial (ctx,coords,lineWidth) {
+				//var lineWidth= getLineWidth();
                 // Construct mask dimensions
-                var fowMask = constructMask(coords);
+                var fowMask = constructMask(coords,lineWidth);
                 ctx.lineWidth = fowMask.lineWidth;
 
                 ctx.beginPath();
@@ -817,7 +817,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 ctx.stroke();
             }
 			
-		 function drawPointsOnCanvas(ctx,points) {
+		 function drawPointsOnCanvas(ctx,points,lineWidth) {
 				var lineWidth= getLineWidth();
                 if (!isDrawing) return;
 
@@ -878,7 +878,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                         }
 
                         // draw rectangle at current point
-                        var fowMask = constructMask(pointCurrent);
+                        var fowMask = constructMask(pointCurrent,lineWidth);
                         ctx.fillRect(
                             fowMask.centerX,
                             fowMask.centerY,
@@ -900,20 +900,20 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 
         function setUpDrawingEvents() {
 			
-            fowCanvas.drawInitial = function (coords) {
-				drawInitial(fowContext,coords);
+            fowCanvas.drawInitial = function (coords,lineWidth) {
+				drawInitial(fowContext,coords,lineWidth);
             };
 
-			dimCanvas.drawInitial = function (coords) {
-				drawInitial(dimContext,coords);
+			dimCanvas.drawInitial = function (coords,lineWidth) {
+				drawInitial(dimContext,coords,lineWidth);
             };
 			
-            fowCanvas.draw = function (points) {
-				drawPointsOnCanvas(fowContext,points);
+            fowCanvas.draw = function (points,lineWidth) {
+				drawPointsOnCanvas(fowContext,points,lineWidth);
             };
 	
-			dimCanvas.draw = function (points) {
-				drawPointsOnCanvas(dimContext,points);
+			dimCanvas.draw = function (points,lineWidth) {
+				drawPointsOnCanvas(dimContext,points,lineWidth);
             };
 			
 			indCanvas.drawInitial = function (coords) {
@@ -1315,6 +1315,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				var slider = document.getElementById("size_input");
 				var size = slider.value;
 				var invisible = false;	
+				var light = document.getElementById("bright-light-input").value;
+				var dim = document.getElementById("dim-light-input").value;
+				var dark = document.getElementById("dark-light-input").value;
 				
 				if (document.getElementById('btn-visibility-brush').innerHTML == 'Reveal'){
 					invisible=true;
@@ -1322,6 +1325,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 				var token = new Object();
 				token.size = size;
+				token.light = light;
+				token.dim = dim;
+				token.dark = dark;
 				token.label = label;
 				token.brushType = indBrush.getCurrentBrush();
 				token.brushShape = brushShape;
@@ -1674,6 +1680,55 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				indContext.strokeStyle = strokeStyle
                 indContext.stroke();
 				indCanvas.drawText(label,l);
+				
+				//only draw dim light if sheds dim light
+				if(label.dim >  0){
+					drawDimLight(label.coords,label.dim);
+				}
+				
+				//only draw birght light if sheds light
+				if(label.light >  0){
+					drawBrightLight(label.coords,label.light);
+				}
+				
+				//only drawt darkness if sheds darkness
+				if(label.dark >  0){
+					drawDarkLight(label.coords,label.dark);
+				}
+				
+			}
+			
+			function drawLight(coords,lineWidth,lightType){
+			
+			
+				dimContext.save();
+				fowContext.save();
+				//change the brush to light temporarily
+				
+				var fillStyle = fowBrush.getPattern(lightType);
+				dimContext.fillStyle = fillStyle.dim;
+				fowContext.fillStyle = fillStyle.dark;
+				
+				fowCanvas.drawInitial(coords,lineWidth);
+				dimCanvas.drawInitial(coords,lineWidth);
+			
+				//reset to old brush
+				fillStyle = fowBrush.getCurrent();
+				
+				fowContext.restore();
+				dimContext.restore();			
+			}
+			
+			function drawBrightLight(coords,lineWidth){
+				drawLight(coords,lineWidth,fowBrush.getLightIx());
+			}
+
+			function drawDimLight(coords,lineWidth){
+				drawLight(coords,lineWidth,fowBrush.getDimIx());
+			}
+			
+			function drawDarkLight(coords,lineWidth){
+				drawLight(coords,lineWidth,fowBrush.getDarkIx());
 			}
 			
 			function createRender2() {
