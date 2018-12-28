@@ -8,10 +8,11 @@ define(function () {
             throw new Error('Invalid args');
         }
 					
-        var brushTypes = ["Light", "Dim", "Dark"],
+        var brushTypes = ["Light", "Dim", "Dark", "Solid Area"],
 			LIGHT_IX = 0,
 			DIM_IX = 1,
 			DARK_IX = 2,
+			SOLID_AREA_IX = 3,
             currentBrushType = LIGHT_IX,
             currentPattern = null,
             setBrushType = function () {
@@ -23,7 +24,7 @@ define(function () {
 				
             },
 			setBrushType = function (type){
-				if((type < LIGHT_IX) ||  (type > DARK_IX)){
+				if((type < LIGHT_IX) ||  (type > SOLID_AREA_IX)){
 					return;
 				}
 				currentBrushType = type;
@@ -73,7 +74,7 @@ define(function () {
 					dim: 'rgba(' + settings.fogDimRGB + ',' + settings.fogDimOpacity + ')',
 					dark: 'rgba(' + settings.fogDarkRGB + ',' + settings.fogDarkOpacity + ')'
 					};
-                } else if (brushType === DARK_IX) {
+                } else if ((brushType === DARK_IX) || (brushType === SOLID_AREA_IX)) {
                     darkCanvasContext.globalCompositeOperation = 'source-over';
 					dimCanvasContext.globalCompositeOperation = 'destination-out';
                     return {
@@ -103,6 +104,12 @@ define(function () {
 			getCurrentBrush = function () {
                 return brushTypes[currentBrushType];
             },
+			isCurrentBrushType = function (type){
+				return type == currentBrushType;
+			},
+			getSolidAreaIx = function(){
+				return SOLID_AREA_IX;
+			},
 			getDarkIx = function(){
 				return DARK_IX;
 			},
@@ -126,7 +133,9 @@ define(function () {
 			clearMap: clearMap,
 			getDarkIx: getDarkIx,
 			getDimIx: getDimIx,
-			getLightIx: getLightIx
+			getLightIx: getLightIx,
+			getSolidAreaIx:getSolidAreaIx,
+			isCurrentBrushType: isCurrentBrushType
         }
     };
 });

@@ -29,6 +29,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             isDrawing = false,
 			currBrush,
             points = [],
+			solidAreaPointSets = [],
 			imgUrl,
             brushShape = settings.defaultBrushShape,
             fogOpacity = settings.fogOpacity,
@@ -719,8 +720,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					restoreFogOfWar();
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
+					//only repaint the solid if not on solidarea brush
+					if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
+						drawSolidAreaFoW()
+					}
 					saveFogOfWar();
-					repaintAllLabels();
+					//repaintAllLabels();
 				}else if(currContext===indContext){
 					
 					//on grid brush?
@@ -752,8 +757,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					 restoreFogOfWar();
 					 fowCanvas.draw(points,getLineWidth());
 					 dimCanvas.draw(points,getLineWidth());
+					 //only repaint the solid if not on solidarea brush
+					if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
+						drawSolidAreaFoW()
+					}
 					 saveFogOfWar();
-					 repaintAllLabels();
+					 //repaintAllLabels();
 				}else if(currContext==indContext){
 				
 					indCanvas.draw(points);
@@ -835,7 +844,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             }
 			
 		 function drawPointsOnCanvas(ctx,points,lineWidth) {
-				var lineWidth= getLineWidth();
+				//var lineWidth= getLineWidth();
                 if (!isDrawing) return;
 
                 var pointPrevious, // the previous point
@@ -1621,6 +1630,21 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//TODO: CREATE THE LOGIC HERE TO STORE  POINTS DRAWN ON A NEW BRUSH, THAT IS USED TO DARKEN TERRAIN SUCH AS WALLS BOLDER, ETC.
 			//IN DUNGEON, A WALL SEGMENT WILL NEVER BE VISIBLE WITH A LIGHT SOURCE, SO USING THESE POINTS COULD MAKE A STATE OF PERMA DARKNESS
 			//TO DRAW EACH LABEL DRAW UPDATE, SO THEIR VISION CAN'T SEE TRHOUGH WALLS
+			
+			//drawing solid sufraces (dark fow)
+			//console.log("brush: "+fowBrush.getCurrentBrush());
+			//console.log("solid area: "+fowBrush.getSolidAreaIx());
+			
+			if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx())){
+				var areaState = new Object()
+				areaState.points = points;
+				areaState.brushSize = getLineWidth();
+				areaState.brushShape = brushShape;
+				solidAreaPointSets.push(areaState);
+				
+			}
+			//saveFogOfWar();
+			repaintAllLabels();
             isDrawing = false;
             points = []
             points.length = 0;
@@ -1662,10 +1686,48 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						}//end if make sure it hasn't been delete
 					}
 				}
+				
+				//only draw solid surface overtop light if it exists
+				
+				
+					drawSolidAreaFoW();
+				
 				//createRender();
 			}
 			
+		function drawSolidAreaFoW(){	
+			if(solidAreaPointSets.length == 0){
+				return;
+			}
+				fowContext.save();
+				//change the brush to light temporarily
+				
+				var fillStyle = fowBrush.getPattern(fowBrush.getDarkIx());
+				fowContext.fillStyle = fillStyle.dark;
+				
+				//iterate each set of points of solid areas and draw
+				for(var i = 0;i<solidAreaPointSets.length;i++){
+					var areaState =  solidAreaPointSets[i]
+					 
+					//make sure there are enough points to draw
+					if(areaState.points.length > 0){
+						var brushShapeBckp = brushShape;
+						brushShape = areaState.brushShape; 
+						console.log("size repaint solid: "+areaState.brushSize);
+						fowCanvas.draw(areaState.points,areaState.brushSize);
+						brushShape = brushShapeBckp; 
+					}
+				}
+				
 			
+				//reset to old brush
+				fillStyle = fowBrush.getCurrent();
+				
+				fowContext.restore();
+		
+				
+			
+		}
 		function drawLabel(label){
 
 				//save the state o
