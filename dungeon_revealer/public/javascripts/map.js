@@ -27,6 +27,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             height,
 			fowMapImageData = new Object(),
             isDrawing = false,
+			saveFowFlag=true,
 			currBrush,
             points = [],
 			solidAreaPointSets = [],
@@ -467,6 +468,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			pcontext.globalAlpha = playerDimCanvasOpacity;
 			
 			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(playerDimCanvas,mergeCanvas(indCanvas,fowCanvas)))));
+			
         }
 
         function remove() {
@@ -720,6 +722,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					restoreFogOfWar();
 					fowCanvas.drawInitial(cords,getLineWidth());
 					dimCanvas.drawInitial(cords,getLineWidth());
+					points.push(cords);
+					//saveFogOfWar();
 					//only repaint the solid if not on solidarea brush
 					/*if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx()) == false){
 						//drawSolidAreaFoW()
@@ -1635,18 +1639,28 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			//console.log("brush: "+fowBrush.getCurrentBrush());
 			//console.log("solid area: "+fowBrush.getSolidAreaIx());
 			
-			if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx())){
-				var areaState = new Object()
-				areaState.points = points;
-				areaState.brushSize = getLineWidth();
-				areaState.brushShape = brushShape;
-				solidAreaPointSets.push(areaState);
-				
-			}else{
-				drawSolidAreaFoW()	
-			}
+			//only save if not label context
+			if(currContext != indContext){
 			
-			saveFogOfWar();
+				if(fowBrush.isCurrentBrushType(fowBrush.getSolidAreaIx())){
+					var areaState = new Object()
+					areaState.points = points;
+					areaState.brushSize = getLineWidth();
+					areaState.brushShape = brushShape;
+					solidAreaPointSets.push(areaState);
+					
+				}else{
+					
+					drawSolidAreaFoW();
+				}
+				saveFogOfWar();
+			}else{
+				drawSolidAreaFoW();
+			}
+			//if(saveFowFlag){
+				//console.log("save fog of ware");
+				//saveFogOfWar();
+			//}
 			//repaintAllLabels();
             isDrawing = false;
             points = []
@@ -1779,6 +1793,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 indContext.stroke();
 				indCanvas.drawText(label,l);
 				
+				//make sure we don't save the fow from the label's lightsource
+				saveFowFlag=false;
 				//make sure the light is spherical
 				var tmpBrush = brushShape;
 				brushShape = 'round';
@@ -1797,10 +1813,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					drawDarkLight(label.coords,label.dark);
 				}
 				
+				//reset flag
+				saveFowFlag=true;
 				//restore the brush
 				brushShape = tmpBrush;
 				
-				drawSolidAreaFoW();
 			}
 			
 			function drawLight(coords,lineWidth,lightType){
@@ -1814,6 +1831,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				dimContext.fillStyle = fillStyle.dim;
 				fowContext.fillStyle = fillStyle.dark;
 				
+				//true for don't want to save fog of war
 				fowCanvas.drawInitial(coords,lineWidth);
 				dimCanvas.drawInitial(coords,lineWidth);
 			
@@ -1837,8 +1855,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			}
 			
 			function createRender2() {
+				
 				removeRender();
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
+				restoreFogOfWar();
 				for (var label in labelMap){				
 					if (labelMap.hasOwnProperty(label)) {						
 						var labelObj = labelMap[label];
@@ -1857,8 +1877,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						}//end if make sure it hasn't been delete
 					}
 				}
-					createRender();
+				drawSolidAreaFoW();
+				createRender();
 				createPlayerMapImage(mapImageCanvas, fowCanvas);
+				
 			}
 			
 			
@@ -1895,7 +1917,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             fitMapToWindow: fitMapToWindow,
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
-			getZoomer: getZoomer
+			getZoomer: getZoomer,
+			drawSolidAreaFoW: drawSolidAreaFoW,
+			repaintAllLabels: repaintAllLabels
         };
     }
 
