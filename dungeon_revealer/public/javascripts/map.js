@@ -1700,6 +1700,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 indContext.stroke();
 				indCanvas.drawText(label,l);
 				
+				//make sure the light is spherical
+				var tmpBrush = brushShape;
+				brushShape = 'round';
 				//only draw dim light if sheds dim light
 				if(label.dim >  0){
 					drawDimLight(label.coords,label.dim);
@@ -1715,6 +1718,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					drawDarkLight(label.coords,label.dark);
 				}
 				
+				//restore the brush
+				brushShape = tmpBrush;
 			}
 			
 			function drawLight(coords,lineWidth,lightType){
