@@ -153,15 +153,19 @@ require(['common'], function(common) {
         });
 		
 		
-		
+	$('#btn-tmp').click(function () {
+	dmMap.drawSolidAreaFoW();
+	});
 	$('#btn-send').click(function () {
 			
 			enableLoadingScreen();
-			setTimeout(function() {
+		/*	setTimeout(function() {
+				dmMap.drawSolidAreaFoW();
+			},3000);	*/	
+			//setTimeout(function() {
 				
 				
 			dmMap.createRender2();
-			
             var imageData = document.getElementById('render').src;
 
             var jqxhr = $.post('/send',
@@ -171,20 +175,25 @@ require(['common'], function(common) {
                 function (e) {
                 })
                 .done(function (e) {
+					/*setTimeout(function() {
+						console.log("done uploading map: solidifying area");
+						dmMap.drawSolidAreaFoW();
+					},2500);*/
                 })
                 .fail(function (e) {
                 })
                 .always(function (e) {
-					dmMap.repaintAllHiddenLabels();
+					
 					disableLoadingScreen();
-					setSendIconGreen();
+					//setSendIconGreen();
                     if (e.success) {
                         console.log(e.responseText);
                     } else {
                         console.error(e.responseText);
                     }
                 });
-        },0);
+				//dmMap.repaintAllHiddenLabels();
+        //},0);
 		});
 
     });

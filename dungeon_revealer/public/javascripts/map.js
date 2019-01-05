@@ -434,7 +434,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 		//merges all canvases into an image
         function toImage() {
 			//make sure to take the dim canvas and make it transparent for player (dm side transparent only with css)
-			var playerDimCanvas = document.createElement('canvas');
+			/*var playerDimCanvas = document.createElement('canvas');
 			var pcontext = playerDimCanvas.getContext('2d');
 			
 			//convert dim pixels to black
@@ -467,7 +467,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			pcontext.globalAlpha = playerDimCanvasOpacity;
 			
 			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(playerDimCanvas,mergeCanvas(indCanvas,fowCanvas)))));
-			
+			*/
+			return convertCanvasToImage(mergeCanvas(mapImageCanvas, mergeCanvas(gridCanvas,mergeCanvas(dimCanvas,mergeCanvas(indCanvas,fowCanvas)))));
         }
 
         function remove() {
@@ -1265,9 +1266,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					return;
 				}*/
 				labelObj.coords = undefined;
+				
 				//repaint all but removed label
 				repaintAllLabels();
-				
+				//drawSolidAreaFoW()
+				 
 				//restoreLabelState(label);	
 			}
 			
@@ -1669,6 +1672,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			
 				//repaints a label except...
 			function repaintLabels(exception){
+				drawing = true
 				restoreFogOfWar();
 				for (var label in labelMap){				
 					if (labelMap.hasOwnProperty(label)) {						
@@ -1692,35 +1696,37 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				//only draw solid surface overtop light if it exists
 				
 				
-					//drawSolidAreaFoW();
-				
-				//createRender();
+				drawSolidAreaFoW();;
 			}
 			
 		function drawSolidAreaFoW(){	
 			if(solidAreaPointSets.length == 0){
 				return;
 			}
+			
+			drawing = true;
 				fowContext.save();
 				dimContext.save();
 				//change the brush to light temporarily
 				
 				var fillStyle = fowBrush.getPattern(fowBrush.getDarkIx());
 				fowContext.fillStyle = fillStyle.dark;
+				dimContext.fillStyle = fillStyle.dim;
 				
 				//iterate each set of points of solid areas and draw
 				for(var i = 0;i<solidAreaPointSets.length;i++){
 					var areaState =  solidAreaPointSets[i]
-					 
-					//make sure there are enough points to draw
-					if(areaState.points.length > 0){
-						var brushShapeBckp = brushShape;
-						brushShape = areaState.brushShape; 
+								
+						//make sure there are enough points to draw
+						if(areaState.points.length > 0){
+							console.log('drawing area size: '+areaState.points.length)
+							var brushShapeBckp = brushShape;
+							brushShape = areaState.brushShape; 
 
-						fowCanvas.draw(areaState.points,areaState.brushSize);
-						dimCanvas.draw(areaState.points,areaState.brushSize);
-						brushShape = brushShapeBckp; 
-					}
+							fowCanvas.draw(areaState.points,areaState.brushSize);
+							dimCanvas.draw(areaState.points,areaState.brushSize);
+							brushShape = brushShapeBckp; 
+						}
 				}
 				
 			
@@ -1730,6 +1736,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				fowContext.restore();
 				dimContext.restore();
 				
+			console.log("done drawing solid area");
 			
 		}
 		function drawLabel(label){
@@ -1799,6 +1806,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				//restore the brush
 				brushShape = tmpBrush;
 				
+			//	drawSolidAreaFoW()
 			}
 			
 			function drawLight(coords,lineWidth,lightType){
@@ -1839,7 +1847,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 				
 				removeRender();
 				indContext.clearRect(0, 0, indCanvas.width, indCanvas.height);
-				restoreFogOfWar();
+				//restoreFogOfWar();
 				for (var label in labelMap){				
 					if (labelMap.hasOwnProperty(label)) {						
 						var labelObj = labelMap[label];
@@ -1858,10 +1866,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 						}//end if make sure it hasn't been delete
 					}
 				}
-				//drawSolidAreaFoW();
-				createRender();
+				;
+				//createRender();
 				createPlayerMapImage(mapImageCanvas, fowCanvas);
 				
+				
+				repaintAllHiddenLabels();
+				
+				//stopDrawing();
 			}
 			
 			
