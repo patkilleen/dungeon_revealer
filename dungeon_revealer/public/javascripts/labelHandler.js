@@ -25,7 +25,7 @@ define(function () {
 			},
 			
 			parseLabel = function () {
-				return baseLabelText + multiLabelCounter;
+				return baseLabelText + "." +multiLabelCounter;
 			},
 			
 			nextLabel = function () {
@@ -40,11 +40,14 @@ define(function () {
 				console.log("multilabel clicked");
 				reset();
 				var btnDOM = document.getElementById('btn-toggle-multi-label');
+				var labelTxtBoxDOM = document.getElementById('labelTextInput');
 				//we enabling?
 				if(!isEnabled()){
 					//enabling
 					
-					baseLabelText = document.getElementById('labelTextInput').value;
+					baseLabelText = labelTxtBoxDOM.value;
+					labelTxtBoxDOM.value = parseLabel();
+					nextLabel();
 					btnDOM.text = "Cancel"
 				}else{
 					btnDOM.text = "Add Multiple Labels"
