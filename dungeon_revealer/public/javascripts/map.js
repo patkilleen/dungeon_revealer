@@ -1,5 +1,5 @@
 var indicatorFlag = false;
-define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid) {
+define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labelHandler'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid,labelHandler) {
     console.log('map module loaded');
     return function () {
         var $ = jquery,
@@ -25,6 +25,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
             mapImage,
             width,
             height,
+			lHandler,
             isDrawing = false,
 			currBrush,
             points = [],
@@ -102,6 +103,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext,dimContext, opts);
 				indBrush = ind_brush(indContext, opts);
+				lHandler = labelHandler();
 				gridBrush = grid(opts);
                 fowContext.strokeStyle = fowBrush.getCurrent().dark;
 				dimContext.strokeStyle = fowBrush.getCurrent().dim;
@@ -959,6 +961,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 					
 					restoreLabelState(labelValue);
 					
+					//if we adding multiple labels in a row, load next label
+					if(lHandler.isEnabled()){
+						document.getElementById('labelTextInput').value = lHandler.parseLabel();
+						lHandler.nextLabel();
+					}
+						
+					
+					
             };
 			
 			//draws text to top right corner of shape
@@ -1018,6 +1028,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid'], fun
 			updateMsg();
             //TODO: move all of this jquery stuff somewhere else
 
+			$('#btn-toggle-multi-label').click(function() {
+				lHandler.multiLabelToggle();
+			});
+			
             $('#btn-toggle-fow-brush').click(function () {
 				var toggleButton = this;
 				//fog of war canvas?
