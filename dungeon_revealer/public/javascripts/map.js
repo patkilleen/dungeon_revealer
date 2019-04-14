@@ -976,8 +976,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				var x = label.coords.x;
 				var y = label.coords.y;
 				var lineWidth= label.size;
-				var newX = x + l;
-				var newY = y - l;
+				//var newX = x + l/2;
+				var newX = x - l/10;
+				//var newY = y - l/2;
+				var newY = y;
 				if(newX<0){
 					newX=0;
 				}else if(newX>indCanvas.width){
@@ -995,7 +997,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.shadowOffsetY = 3; 
 				indContext.shadowBlur = 1;
 				indContext.fillStyle="white"
-				indContext.font = (20 + (lineWidth/10))+"px Arial";
+				indContext.font = (12 + (lineWidth/10))+"px Arial";
+				//indContext.font = (lineWidth/2)+"px Arial";
 				indContext.fillText(label.label,newX,newY);
 				indContext.restore();
 			}
