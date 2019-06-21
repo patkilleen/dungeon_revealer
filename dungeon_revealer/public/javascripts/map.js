@@ -1748,8 +1748,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			mapSaver.save('example.txt',fowCanvas,width,height);
 		}
 		
-		function loadMap(){
-			console.log('loading map');
+		function loadMap(file){
+			console.log('loading map: ');
+			mapSaver.load(file,fowCanvas,width,height);
 		}
         return {
             create: create,

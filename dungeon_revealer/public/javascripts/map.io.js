@@ -26,13 +26,26 @@ define(function () {
 			
 		},
 		
-		load = function(inputFilePath,canvas){
+		load = function(inputFilePath,canvas,width,height){
 			
 			//var canvaData = freadFileSync(inputFilePath,encoding);
-			//var ctx = canvas.getContext2D();
+			var ctx = canvas.getContext('2d');
 			//ctx.putImageData(canvaData,0,0);
 			
-			
+			var reader = new FileReader();
+			  reader.onload = function(e) {
+				  //the json string
+				var contents = e.target.result;
+				var dataUrl = JSON.parse(contents);
+				//var urlCreator = window.URL || window.webkitURL;
+				//var imageUrl = urlCreator.createObjectURL(contents);
+				var img = new Image();
+				img.onload = function() {
+					ctx.drawImage(img,0,0,width,height);
+				};
+				img.src = dataUrl;						
+			  };
+			  reader.readAsText(inputFilePath);			
 		},
 		saveByteArray = (function () {
 			var a = document.createElement("a");

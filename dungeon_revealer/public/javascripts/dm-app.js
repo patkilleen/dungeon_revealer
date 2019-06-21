@@ -113,7 +113,18 @@ require(['common'], function(common) {
 		 });
 		 
 		 $('#btn-load-map').click(function() {
-			 dmMap.loadMap();
+			 document.getElementById('btn-choose-file').style = 'display: inline-block !important';		 
+		 });
+		 
+		 $('#btn-choose-file').change(function(e) {
+			 var file = e.target.files[0];
+			 if(!file){
+				 console.log("failed to read file");
+				 return;
+			 }
+			 dmMap.loadMap(file);
+			 document.getElementById('btn-choose-file').style = 'display: none;';
+			 return false;
 		 });
 		 
 		$('#btn-zoom-in').click(function() {
