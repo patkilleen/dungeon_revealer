@@ -1,5 +1,5 @@
 var indicatorFlag = false;
-define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labelHandler'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid,labelHandler) {
+define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labelHandler','map.io'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid,labelHandler,mapIO) {
     console.log('map module loaded');
     return function () {
         var $ = jquery,
@@ -35,7 +35,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             fogRGB = settings.fogRGB,
 			playerRGB= settings.playerRGB,
 			enemyRGB = settings.enemyRGB,
-			targetRGB = settings.targetRGB;
+			targetRGB = settings.targetRGB,
+			mapSaver = mapIO();
 			
 			function getLineWidth(){
 				var slider = document.getElementById("size_input");
@@ -1742,6 +1743,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			return zoomer;
 		}
 
+		function saveMap(){
+			console.log('saving map');
+			mapSaver.save('example.txt',fowCanvas,width,height);
+		}
+		
+		function loadMap(){
+			console.log('loading map');
+		}
         return {
             create: create,
 			createRender2: createRender2,
@@ -1752,7 +1761,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             fitMapToWindow: fitMapToWindow,
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
-			getZoomer: getZoomer
+			getZoomer: getZoomer,
+			loadMap: loadMap,
+			saveMap: saveMap
         };
     }
 

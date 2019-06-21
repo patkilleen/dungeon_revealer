@@ -108,6 +108,14 @@ require(['common'], function(common) {
 			$('#upload').show();
         });
 		
+		 $('#btn-save-map').click(function() {
+			 dmMap.saveMap();
+		 });
+		 
+		 $('#btn-load-map').click(function() {
+			 dmMap.loadMap();
+		 });
+		 
 		$('#btn-zoom-in').click(function() {
 			var zoomer = dmMap.getZoomer();
 			zoomer.zoom(zoomFactor);
