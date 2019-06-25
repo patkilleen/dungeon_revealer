@@ -5,38 +5,31 @@ define(function () {
         console.log('creating map io object');
 
 		var encoding = 'utf-8',
-		save = function(outputFilePath,canvas,width,height){
+		save = function(outputFilePath,obj,width,height){
 		
 		
 		//var ctx = canvas.getContext('2d');
-			var data = canvas.toDataURL('image/png');
+			//var data = canvas.toDataURL('image/png');
 			//var data = ctx.getImageData(0,0,width,height);
-			saveByteArray([new Blob([JSON.stringify(data)])],outputFilePath);
-			//saveByteArray(outputFilePath,ctx.getImageData(),outputFilePath);
-			/*var blob = canvas.toBlob(function(blob) {
-			  var newImg = document.createElement('img'),
-				  url = URL.createObjectURL(blob);
-
-			  newImg.onload = function() {
-				// no longer need to read the blob so it's revoked
-				URL.revokeObjectURL(url);
-			  };
-
-			  newImg.src = url;
-			  saveByteArray(url,outputFilePath);
-			});*/
-
+			
+			//object to output has the canvas data only
+			//var obj = new Object()
+			//obj.indCanvas = canvas.indCanvas.toDataURL('image/png');;
+			//obj.labelMap = labelMap;
+			//saveByteArray([new Blob([JSON.stringify(data)])],outputFilePath);
+			saveByteArray([new Blob([JSON.stringify(obj)])],outputFilePath);
+			
 		},
 
-		load = function(inputFilePath,canvas,width,height){
+		load = function(inputFilePath,callback,width,height,userObj){
 
       
 		
 			//var canvaData = freadFileSync(inputFilePath,encoding);
-			var ctx = canvas.getContext('2d');
+			//var ctx = canvas.getContext('2d');
 			
 			//save ctx
-			ctx.save()
+			//ctx.save()
 			
 			//now change the drawing type to 'copy' so new image replaces old canvas
 			//see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
@@ -44,7 +37,7 @@ define(function () {
 			//ctx.globalCompostieOperation = 'destination-out';
 			//ctx.globalCompostieOperation = 'copy';
 			//ctx.globalCompostieOperation = 'source-over';
-			ctx.globalCompostieOperation = 'copy';
+			//ctx.globalCompostieOperation = 'copy';
 			//ctx.putImageData(canvaData,0,0);
 			
 			var reader = new FileReader();
@@ -52,19 +45,22 @@ define(function () {
 			  reader.onload = function(e) {
 				  //the json string
 				var contents = e.target.result;
-				var dataUrl = JSON.parse(contents);
+				callback(JSON.parse(contents),userObj);
+				/*var dataUrl = JSON.parse(contents);
 				//var urlCreator = window.URL || window.webkitURL;
 				//var imageUrl = urlCreator.createObjectURL(contents);
 				var img = new Image();
 				img.onload = function() {
+					
 					ctx.drawImage(img,0,0,width,height);
+					
 				};
-				img.src = dataUrl;						
+				img.src = dataUrl;						*/
 			  };
 			  reader.readAsText(inputFilePath);			
 			  
 			window.alert("Map Successfully loaded");
-			ctx.restore();
+			//ctx.restore();
 		},
 		saveByteArray = (function () {
 			
