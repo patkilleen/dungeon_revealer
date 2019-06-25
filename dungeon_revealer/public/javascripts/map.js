@@ -1745,12 +1745,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 
 		function saveMap(){
 			console.log('saving map');
-			mapSaver.save('example.txt',fowCanvas,width,height);
+			mapSaver.save('example.txt',indCanvas,width,height);
 		}
 		
 		function loadMap(file){
 			console.log('loading map: ');
-			mapSaver.load(file,fowCanvas,width,height);
+			mapSaver.load(file,indCanvas,width,height);
 		}
         return {
             create: create,

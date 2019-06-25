@@ -119,10 +119,17 @@ require(['common'], function(common) {
 		 $('#btn-choose-file').change(function(e) {
 			 var file = e.target.files[0];
 			 if(!file){
+				 window.alert("Failed to load map");
 				 console.log("failed to read file");
+				  document.getElementById('btn-choose-file').style = 'display: none;';
 				 return;
 			 }
-			 dmMap.loadMap(file);
+			 
+			 try{
+				dmMap.loadMap(file);
+			 }catch(err){
+				 window.alert("Failed to load map");
+			 }
 			 document.getElementById('btn-choose-file').style = 'display: none;';
 			 return false;
 		 });
