@@ -20,6 +20,19 @@ define(function () {
 			scaleFactor=1.05,
 			dragFactor=0.3,
 			panLocked = false,
+			copy = function(zoomer){
+				//initValues();	
+				//image = zoomer.img,
+				lastX = zoomer.lastX;
+				lastY= zoomer.lastY;
+				defaultWidth= zoomer.defaultWidth;
+				defaultHeight= zoomer.defaultHeight;
+				dragStartX= zoomer.dragStartX;
+				dragStartY= zoomer.dragStartY;
+				dragged= zoomer.dragged;
+				scaleFactor= zoomer.scaleFactor;
+				panLocked= zoomer.panLocked;
+			}
 			redraw = function(){
 			// Clear the entire canvas
 
@@ -113,7 +126,8 @@ define(function () {
 				zoom: zoom,
 				resetMapImage: resetMapImage,
 				lockPan: lockPan,
-				unlockPan: unlockPan
+				unlockPan: unlockPan,
+				copy: copy
 			}
     };
 });

@@ -11,9 +11,10 @@ define(function () {
 			dimCanvasIndex = 'dimCanvas',
 			gridCanvasIndex = 'gridCanvas',
 			mapImageCanvasIndex = 'mapImageCanvas',
+			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
 			selectionPaneOthersId = 'label_sel2',
-		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap){
+		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap, zoomer){
 			
 			console.log('loading map');
 			//debugger;
@@ -30,7 +31,13 @@ define(function () {
 			obj.index = labelMapIndex;
 			readObjectFromFile(file,labelsCallback,obj);
 			
-			 obj = new Object();
+			obj = new Object();
+			obj.zoomer =zoomer;
+			obj.index = zoomerIndex;
+			obj.mapImageCanvas = mapImageCanvas;
+			readObjectFromFile(file,zoomerCallback,obj);
+			
+			obj = new Object();
 			obj.canvas = indCanvas;
 			obj.index = indCanvasIndex;
 			obj.height = height;
@@ -41,12 +48,13 @@ define(function () {
 			
 			window.alert("Map Successfully loaded");
 		},
-		saveAll = function(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap){
+		saveAll = function(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer){
 			console.log('saving dungeon revealer states');
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
+			obj[zoomerIndex] = zoomer;
 			writeObjectToFile(objectOutputFile,obj);
 		},
 		writeObjectToFile = function(outputFilePath,obj){
@@ -93,6 +101,19 @@ define(function () {
 			img.src = dataUrl;						
 		
 			ctx.restore();
+		},
+		
+		zoomerCallback = function(inputData,userObject){
+			
+			var zoomer = userObject.zoomer;
+		//	var mapImageCanvas = userObject.mapImageCanvas;
+			var index = userObject.index;
+			
+			var newZoomer = inputData[index];
+			
+			//copy all attributes of zoomer in file to the current map zoomer
+			zoomer.copy(newZoomer);
+			
 		},
 		labelsCallback = function(inputData,userObject){
 			

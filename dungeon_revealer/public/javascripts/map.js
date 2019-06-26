@@ -1750,11 +1750,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		}
 
 		function saveMap(){
-			mapSaver.saveAll(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap);
+			mapSaver.saveAll(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer);
 		}
 		
 		function loadMap(file){
-			mapSaver.loadAll(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap);
+			mapSaver.loadAll(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer);
 		}
 		
 		
