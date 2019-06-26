@@ -18,16 +18,26 @@ define(function () {
 			console.log('loading map');
 			//debugger;
 			var obj = new Object();
+			obj.canvas = mapImageCanvas;
+			obj.index = mapImageCanvasIndex;
+			obj.height = height;
+			obj.width = width;
+			readObjectFromFile(file,canvasCallback,obj);
+			 
+			
+			obj = new Object();
+			obj.labelMap =labelMap;
+			obj.index = labelMapIndex;
+			readObjectFromFile(file,labelsCallback,obj);
+			
+			 obj = new Object();
 			obj.canvas = indCanvas;
 			obj.index = indCanvasIndex;
 			obj.height = height;
 			obj.width = width;
 			readObjectFromFile(file,canvasCallback,obj);
 			
-			obj = new Object();
-			obj.labelMap =labelMap;
-			obj.index = labelMapIndex;
-			readObjectFromFile(file,labelsCallback,obj);
+			
 			
 			window.alert("Map Successfully loaded");
 		},
@@ -35,6 +45,7 @@ define(function () {
 			console.log('saving dungeon revealer states');
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
+			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
 			writeObjectToFile(objectOutputFile,obj);
 		},
