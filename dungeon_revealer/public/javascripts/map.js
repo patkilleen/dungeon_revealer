@@ -1750,105 +1750,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		}
 
 		function saveMap(){
-			console.log('saving map');
-			var obj = new Object();
-			obj["indCanvas"] = indCanvas.toDataURL('image/png');
-			obj["labelMap"] = labelMap;
-			mapSaver.save('example.txt',obj,width,height);
+			mapSaver.saveAll(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap);
 		}
 		
 		function loadMap(file){
-			console.log('loading map: ');
-			
-			var canvascallback = function(inputData,obj){
-				
-				var canvas = obj.canvas;
-				var index = obj.index;
-				var dataUrl = inputData[index];
-				//var canvaData = freadFileSync(inputFilePath,encoding);
-				var ctx = canvas.getContext('2d');
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				//save ctx
-				ctx.save()
-				
-				//now change the drawing type to 'copy' so new image replaces old canvas
-				//see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
-				ctx.globalCompostieOperation = 'copy';
-				
-				
-				var img = new Image();
-				img.onload = function() {
-					
-					ctx.drawImage(img,0,0,width,height);
-					
-				};
-				img.src = dataUrl;						
-			
-				ctx.restore();
-			}
-			
-			var labelscallback = function(inputData,index){
-				
-				//clear the label map
-				labelMap = new Object();
-				var newLabelMap = inputData[index];
-			//	newLabelMap = JSON.parse(newLabelMap);
-				//delete the ui entries of label
-				var selection = document.getElementById('label_sel');
-
-					while (selection.firstChild) {
-						//get label value and remove from map				
-						selection.removeChild(selection.firstChild);
-					}
-				//delete the ui entries of label
-				var selection = document.getElementById('label_sel2');
-
-					while (selection.firstChild) {
-						//get label value and remove from map					
-						selection.removeChild(selection.firstChild);
-					}
-					
-				for (var label in newLabelMap){
-					
-					
-					if(label !== undefined){
-					var token = newLabelMap[label];
-					console.log(token.brushType);
-					var dom_id = (token.brushType === "player") ? 'label_sel' : 'label_sel2';//choose dom based on label type
-					var e = document.getElementById(dom_id);
-					var options = e.options;				
-					
-					var option = document.createElement("option");
-					option.text = label;
-					
-					//choose label color
-					if(token.brushType === 'player'){
-						option.style = "color:#42f445;";	
-					}else if(token.brushType === 'enemy'){
-						option.style = "color:red;";
-					}else if(token.brushType === 'target'){
-						option.style = "color:yellow;";
-					}else{
-						console.log("error, indicator brush has invalid drawing brush");
-						option.style = "color:white;";
-					}
-					
-					
-					//add nubmer of clicks, 0 initially
-					e.add(option);
-					
-					labelMap[label] = token;
-					}
-				}			
-			}
-			
-			
-			var obj = new Object();
-			obj.canvas = indCanvas;
-			obj.index = "indCanvas";
-			mapSaver.load(file,canvascallback,width,height,obj);
-			mapSaver.load(file,labelscallback,width,height,"labelMap");
+			mapSaver.loadAll(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap);
 		}
+		
+		
         return {
             create: create,
 			createRender2: createRender2,

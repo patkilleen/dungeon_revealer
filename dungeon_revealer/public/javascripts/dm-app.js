@@ -128,7 +128,7 @@ require(['common'], function(common) {
 			 try{
 				dmMap.loadMap(file);
 			 }catch(err){
-				 window.alert("Failed to load map");
+				 window.alert("Failed to load map due to "+err);
 			 }
 			 document.getElementById('btn-choose-file').style = 'display: none;';
 			 return false;
