@@ -18,8 +18,42 @@ define(function () {
 		setFowBrush = function(_fow_brush){
 			fow_brush = _fow_brush;
 		},
-		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap, zoomer){
+		
+		createFOWCallbackObject = function(width,height,canvas,canvasIndex,brushType){
+			 
+			var obj = new Object();
+			obj.canvas = canvas;
+			obj.index = canvasIndex;
+			obj.height = height;
+			obj.width = width;
+			obj.globalCompositeOperation = 'source-out';
+			var ctx  = canvas.getContext('2d');
+			ctx.save();
+			obj.onImageDraw = function(){
+				ctx.restore();
+			}
+			//set up the fog of war brush so its ready to draw when loadin fow image
+			//var type = fow_brush.getCurrentBrushTypeEnum();
+			//fow_brush.setBrushType(fow_brush.getDarkIx());
 			
+			var strokeStyle = fow_brush.getPattern(brushType);
+			if(brushType == fow_brush.getDarkIx()){
+				ctx.strokeStyle = strokeStyle.dark;
+				ctx.fillStyle = strokeStyle.dark;
+			}else if(brushType == fow_brush.getDimIx()){
+				ctx.strokeStyle = strokeStyle.dim;
+				ctx.fillStyle = strokeStyle.dim;
+			}else{
+				console.log("illegal brush type in create fow callback object")
+			}
+			
+			return obj;
+		}
+		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap, zoomer){
+		
+		//atm there is a bug, i should have synchronizaiotn, wait for all canvases to load one after another.
+		//other wise they load fine!
+		
 			console.log('loading map');
 			
 			//map image
@@ -32,29 +66,12 @@ define(function () {
 			readObjectFromFile(file,canvasCallback,obj);
 			 
 			//fog of war (dark-light)
-			obj = new Object();
-			obj.canvas = fowCanvas;
-			obj.index = fowCanvasIndex;
-			obj.height = height;
-			obj.width = width;
-			obj.globalCompositeOperation = 'source-out';
-			var darkCanvasContext  = fowCanvas.getContext('2d');
-			darkCanvasContext.save();
-			obj.onImageDraw = function(){
-				darkCanvasContext.restore()
-			}
-			//set up the fog of war brush so its ready to draw when loadin fow image
-			//var type = fow_brush.getCurrentBrushTypeEnum();
-			//fow_brush.setBrushType(fow_brush.getDarkIx());
-			
-			var strokeStyle = fow_brush.getPattern(fow_brush.getDarkIx());
-			
-			darkCanvasContext.strokeStyle = strokeStyle.dark;
-			darkCanvasContext.fillStyle = strokeStyle.dark;
+			obj = createFOWCallbackObject(width,height,fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
 			readObjectFromFile(file,canvasCallback,obj);
 			
-			//put the brush back to normal
-			//fow_brush.setBrushType(type);
+			//fog of war (dim-light)
+			obj = createFOWCallbackObject(width,height,dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
+			readObjectFromFile(file,canvasCallback,obj);
 			
 			//label map
 			obj = new Object();
@@ -87,6 +104,7 @@ define(function () {
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
 			obj[fowCanvasIndex] = fowCanvas.toDataURL('image/png');
+			obj[dimCanvasIndex] = dimCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
 			obj[zoomerIndex] = zoomer;
 			writeObjectToFile(objectOutputFile,obj);
