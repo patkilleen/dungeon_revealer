@@ -29,7 +29,10 @@ define(function () {
 				}
 				currentBrushType = type;
 				updateContextStrokeStyle();
-			}
+			},
+			getCurrentBrushTypeEnum = function(){
+				return currentBrushType;
+			},
 			updateContextStrokeStyle = function (){
 				
 				var strokeStyle = getCurrent();
@@ -127,7 +130,9 @@ define(function () {
 			clearMap: clearMap,
 			getDarkIx: getDarkIx,
 			getDimIx: getDimIx,
-			getLightIx: getLightIx
+			getLightIx: getLightIx,
+			updateContextStrokeStyle: updateContextStrokeStyle,
+			getCurrentBrushTypeEnum: getCurrentBrushTypeEnum
         }
     };
 });

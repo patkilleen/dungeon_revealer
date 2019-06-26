@@ -5,6 +5,7 @@ define(function () {
         console.log('creating map io object');
 
 		var objectOutputFile = 'dungeon-revealer.json',
+			fow_brush,
 			indCanvasIndex = 'indCanvas',
 			labelMapIndex = 'labelMap',
 			fowCanvasIndex = 'fowCanvas',
@@ -14,36 +15,68 @@ define(function () {
 			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
 			selectionPaneOthersId = 'label_sel2',
+		setFowBrush = function(_fow_brush){
+			fow_brush = _fow_brush;
+		},
 		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap, zoomer){
 			
 			console.log('loading map');
-			//debugger;
+			
+			//map image
 			var obj = new Object();
 			obj.canvas = mapImageCanvas;
 			obj.index = mapImageCanvasIndex;
 			obj.height = height;
 			obj.width = width;
+			obj.globalCompositeOperation = 'copy';
 			readObjectFromFile(file,canvasCallback,obj);
 			 
+			//fog of war (dark-light)
+			obj = new Object();
+			obj.canvas = fowCanvas;
+			obj.index = fowCanvasIndex;
+			obj.height = height;
+			obj.width = width;
+			obj.globalCompositeOperation = 'source-out';
+			var darkCanvasContext  = fowCanvas.getContext('2d');
+			darkCanvasContext.save();
+			obj.onImageDraw = function(){
+				darkCanvasContext.restore()
+			}
+			//set up the fog of war brush so its ready to draw when loadin fow image
+			//var type = fow_brush.getCurrentBrushTypeEnum();
+			//fow_brush.setBrushType(fow_brush.getDarkIx());
 			
+			var strokeStyle = fow_brush.getPattern(fow_brush.getDarkIx());
+			
+			darkCanvasContext.strokeStyle = strokeStyle.dark;
+			darkCanvasContext.fillStyle = strokeStyle.dark;
+			readObjectFromFile(file,canvasCallback,obj);
+			
+			//put the brush back to normal
+			//fow_brush.setBrushType(type);
+			
+			//label map
 			obj = new Object();
 			obj.labelMap =labelMap;
 			obj.index = labelMapIndex;
 			readObjectFromFile(file,labelsCallback,obj);
 			
+			//zoomer
 			obj = new Object();
 			obj.zoomer =zoomer;
 			obj.index = zoomerIndex;
 			obj.mapImageCanvas = mapImageCanvas;
 			readObjectFromFile(file,zoomerCallback,obj);
 			
+			//label canvas
 			obj = new Object();
 			obj.canvas = indCanvas;
 			obj.index = indCanvasIndex;
 			obj.height = height;
 			obj.width = width;
+			obj.globalCompositeOperation = 'copy';
 			readObjectFromFile(file,canvasCallback,obj);
-			
 			
 			
 			window.alert("Map Successfully loaded");
@@ -53,6 +86,7 @@ define(function () {
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
+			obj[fowCanvasIndex] = fowCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
 			obj[zoomerIndex] = zoomer;
 			writeObjectToFile(objectOutputFile,obj);
@@ -72,14 +106,13 @@ define(function () {
 			  };
 			  reader.readAsText(inputFilePath);				  		
 		},
-		
 		canvasCallback = function(inputData,userObject){
 				
 			var canvas = userObject.canvas;
 			var index = userObject.index;
 			var width = userObject.width;
 			var height = userObject.height;
-			
+			var onImageDraw = userObject.onImageDraw;
 			var dataUrl = inputData[index];
 
 			var ctx = canvas.getContext('2d');
@@ -89,14 +122,16 @@ define(function () {
 			
 			//now change the drawing type to 'copy' so new image replaces old canvas
 			//see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
-			ctx.globalCompostieOperation = 'copy';
+			ctx.globalCompostieOperation = userObject.globalCompositeOperation;
 			
 			
 			var img = new Image();
 			img.onload = function() {
 				
 				ctx.drawImage(img,0,0,width,height);
-				
+				if(onImageDraw !== undefined){
+					onImageDraw();
+				}
 			};
 			img.src = dataUrl;						
 		
@@ -149,7 +184,6 @@ define(function () {
 				
 				if(label !== undefined){
 				var token = newLabelMap[label];
-				console.log(token.brushType);
 				var dom_id = (token.brushType === "player") ? selectionPanePlayersId : selectionPaneOthersId;//choose dom based on label type
 				var e = document.getElementById(dom_id);
 				var options = e.options;				
@@ -208,7 +242,8 @@ define(function () {
 				
 		return {
 				loadAll: loadAll,
-				saveAll: saveAll
+				saveAll: saveAll,
+				setFowBrush: setFowBrush
 		}
     };
 });
