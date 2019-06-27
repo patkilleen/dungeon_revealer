@@ -99,13 +99,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				gridContext = gridCanvas.getContext('2d');
 				dimContext = dimCanvas.getContext('2d');
 				gridContext.save();
-				gridSlider = document.getElementById("grid_size_input");
+				//gridSlider = document.getElementById("grid_size_input");
                 cursorContext = cursorCanvas.getContext('2d');
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext,dimContext, opts);
 				indBrush = ind_brush(indContext, opts);
 				lHandler = labelHandler();
-				gridBrush = grid(opts);
+				gridBrush = grid($,opts,cursorCanvas,gridCanvas,createRender);
                 fowContext.strokeStyle = fowBrush.getCurrent().dark;
 				dimContext.strokeStyle = fowBrush.getCurrent().dim;
 				indContext.strokeStyle = indBrush.getCurrent();
@@ -268,7 +268,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		function setSendIconYellow(){
 			document.getElementById("icon-send-state").setAttribute('class',"yellow_dot");
 		}
-		
+		/*
 		function renderGrid(){
 			//enableLoadingScreen();
 			//give chance for loading screen to pop up
@@ -284,7 +284,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				//disableLoadingScreen();
 			//},0);
 		}
-		
+		*/
 		
 		
         function getMouseCoordinates(e) {
@@ -688,11 +688,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             }
             return limitedPointsSorted
         }
-		function handleGridDistance(x,y){
+		/*function handleGridDistance(x,y){
 
 			var squareSize = gridSlider.value;
 			gridBrush.handleGridDistance(x,y,cursorCanvas,squareSize);
-		}
+		}*/
         function setupCursorTracking() {
 			var lineWidth = getLineWidth();
             // Mouse Click
@@ -718,7 +718,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					//on grid brush?
 					if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
 					//	renderGrid();
-						handleGridDistance(cords.x,cords.y);
+						gridBrush.handleGridDistance(cords.x,cords.y);
 						//var pt = gridBrush.findCellClicked(cords.x,cords.y,gridSlider.value);
 						//console.log("["+pt.row+","+pt.col+"]");
 					}else{
@@ -1049,7 +1049,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					indBrush.toggle();
 					//are we on grid brush?
 					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
-						displayTempGrid();
+						gridBrush.displayTempGrid();
 					}else{//remove the grid display 
 						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 					}
@@ -1514,17 +1514,17 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
-			
+			/*
 			function displayTempGrid(){
 				gridBrush.displayTempGrid(gridSlider.value,cursorCanvas)
 			}
-			
+			*/
             $('#btn-shrink-brush').click(function () {
 				var slider = document.getElementById("size_input");
 				slider.value = parseInt(slider.value)-10;
 				lineWidth = slider.value;
             });
-			
+			/*
 			$('#btn-smaller-grid').click(function () {
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)-1;
@@ -1555,7 +1555,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			//size of grid changed, display the light blue candidate grid?
 			gridSlider.onchange = function(e){		
 				displayTempGrid();
-			}
+			}*/
 			
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;

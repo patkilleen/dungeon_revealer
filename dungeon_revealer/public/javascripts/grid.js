@@ -1,11 +1,20 @@
 define(function () {
     console.log('grid.js starting');
 
-    return function (opts) {
+    return function ($,opts, _cursorCanvas,_gridCanvas, _createRender) {
         console.log('creating grid object');
 
+		
+			
+            
         var x1,y1,
 			addedGrid=false,
+			cursorCanvas = _cursorCanvas,
+			cursorContext = cursorCanvas.getContext('2d'),
+			gridSlider = document.getElementById("grid_size_input"),
+			gridCanvas = _gridCanvas,
+			gridContext = gridCanvas.getContext('2d'),
+			createRender = _createRender,
 			addGrid = function (canvas,squareSize,color){
 				var numCols = canvas.width/squareSize;
 				var numRows = canvas.height/squareSize;
@@ -31,14 +40,16 @@ define(function () {
 				context.restore();
 			},
 				
-			displayTempGrid = function(squareSize,cursorCanvas){
+			displayTempGridFromSliderSize = function(){
+				displayTempGrid(gridSlider.value,cursorCanvas)
+			},
+			displayTempGrid = function(squareSize,_cursorCanvas){
 				//only display blue grid that will be painted if added if no grid on map
 				if(!hasGrid()){
-					addGrid(cursorCanvas,squareSize,undefined);
+					addGrid(_cursorCanvas,squareSize,undefined);
 				}
 			},
-			handleGridDistance = function(x,y,cursorCanvas,squareSize){
-
+			handleGridDistance = function(x,y){
 				var squareSize = gridSlider.value;
 				
 				
@@ -127,7 +138,56 @@ define(function () {
 			},
 			hasGrid = function(){
 				return addedGrid;
+			},
+			renderGrid = function (){
+			//enableLoadingScreen();
+			//give chance for loading screen to pop up
+			//setTimeout(function() {
+				squareSize = gridSlider.value
+				addGrid(gridCanvas,squareSize,'black');
+				setGridAdded(true);
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				var rmBtn = document.getElementById('btn-rm-grid');
+				rmBtn.style='display: inline-block !important;';
+				this.style='display: none';
+				createRender();
+				//disableLoadingScreen();
+			//},0);
+		};
+
+			
+			$('#btn-smaller-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)-1;
+				displayTempGridFromSliderSize();
+            });
+			
+			$('#btn-bigger-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)+1;
+				displayTempGridFromSliderSize();
+            });
+			
+			$('#btn-add-grid').click(function () {	
+				renderGrid();
+            });
+			
+			$('#btn-rm-grid').click(function () {
+				
+				setGridAdded(false);
+				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+				var addBtn = document.getElementById('btn-add-grid');
+				addBtn.style='display: inline-block !important;';
+				this.style='display: none';
+				createRender();
+				displayTempGridFromSliderSize();
+            });
+					
+			//size of grid changed, display the light blue candidate grid?
+			gridSlider.onchange = function(e){		
+				displayTempGridFromSliderSize();
 			}
+			
         return {
            findCellClicked: findCellClicked,
 		   addGrid: addGrid,
@@ -138,8 +198,11 @@ define(function () {
 		   addPointClicked:addPointClicked,
 		   hasGrid:hasGrid,
 		   setGridAdded:setGridAdded,
-		   displayTempGrid:displayTempGrid,
+		   displayTempGrid:displayTempGridFromSliderSize,
 		   handleGridDistance:handleGridDistance
         }
+
+			
+			
     };
 });
