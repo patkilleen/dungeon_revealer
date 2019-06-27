@@ -46,9 +46,9 @@ define(function () {
 			obj.globalCompositeOperation = 'source-out';
 			var ctx  = canvas.getContext('2d');
 			ctx.save();
-			obj.onImageDraw = function(){
+			/*obj.onImageDraw = function(){
 				ctx.restore();
-			}
+			}*/
 			//set up the fog of war brush so its ready to draw when loadin fow image
 			//var type = fow_brush.getCurrentBrushTypeEnum();
 			//fow_brush.setBrushType(fow_brush.getDarkIx());
@@ -67,53 +67,7 @@ define(function () {
 			return obj;
 		}
 		loadAll = function(file){
-		
-		//atm there is a bug, i should have synchronizaiotn, wait for all canvases to load one after another.
-		//other wise they load fine!
-		
-			console.log('loading map');
-			
-			//map image
-			var obj = new Object();
-			obj.canvas = mapImageCanvas;
-			obj.index = mapImageCanvasIndex;
-			//obj.height = height;
-			//obj.width = width;
-			obj.globalCompositeOperation = 'copy';
-			readObjectFromFile(file,canvasCallback,obj);
-			 
-			//fog of war (dark-light)
-			obj = createFOWCallbackObject(fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
-			readObjectFromFile(file,canvasCallback,obj);
-			
-			//fog of war (dim-light)
-			obj = createFOWCallbackObject(dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
-			readObjectFromFile(file,canvasCallback,obj);
-			
-			//label map
-			obj = new Object();
-			obj.labelMap =labelMap;
-			obj.index = labelMapIndex;
-			readObjectFromFile(file,labelsCallback,obj);
-			
-			//zoomer
-			obj = new Object();
-			//obj.zoomer =zoomer;
-			obj.index = zoomerIndex;
-			//obj.mapImageCanvas = mapImageCanvas;
-			readObjectFromFile(file,zoomerCallback,obj);
-			
-			//label canvas
-			obj = new Object();
-			obj.canvas = indCanvas;
-			obj.index = indCanvasIndex;
-			//obj.height = height;
-			//obj.width = width;
-			obj.globalCompositeOperation = 'copy';
-			readObjectFromFile(file,canvasCallback,obj);
-			
-			
-			window.alert("Map Successfully loaded");
+			readObjectFromFile(file,onFileRead);
 		},
 		saveAll = function(){
 			console.log('saving dungeon revealer states');
@@ -126,31 +80,76 @@ define(function () {
 			obj[zoomerIndex] = zoomer;
 			writeObjectToFile(objectOutputFile,obj);
 		},
-	//	onFileRead = function(inputData,userObj){
+		onFileRead = function(inputData){//called when file loaded
 			
-		//},
+			console.log('loading map');
+			var ctx;
+			//map image
+			var obj = new Object();
+			obj.canvas = mapImageCanvas;
+			obj.index = mapImageCanvasIndex;
+			obj.globalCompositeOperation = 'copy';
+			
+			canvasCallback(inputData,obj, function (){//call back when done loading will call the below
+				 ctx = mapImageCanvas.getContext('2d');
+				 ctx.restore();
+				//fog of war (dark-light)
+				obj = createFOWCallbackObject(fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
+				canvasCallback(inputData,obj, function(){
+					ctx = fowCanvas.getContext('2d');
+					ctx.restore();
+					//fog of war (dim-light)
+					obj = createFOWCallbackObject(dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
+					canvasCallback(inputData,obj,function (){
+						ctx = dimCanvas.getContext('2d');
+						ctx.restore();
+							
+							//zoomer
+					/*		obj = new Object();
+							obj.index = zoomerIndex;
+							zoomerCallback(inputData,obj);
+						*/	
+						//label canvas
+						obj = new Object();
+						obj.canvas = indCanvas;
+						obj.index = indCanvasIndex;
+						obj.globalCompositeOperation = 'copy';
+						canvasCallback(inputData,obj, function(){
+							ctx.restore();
+							
+							//label map
+							obj = new Object();
+							obj.labelMap =labelMap;
+							obj.index = labelMapIndex;
+							loadLabelMap(inputData,obj);
+							
+							window.alert("Map Successfully loaded");
+						});//end label canvas callback
+					});//end of dim brush
+				});//end dark fog of war canvas callback
+			});//end mpa image canvas call back
+		},
 		writeObjectToFile = function(outputFilePath,obj){
 			saveByteArray([new Blob([JSON.stringify(obj)])],outputFilePath);
 		},
-		readObjectFromFile = function(inputFilePath,callback,userObj){//userObj is given as argument to callback
-			console.log('reading '+inputFilePath);
+		readObjectFromFile = function(inputFilePath,callback){
 			var reader = new FileReader();
 			
 			  reader.onload = function(e) {
 				  //the json string
 				var contents = e.target.result;
-				callback(JSON.parse(contents),userObj);
+				callback(JSON.parse(contents));
 				
 			  };
 			  reader.readAsText(inputFilePath);				  		
 		},
-		canvasCallback = function(inputData,userObject){
+		canvasCallback = function(inputData,userObject, callback){
 				
 			var canvas = userObject.canvas;
 			var index = userObject.index;
 			//var width = userObject.width;
 			//var height = userObject.height;
-			var onImageDraw = userObject.onImageDraw;
+			//var onImageDraw = userObject.onImageDraw;
 			var dataUrl = inputData[index];
 
 			var ctx = canvas.getContext('2d');
@@ -167,13 +166,12 @@ define(function () {
 			img.onload = function() {
 				
 				ctx.drawImage(img,0,0,width,height);
-				if(onImageDraw !== undefined){
-					onImageDraw();
-				}
+				callback();
+				
 			};
 			img.src = dataUrl;						
 		
-			ctx.restore();
+			//ctx.restore();
 		},
 		
 		zoomerCallback = function(inputData,userObject){
@@ -186,9 +184,9 @@ define(function () {
 			
 			//copy all attributes of zoomer in file to the current map zoomer
 			zoomer.copy(newZoomer);
-			
+
 		},
-		labelsCallback = function(inputData,userObject){
+		loadLabelMap = function(inputData,userObject){
 			
 			//var labelMap = userObject.labelMap;
 			var index = userObject.index;
@@ -242,7 +240,6 @@ define(function () {
 				}
 				
 				
-				//add nubmer of clicks, 0 initially
 				e.add(option);
 				
 				labelMap[label] = token;
