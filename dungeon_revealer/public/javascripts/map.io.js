@@ -22,10 +22,10 @@ define(function () {
 			indCanvas,
 			gridCanvas,
 			mapImageCanvas,
-			labelMap,
 			zoomer,
+			labelMap,
 			fow_brush,
-		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas,_labelMap, _zoomer, _fow_brush){
+		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas, _zoomer, _fow_brush){
 			width=_width;
 			height=_height;
 			fowCanvas=_fowCanvas;
@@ -33,7 +33,6 @@ define(function () {
 			indCanvas=_indCanvas;
 			gridCanvas=_gridCanvas;
 			mapImageCanvas=_mapImageCanvas;
-			labelMap=_labelMap;
 			zoomer=_zoomer;
 			fow_brush = _fow_brush;
 		},
@@ -66,10 +65,11 @@ define(function () {
 			
 			return obj;
 		}
-		loadAll = function(file){
+		loadAll = function(file,_labelMap){
+			labelMap = _labelMap;
 			readObjectFromFile(file,onFileRead);
 		},
-		saveAll = function(){
+		saveAll = function(labelMap){
 			console.log('saving dungeon revealer states');
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
@@ -86,6 +86,15 @@ define(function () {
 			var ctx;
 			//map image
 			var obj = new Object();
+			
+			
+			//label map
+		
+			obj.labelMap =labelMap;
+			obj.index = labelMapIndex;
+			loadLabelMap(inputData,obj);
+			
+			obj = new Object();
 			obj.canvas = mapImageCanvas;
 			obj.index = mapImageCanvasIndex;
 			obj.globalCompositeOperation = 'copy';
@@ -116,13 +125,7 @@ define(function () {
 						obj.globalCompositeOperation = 'copy';
 						canvasCallback(inputData,obj, function(){
 							ctx.restore();
-							
-							//label map
-							obj = new Object();
-							obj.labelMap =labelMap;
-							obj.index = labelMapIndex;
-							loadLabelMap(inputData,obj);
-							
+
 							window.alert("Map Successfully loaded");
 						});//end label canvas callback
 					});//end of dim brush
@@ -187,18 +190,21 @@ define(function () {
 
 		},
 		loadLabelMap = function(inputData,userObject){
-			
-			//var labelMap = userObject.labelMap;
+			console.log("loading label map")
+			var labelMap = userObject.labelMap;
 			var index = userObject.index;
 			
 			//clear the label map
 			for (var label in labelMap){
+				
 				if(label !== undefined){
 					labelMap[label] = undefined;
+					console.log("removing label "+label)
 				}
 			}
 			
 			var newLabelMap = inputData[index];
+			console.log("loaded labe map:" +JSON.stringify(newLabelMap));
 		//	newLabelMap = JSON.parse(newLabelMap);
 			//delete the ui entries of label
 			var selection = document.getElementById(selectionPanePlayersId);
@@ -219,30 +225,31 @@ define(function () {
 				
 				
 				if(label !== undefined){
-				var token = newLabelMap[label];
-				var dom_id = (token.brushType === "player") ? selectionPanePlayersId : selectionPaneOthersId;//choose dom based on label type
-				var e = document.getElementById(dom_id);
-				var options = e.options;				
-				
-				var option = document.createElement("option");
-				option.text = label;
-				
-				//choose label color
-				if(token.brushType === 'player'){
-					option.style = "color:#42f445;";	
-				}else if(token.brushType === 'enemy'){
-					option.style = "color:red;";
-				}else if(token.brushType === 'target'){
-					option.style = "color:yellow;";
-				}else{
-					console.log("error, indicator brush has invalid drawing brush");
-					option.style = "color:white;";
-				}
-				
-				
-				e.add(option);
-				
-				labelMap[label] = token;
+					console.log("adding label "+label)
+					var token = newLabelMap[label];
+					var dom_id = (token.brushType === "player") ? selectionPanePlayersId : selectionPaneOthersId;//choose dom based on label type
+					var e = document.getElementById(dom_id);
+					var options = e.options;				
+					
+					var option = document.createElement("option");
+					option.text = label;
+					
+					//choose label color
+					if(token.brushType === 'player'){
+						option.style = "color:#42f445;";	
+					}else if(token.brushType === 'enemy'){
+						option.style = "color:red;";
+					}else if(token.brushType === 'target'){
+						option.style = "color:yellow;";
+					}else{
+						console.log("error, indicator brush has invalid drawing brush");
+						option.style = "color:white;";
+					}
+					
+					
+					e.add(option);
+					
+					labelMap[label] = token;
 				}
 			}			
 		},
