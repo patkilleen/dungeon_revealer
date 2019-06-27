@@ -40,7 +40,11 @@ define(function () {
 				context.stroke();
 				context.restore();
 			},
-				
+			getAttributes=function(){
+				return{addedGrid:addedGrid,
+						currentSquareSize,currentSquareSize
+					};
+			},
 			displayTempGridFromSliderSize = function(){
 				displayTempGrid(gridSlider.value,cursorCanvas)
 			},
@@ -54,7 +58,7 @@ define(function () {
 				currentSquareSize = squareSize;
 			},
 			setSliderSize = function(squareSize){
-				gridSlider = squareSize;
+				gridSlider.value = squareSize;
 			},
 			getSliderSize = function(){
 				return gridSlider.value;
@@ -160,17 +164,19 @@ define(function () {
 				return addedGrid;
 			},
 			renderGrid = function (){
+				addGridNoRender();
+				addGrid(gridCanvas,squareSize,'black');
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				createRender();
+			},
+			addGridNoRender = function(){
 				gridSlider.disabled = true;
 				squareSize = gridSlider.value;
-				setCurrentSquareSize(squareSize);
-				addGrid(gridCanvas,squareSize,'black');
+				setCurrentSquareSize(squareSize);		
 				setGridAdded(true);
-				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
 				hideAddButton();
-				revealRemoveButton();
-				createRender();
-			
-		},
+				revealRemoveButton();	
+			},
 		hideRemoveButton = function(){
 			var rmBtn = document.getElementById('btn-rm-grid');
 			rmBtn.style='display: none';
@@ -187,12 +193,15 @@ define(function () {
 			var b = document.getElementById('btn-add-grid');
 			b.style='display: none';
 		},
-		removeGrid = function(){
+		removeGridNoRender = function(){
 			setGridAdded(false);
 			gridSlider.disabled = false;
 			gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 			hideRemoveButton();
 			revealAddButton();
+		}
+		removeGrid = function(){
+			removeGridNoRender();
 			createRender();
 			displayTempGridFromSliderSize();
 		};
@@ -235,7 +244,14 @@ define(function () {
 		   hasGrid:hasGrid,
 		   setGridAdded:setGridAdded,
 		   displayTempGrid:displayTempGridFromSliderSize,
-		   handleGridDistance:handleGridDistance
+		   handleGridDistance:handleGridDistance,
+		   setCurrentSquareSize:setCurrentSquareSize,
+		   getCurrentSquareSize:getCurrentSquareSize,
+		   setSliderSize: setSliderSize,
+		   renderGrid:renderGrid,
+		   getAttributes:getAttributes,
+		   addGridNoRender:addGridNoRender,
+		   removeGridNoRender: removeGridNoRender
         }
 
 			

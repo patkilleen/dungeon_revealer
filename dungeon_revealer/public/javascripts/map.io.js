@@ -12,7 +12,7 @@ define(function () {
 			dimCanvasIndex = 'dimCanvas',
 			gridCanvasIndex = 'gridCanvas',
 			mapImageCanvasIndex = 'mapImageCanvas',
-			hasGridIndex = 'hasGrid',
+			gridIndex = 'grid',
 			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
 			selectionPaneOthersId = 'label_sel2',
@@ -78,8 +78,31 @@ define(function () {
 			obj[gridCanvasIndex] = gridCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
 			obj[zoomerIndex] = zoomer;
-			obj[hasGridIndex] = grid.hasGrid();		
+			obj[gridIndex] = grid.getAttributes();		
 			writeObjectToFile(objectOutputFile,obj);
+		},
+		loadGrid = function(inputData){
+		//	debugger;
+			//load the grid object
+			var newGridAttributes = inputData[gridIndex];
+			
+			var hasGrid = newGridAttributes.addedGrid;
+			
+			grid.removeGridNoRender();
+			
+			if(hasGrid){
+				grid.setSliderSize(newGridAttributes.currentSquareSize);
+				grid.addGridNoRender();
+				//gridSlider.disabled = true;
+				//squareSize = gridSlider.value;
+				//setCurrentSquareSize(squareSize);
+				//addGrid(gridCanvas,squareSize,'black');
+				//setGridAdded(true);
+				//cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				//hideAddButton();
+				//revealRemoveButton();
+			}
+			//grid.renderGrid();
 		},
 		onFileRead = function(inputData){//called when file loaded
 			
@@ -95,10 +118,7 @@ define(function () {
 			obj.index = labelMapIndex;
 			loadLabelMap(inputData,obj);
 			
-			//load the grid object
-			var hasGrid = inputData[hasGridIndex];
-			grid.setGridAdded(hasGrid);
-			
+			loadGrid(inputData);
 			
 			obj = new Object();
 			obj.canvas = mapImageCanvas;
