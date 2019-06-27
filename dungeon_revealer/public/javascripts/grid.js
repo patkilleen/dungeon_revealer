@@ -9,6 +9,7 @@ define(function () {
             
         var x1,y1,
 			addedGrid=false,
+			currentSquareSize,
 			cursorCanvas = _cursorCanvas,
 			cursorContext = cursorCanvas.getContext('2d'),
 			gridSlider = document.getElementById("grid_size_input"),
@@ -49,8 +50,27 @@ define(function () {
 					addGrid(_cursorCanvas,squareSize,undefined);
 				}
 			},
+			setCurrentSquareSize = function(squareSize){
+				currentSquareSize = squareSize;
+			},
+			setSliderSize = function(squareSize){
+				gridSlider = squareSize;
+			},
+			getSliderSize = function(){
+				return gridSlider.value;
+			},
+			getCurrentSquareSize = function(){
+				return currentSquareSize;
+			},
 			handleGridDistance = function(x,y){
-				var squareSize = gridSlider.value;
+				
+				var squareSize;
+				if(hasGrid()){
+					squareSize = currentSquareSize;
+				}else{
+					squareSize = gridSlider.value;
+				}
+				
 				
 				
 				var dist = distanceFromLastClick(x,y,squareSize);
@@ -140,19 +160,41 @@ define(function () {
 				return addedGrid;
 			},
 			renderGrid = function (){
-			//enableLoadingScreen();
-			//give chance for loading screen to pop up
-			//setTimeout(function() {
-				squareSize = gridSlider.value
+				gridSlider.disabled = true;
+				squareSize = gridSlider.value;
+				setCurrentSquareSize(squareSize);
 				addGrid(gridCanvas,squareSize,'black');
 				setGridAdded(true);
 				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-				var rmBtn = document.getElementById('btn-rm-grid');
-				rmBtn.style='display: inline-block !important;';
-				this.style='display: none';
+				hideAddButton();
+				revealRemoveButton();
 				createRender();
-				//disableLoadingScreen();
-			//},0);
+			
+		},
+		hideRemoveButton = function(){
+			var rmBtn = document.getElementById('btn-rm-grid');
+			rmBtn.style='display: none';
+		},
+		revealRemoveButton = function(){
+			var rmBtn = document.getElementById('btn-rm-grid');
+			rmBtn.style='display: inline-block !important;';
+		},
+		revealAddButton = function(){
+			var b= document.getElementById('btn-add-grid');
+			b.style='display: inline-block !important;';
+		},
+		hideAddButton = function(){
+			var b = document.getElementById('btn-add-grid');
+			b.style='display: none';
+		},
+		removeGrid = function(){
+			setGridAdded(false);
+			gridSlider.disabled = false;
+			gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+			hideRemoveButton();
+			revealAddButton();
+			createRender();
+			displayTempGridFromSliderSize();
 		};
 
 			
@@ -174,13 +216,7 @@ define(function () {
 			
 			$('#btn-rm-grid').click(function () {
 				
-				setGridAdded(false);
-				gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
-				var addBtn = document.getElementById('btn-add-grid');
-				addBtn.style='display: inline-block !important;';
-				this.style='display: none';
-				createRender();
-				displayTempGridFromSliderSize();
+				removeGrid();
             });
 					
 			//size of grid changed, display the light blue candidate grid?
