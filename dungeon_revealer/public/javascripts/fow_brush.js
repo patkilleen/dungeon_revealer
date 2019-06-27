@@ -19,7 +19,6 @@ define(function () {
             },
             toggle = function () {
                 currentBrushType = (currentBrushType +1) % brushTypes.length;
-               console.log("current brush type: "+currentBrushType);
 				updateContextStrokeStyle();
 				
             },
@@ -69,7 +68,6 @@ define(function () {
 				dimCanvasContext.restore();
 			},
             getPattern = function (brushType) {
-				console.log("burhstype: "+brushType);
                 if (brushType === LIGHT_IX) {
                     darkCanvasContext.globalCompositeOperation = 'destination-out';
 					dimCanvasContext.globalCompositeOperation = 'destination-out';

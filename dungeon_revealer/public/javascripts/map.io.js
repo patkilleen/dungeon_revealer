@@ -45,9 +45,6 @@ define(function () {
 			obj.globalCompositeOperation = 'source-out';
 			var ctx  = canvas.getContext('2d');
 			ctx.save();
-			/*obj.onImageDraw = function(){
-				ctx.restore();
-			}*/
 			//set up the fog of war brush so its ready to draw when loadin fow image
 			//var type = fow_brush.getCurrentBrushTypeEnum();
 			//fow_brush.setBrushType(fow_brush.getDarkIx());
@@ -70,7 +67,6 @@ define(function () {
 			readObjectFromFile(file,onFileRead);
 		},
 		saveAll = function(labelMap){
-			console.log('saving dungeon revealer states');
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
@@ -150,9 +146,6 @@ define(function () {
 				
 			var canvas = userObject.canvas;
 			var index = userObject.index;
-			//var width = userObject.width;
-			//var height = userObject.height;
-			//var onImageDraw = userObject.onImageDraw;
 			var dataUrl = inputData[index];
 
 			var ctx = canvas.getContext('2d');
@@ -163,8 +156,6 @@ define(function () {
 			//now change the drawing type to 'copy' so new image replaces old canvas
 			//see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 			ctx.globalCompostieOperation = userObject.globalCompositeOperation;
-			
-			
 			var img = new Image();
 			img.onload = function() {
 				
@@ -173,14 +164,10 @@ define(function () {
 				
 			};
 			img.src = dataUrl;						
-		
-			//ctx.restore();
 		},
 		
 		zoomerCallback = function(inputData,userObject){
-			
-	//		var zoomer = userObject.zoomer;
-		//	var mapImageCanvas = userObject.mapImageCanvas;
+
 			var index = userObject.index;
 			
 			var newZoomer = inputData[index];
@@ -190,7 +177,6 @@ define(function () {
 
 		},
 		loadLabelMap = function(inputData,userObject){
-			console.log("loading label map")
 			var labelMap = userObject.labelMap;
 			var index = userObject.index;
 			
@@ -199,13 +185,11 @@ define(function () {
 				
 				if(label !== undefined){
 					labelMap[label] = undefined;
-					console.log("removing label "+label)
 				}
 			}
 			
 			var newLabelMap = inputData[index];
-			console.log("loaded labe map:" +JSON.stringify(newLabelMap));
-		//	newLabelMap = JSON.parse(newLabelMap);
+			
 			//delete the ui entries of label
 			var selection = document.getElementById(selectionPanePlayersId);
 
@@ -225,7 +209,7 @@ define(function () {
 				
 				
 				if(label !== undefined){
-					console.log("adding label "+label)
+					
 					var token = newLabelMap[label];
 					var dom_id = (token.brushType === "player") ? selectionPanePlayersId : selectionPaneOthersId;//choose dom based on label type
 					var e = document.getElementById(dom_id);
