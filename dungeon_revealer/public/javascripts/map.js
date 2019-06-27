@@ -111,7 +111,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-				mapSaver.setFowBrush(fowBrush);
+				mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer,fowBrush);
                 
                 createRender();
                 setUpDrawingEvents();
@@ -1751,11 +1751,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		}
 
 		function saveMap(){
-			mapSaver.saveAll(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer);
+			mapSaver.saveAll();
 		}
 		
 		function loadMap(file){
-			mapSaver.loadAll(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer);
+			mapSaver.loadAll(file);
 		}
 		
 		

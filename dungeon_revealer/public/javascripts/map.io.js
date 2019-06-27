@@ -15,17 +15,34 @@ define(function () {
 			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
 			selectionPaneOthersId = 'label_sel2',
-		setFowBrush = function(_fow_brush){
+			width,
+			height,
+			fowCanvas,
+			dimCanvas,
+			indCanvas,
+			gridCanvas,
+			mapImageCanvas,
+			labelMap,
+			zoomer,
+			fow_brush,
+		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas,_labelMap, _zoomer, _fow_brush){
+			width=_width;
+			height=_height;
+			fowCanvas=_fowCanvas;
+			dimCanvas=_dimCanvas;
+			indCanvas=_indCanvas;
+			gridCanvas=_gridCanvas;
+			mapImageCanvas=_mapImageCanvas;
+			labelMap=_labelMap;
+			zoomer=_zoomer;
 			fow_brush = _fow_brush;
 		},
 		
-		createFOWCallbackObject = function(width,height,canvas,canvasIndex,brushType){
+		createFOWCallbackObject = function(canvas,canvasIndex,brushType){
 			 
 			var obj = new Object();
 			obj.canvas = canvas;
 			obj.index = canvasIndex;
-			obj.height = height;
-			obj.width = width;
 			obj.globalCompositeOperation = 'source-out';
 			var ctx  = canvas.getContext('2d');
 			ctx.save();
@@ -49,7 +66,7 @@ define(function () {
 			
 			return obj;
 		}
-		loadAll = function(file,width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap, zoomer){
+		loadAll = function(file){
 		
 		//atm there is a bug, i should have synchronizaiotn, wait for all canvases to load one after another.
 		//other wise they load fine!
@@ -60,17 +77,17 @@ define(function () {
 			var obj = new Object();
 			obj.canvas = mapImageCanvas;
 			obj.index = mapImageCanvasIndex;
-			obj.height = height;
-			obj.width = width;
+			//obj.height = height;
+			//obj.width = width;
 			obj.globalCompositeOperation = 'copy';
 			readObjectFromFile(file,canvasCallback,obj);
 			 
 			//fog of war (dark-light)
-			obj = createFOWCallbackObject(width,height,fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
+			obj = createFOWCallbackObject(fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
 			readObjectFromFile(file,canvasCallback,obj);
 			
 			//fog of war (dim-light)
-			obj = createFOWCallbackObject(width,height,dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
+			obj = createFOWCallbackObject(dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
 			readObjectFromFile(file,canvasCallback,obj);
 			
 			//label map
@@ -81,24 +98,24 @@ define(function () {
 			
 			//zoomer
 			obj = new Object();
-			obj.zoomer =zoomer;
+			//obj.zoomer =zoomer;
 			obj.index = zoomerIndex;
-			obj.mapImageCanvas = mapImageCanvas;
+			//obj.mapImageCanvas = mapImageCanvas;
 			readObjectFromFile(file,zoomerCallback,obj);
 			
 			//label canvas
 			obj = new Object();
 			obj.canvas = indCanvas;
 			obj.index = indCanvasIndex;
-			obj.height = height;
-			obj.width = width;
+			//obj.height = height;
+			//obj.width = width;
 			obj.globalCompositeOperation = 'copy';
 			readObjectFromFile(file,canvasCallback,obj);
 			
 			
 			window.alert("Map Successfully loaded");
 		},
-		saveAll = function(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,labelMap,zoomer){
+		saveAll = function(){
 			console.log('saving dungeon revealer states');
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
@@ -109,6 +126,9 @@ define(function () {
 			obj[zoomerIndex] = zoomer;
 			writeObjectToFile(objectOutputFile,obj);
 		},
+	//	onFileRead = function(inputData,userObj){
+			
+		//},
 		writeObjectToFile = function(outputFilePath,obj){
 			saveByteArray([new Blob([JSON.stringify(obj)])],outputFilePath);
 		},
@@ -128,8 +148,8 @@ define(function () {
 				
 			var canvas = userObject.canvas;
 			var index = userObject.index;
-			var width = userObject.width;
-			var height = userObject.height;
+			//var width = userObject.width;
+			//var height = userObject.height;
 			var onImageDraw = userObject.onImageDraw;
 			var dataUrl = inputData[index];
 
@@ -158,7 +178,7 @@ define(function () {
 		
 		zoomerCallback = function(inputData,userObject){
 			
-			var zoomer = userObject.zoomer;
+	//		var zoomer = userObject.zoomer;
 		//	var mapImageCanvas = userObject.mapImageCanvas;
 			var index = userObject.index;
 			
@@ -170,7 +190,7 @@ define(function () {
 		},
 		labelsCallback = function(inputData,userObject){
 			
-			var labelMap = userObject.labelMap;
+			//var labelMap = userObject.labelMap;
 			var index = userObject.index;
 			
 			//clear the label map
@@ -261,7 +281,7 @@ define(function () {
 		return {
 				loadAll: loadAll,
 				saveAll: saveAll,
-				setFowBrush: setFowBrush
+				init: init
 		}
     };
 });
