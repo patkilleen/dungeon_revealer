@@ -111,7 +111,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-				mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,zoomer,fowBrush);
+				mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,zoomer,fowBrush,gridBrush);
                 
                 createRender();
                 setUpDrawingEvents();

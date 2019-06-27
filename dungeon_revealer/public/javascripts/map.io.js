@@ -12,6 +12,7 @@ define(function () {
 			dimCanvasIndex = 'dimCanvas',
 			gridCanvasIndex = 'gridCanvas',
 			mapImageCanvasIndex = 'mapImageCanvas',
+			hasGridIndex = 'hasGrid',
 			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
 			selectionPaneOthersId = 'label_sel2',
@@ -25,7 +26,8 @@ define(function () {
 			zoomer,
 			labelMap,
 			fow_brush,
-		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas, _zoomer, _fow_brush){
+			grid,
+		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas, _zoomer, _fow_brush,_grid){
 			width=_width;
 			height=_height;
 			fowCanvas=_fowCanvas;
@@ -35,6 +37,7 @@ define(function () {
 			mapImageCanvas=_mapImageCanvas;
 			zoomer=_zoomer;
 			fow_brush = _fow_brush;
+			grid = _grid;
 		},
 		
 		createFOWCallbackObject = function(canvas,canvasIndex,brushType){
@@ -72,8 +75,10 @@ define(function () {
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
 			obj[fowCanvasIndex] = fowCanvas.toDataURL('image/png');
 			obj[dimCanvasIndex] = dimCanvas.toDataURL('image/png');
+			obj[gridCanvasIndex] = gridCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
 			obj[zoomerIndex] = zoomer;
+			obj[hasGridIndex] = grid.hasGrid();		
 			writeObjectToFile(objectOutputFile,obj);
 		},
 		onFileRead = function(inputData){//called when file loaded
@@ -89,6 +94,11 @@ define(function () {
 			obj.labelMap =labelMap;
 			obj.index = labelMapIndex;
 			loadLabelMap(inputData,obj);
+			
+			//load the grid object
+			var hasGrid = inputData[hasGridIndex];
+			grid.setGridAdded(hasGrid);
+			
 			
 			obj = new Object();
 			obj.canvas = mapImageCanvas;
@@ -121,8 +131,15 @@ define(function () {
 						obj.globalCompositeOperation = 'copy';
 						canvasCallback(inputData,obj, function(){
 							ctx.restore();
+							obj = new Object();
+							obj.canvas = gridCanvas;
+							obj.index = gridCanvasIndex;
+							obj.globalCompositeOperation = 'copy';
+							canvasCallback(inputData,obj, function(){
+								ctx.restore();
 
-							window.alert("Map Successfully loaded");
+								window.alert("Map Successfully loaded");
+							});
 						});//end label canvas callback
 					});//end of dim brush
 				});//end dark fog of war canvas callback
