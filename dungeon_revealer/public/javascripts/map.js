@@ -1073,7 +1073,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 						btns.style='display: inline-block !important;';
 						btns = document.getElementById('label-btns');
 						btns.style='display: none';
-						displayTempGrid();
+						gridBrush.displayTempGrid();
 					}else{
 						btns = document.getElementById('label-btns');
 						btns.style='display: inline-block !important;';
