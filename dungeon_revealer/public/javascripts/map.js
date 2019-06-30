@@ -124,16 +124,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		function labelVisibilityChange(){
 			
 		}
-		
-		function loadImage(){
-			//mapImage = new Image();
-			mapImage.onload = function(){
-				//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
-				copyCanvas(mapImageContext, createImageCanvas(mapImage));
-			};
-            mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
-            mapImage.src = imgUrl;
-		}
         // TODO: account for multiple containers
         function getContainer() {
             var container = document.getElementById('canvasContainer') || document.createElement('div');
@@ -1450,7 +1440,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			
 			$('#btn-fix-map').click(function() {
 				console.log("reload map.")
-				loadImage();
+				//mapImage = new Image();
+				mapImage.onload = function(){
+					//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
+					copyCanvas(mapImageContext, createImageCanvas(mapImage));
+					zoomer.redrawHistory();
+				};
+				mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
+				mapImage.src = imgUrl;
+			
 			});
 			function findLabelIndex(label,dom_id){
 				
