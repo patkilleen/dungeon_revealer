@@ -22,7 +22,6 @@ require(['common'], function(common) {
                 });
                 
                 this.on('complete', function (file) {
-					debugger;
                     console.log('complete');
                     this.removeFile(file);
                     checkForMapUpload();
@@ -42,7 +41,7 @@ require(['common'], function(common) {
         checkForMapUpload();
         
 		function enableLoadingScreen(){
-				document.getElementById("loading_screen").setAttribute('class',"modal");
+			document.getElementById("loading_screen").setAttribute('class',"modal");
 		}
 			
 		function disableLoadingScreen(){
@@ -121,6 +120,9 @@ require(['common'], function(common) {
 		 });
 		 
 		 $('#btn-choose-file').change(function(e) {
+			  alert("Make sure the map save file you are choosing is a save file for the currently loaded map.\n"+
+			 "Otherwise, load the map first using the 'New Map' button, and then load your saved map file.");
+			 
 			enableLoadingScreen();
 	
 			var file = e.target.files[0];
