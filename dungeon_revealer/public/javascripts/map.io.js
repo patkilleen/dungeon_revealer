@@ -77,7 +77,7 @@ define(function () {
 			obj[dimCanvasIndex] = dimCanvas.toDataURL('image/png');
 			obj[gridCanvasIndex] = gridCanvas.toDataURL('image/png');
 			obj[labelMapIndex] = labelMap;
-			obj[zoomerIndex] = zoomer;
+			obj[zoomerIndex] = zoomer.getAttributes();
 			obj[gridIndex] = grid.getAttributes();		
 			writeObjectToFile(objectOutputFile,obj);
 		},
@@ -139,11 +139,8 @@ define(function () {
 						ctx = dimCanvas.getContext('2d');
 						ctx.restore();
 							
-							//zoomer
-					/*		obj = new Object();
-							obj.index = zoomerIndex;
-							zoomerCallback(inputData,obj);
-						*/	
+						
+							
 						//label canvas
 						obj = new Object();
 						obj.canvas = indCanvas;
@@ -158,6 +155,14 @@ define(function () {
 							canvasCallback(inputData,obj, function(){
 								ctx.restore();
 
+								//zoomer
+								ctx.save()
+									obj = new Object();
+									obj.index = zoomerIndex;
+									console.log("calling zoomer callback");
+									
+									zoomerCallback(inputData,obj);
+									ctx.restore();
 								window.alert("Map Successfully loaded");
 							});
 						});//end label canvas callback
@@ -207,10 +212,12 @@ define(function () {
 
 			var index = userObject.index;
 			
-			var newZoomer = inputData[index];
+			var newZoomerAttributes = inputData[index];
 			
 			//copy all attributes of zoomer in file to the current map zoomer
-			zoomer.copy(newZoomer);
+			zoomer.setAttributes(newZoomerAttributes);
+			
+			zoomer.redrawHistory();
 
 		},
 		loadLabelMap = function(inputData,userObject){

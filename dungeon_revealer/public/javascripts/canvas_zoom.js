@@ -20,6 +20,7 @@ define(function () {
 			scaleFactor=1.05,
 			dragFactor=0.3,
 			panLocked = false,
+			scaleHistory = [],
 			copy = function(zoomer){
 				//initValues();	
 				//image = zoomer.img,
@@ -32,7 +33,35 @@ define(function () {
 				dragged= zoomer.dragged;
 				scaleFactor= zoomer.scaleFactor;
 				panLocked= zoomer.panLocked;
-			}
+				scaleHistory = zoomer.scaleHistory;
+			},
+			getAttributes = function(){
+				return {
+					lastX :lastX,
+					lastY: lastY,
+					defaultWidth: defaultWidth,
+					defaultHeight:defaultHeight,
+					dragStartX: dragStartX,
+					dragStartY: dragStartY,
+					dragged: dragged,
+					scaleFactor: scaleFactor,
+					panLocked: panLocked,
+					scaleHistory : scaleHistory
+				}
+			},
+			
+			setAttributes = function(attributes){
+				lastX = attributes.lastX;
+				lastY= attributes.lastY;
+				defaultWidth= attributes.defaultWidth;
+				defaultHeight= attributes.defaultHeight;
+				dragStartX= attributes.dragStartX;
+				dragStartY= attributes.dragStartY;
+				dragged= attributes.dragged;
+				scaleFactor= attributes.scaleFactor;
+				panLocked= attributes.panLocked;
+				scaleHistory = attributes.scaleHistory;
+			},
 			redraw = function(){
 			// Clear the entire canvas
 
@@ -99,6 +128,7 @@ define(function () {
 			},
 			zoom = function(clicks){
 				var factor = Math.pow(scaleFactor,clicks);
+				scaleHistory.push(factor);
 				ctx.scale(factor,factor);
 				redraw();
 			},
@@ -115,10 +145,26 @@ define(function () {
 			},	
 
 			resetMapImage = function(){
+		//		scaleHistory=[];
 				initValues();
 				ctx.clearRect(0,0,canvas.width,canvas.height);
 				ctx.resetTransform();
 				ctx.drawImage(image,0,0);
+			},
+			
+			redrawHistory = function(){
+				//debugger;
+				console.log(JSON.stringify(scaleHistory));
+				
+				var i = 0;
+				
+				while(i < scaleHistory.length){
+					var factor = scaleHistory[i];
+					console.log("scaling: "+factor);
+					ctx.scale(factor,factor);
+					i++;
+				}
+				redraw();
 			}
 					
 			return {
@@ -127,7 +173,10 @@ define(function () {
 				resetMapImage: resetMapImage,
 				lockPan: lockPan,
 				unlockPan: unlockPan,
-				copy: copy
+				copy: copy,
+				redrawHistory: redrawHistory,
+				getAttributes:getAttributes,
+				setAttributes:setAttributes
 			}
     };
 });
