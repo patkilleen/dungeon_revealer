@@ -2,7 +2,6 @@ define(function () {
     console.log('map.io.js starting');
 
     return function () {
-        console.log('creating map io object');
 
 		var objectOutputFile = 'dungeon-revealer.map',
 			fow_brush,
@@ -117,8 +116,6 @@ define(function () {
 			});
 		},
 		onFileRead = function(inputData){//called when file loaded
-			
-			console.log('loading map');
 			var ctx;
 			//map image
 			var obj = new Object();
@@ -159,22 +156,23 @@ define(function () {
 						obj.index = indCanvasIndex;
 						obj.globalCompositeOperation = 'copy';
 						canvasCallback(inputData,obj, function(){
+							ctx = indCanvas.getContext('2d');
 							ctx.restore();
 							obj = new Object();
 							obj.canvas = gridCanvas;
 							obj.index = gridCanvasIndex;
 							obj.globalCompositeOperation = 'copy';
 							canvasCallback(inputData,obj, function(){
+								ctx = gridCanvas.getContext('2d');
 								ctx.restore();
 
 								//zoomer
-								ctx.save()
+								//ctx.save()
 									obj = new Object();
 									obj.index = zoomerIndex;
-									console.log("calling zoomer callback");
 									
 									zoomerCallback(inputData,obj);
-									ctx.restore();
+									//ctx.restore();
 									//disable loading screen
 									document.getElementById("loading_screen").removeAttribute('class');
 							});
