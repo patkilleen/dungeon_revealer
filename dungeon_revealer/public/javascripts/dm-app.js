@@ -132,7 +132,7 @@ require(['common'], function(common) {
 			 try{			 
 				var mapIO  = dmMap.createMapIO();
 				mapIO.loadAll(file);
-	
+				this.value="";
 			 }catch(err){
 				 window.alert("Failed to load map due to "+err);
 			 }
