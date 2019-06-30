@@ -21,6 +21,7 @@ define(function () {
 			dragFactor=0.3,
 			panLocked = false,
 			scaleHistory = [],
+			translateHistory = [],
 			copy = function(zoomer){
 				//initValues();	
 				//image = zoomer.img,
@@ -34,6 +35,7 @@ define(function () {
 				scaleFactor= zoomer.scaleFactor;
 				panLocked= zoomer.panLocked;
 				scaleHistory = zoomer.scaleHistory;
+				translateHistory = zoomer.translateHistory;
 			},
 			getAttributes = function(){
 				return {
@@ -46,7 +48,8 @@ define(function () {
 					dragged: dragged,
 					scaleFactor: scaleFactor,
 					panLocked: panLocked,
-					scaleHistory : scaleHistory
+					scaleHistory : scaleHistory,
+					translateHistory : translateHistory
 				}
 			},
 			
@@ -61,6 +64,7 @@ define(function () {
 				scaleFactor= attributes.scaleFactor;
 				panLocked= attributes.panLocked;
 				scaleHistory = attributes.scaleHistory;
+				translateHistory = attributes.translateHistory;
 			},
 			redraw = function(){
 			// Clear the entire canvas
@@ -107,7 +111,10 @@ define(function () {
 						dragged = true;
 						//only draw if dragging
 						if ((dragStartX != null) || (dragStartY != null)){
-							ctx.translate((dragFactor)*(lastX-dragStartX),dragFactor*(lastY-dragStartY));
+							var x = (dragFactor)*(lastX-dragStartX);
+							var y =dragFactor*(lastY-dragStartY);
+							ctx.translate(x,y);
+							translateHistory.push({x:x,y:y});
 							redraw();
 						}
 					},false);
@@ -154,14 +161,21 @@ define(function () {
 			
 			redrawHistory = function(){
 				//debugger;
-				console.log(JSON.stringify(scaleHistory));
+			//	console.log(JSON.stringify(scaleHistory));
 				
 				var i = 0;
 				
 				while(i < scaleHistory.length){
 					var factor = scaleHistory[i];
-					console.log("scaling: "+factor);
+					//console.log("scaling: "+factor);
 					ctx.scale(factor,factor);
+					i++;
+				}
+				
+				var  i = 0;
+				while( i < translateHistory.length){
+					var pt = translateHistory[i];	
+					ctx.translate(pt.x,pt.y);
 					i++;
 				}
 				redraw();
