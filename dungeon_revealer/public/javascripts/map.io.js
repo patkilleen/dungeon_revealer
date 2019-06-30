@@ -108,6 +108,14 @@ define(function () {
 			}
 			//grid.renderGrid();
 		},
+		loadMapImage = function(file, callback){
+			
+			readObjectFromFile(file, function(inputData){
+				
+				var imageURLData = inputData[mapImageIndex];
+				callback(imageURLData);
+			});
+		},
 		onFileRead = function(inputData){//called when file loaded
 			
 			console.log('loading map');
@@ -317,7 +325,8 @@ define(function () {
 		return {
 				loadAll: loadAll,
 				saveAll: saveAll,
-				init: init
+				init: init,
+				loadMapImage: loadMapImage
 		}
     };
 });

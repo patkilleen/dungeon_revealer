@@ -121,6 +121,17 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             mapImage.src = imgUrl;
         }
 
+		function setMapImageData(newImageData, callback){
+			
+			mapImage.onload = function () {
+               
+                dimensions = getOptimalDimensions(mapImage.width, mapImage.height, settings.maxWidth, settings.maxHeight);
+                width = dimensions.width;
+                height = dimensions.height;
+				callback();
+			  }
+			mapImage.src = newImageData;
+		}
 		function labelVisibilityChange(){
 			
 		}
@@ -1765,7 +1776,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
 			getZoomer: getZoomer,
-			createMapIO: createMapIO
+			createMapIO: createMapIO,
+			setMapImageData: setMapImageData
         };
     }
 
