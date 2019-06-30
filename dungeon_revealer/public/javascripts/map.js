@@ -996,7 +996,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.restore();
 			}
             indCanvas.draw = function (points) {
-            };
+            },
 			updateMsg = function (){
 				var msgdom = document.getElementById('messages');
 				if(currBrush == fowBrush){

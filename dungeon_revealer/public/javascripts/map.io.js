@@ -140,14 +140,19 @@ define(function () {
 				//fog of war (dark-light)
 				obj = createFOWCallbackObject(fowCanvas,fowCanvasIndex,fow_brush.getDarkIx());
 				canvasCallback(inputData,obj, function(){
+					
 					ctx = fowCanvas.getContext('2d');
 					ctx.restore();
+					//2nd restore to bring back context from changes done in createFOWCallbackObject
+					ctx.restore();
+					
 					//fog of war (dim-light)
 					obj = createFOWCallbackObject(dimCanvas,dimCanvasIndex,fow_brush.getDimIx());
 					canvasCallback(inputData,obj,function (){
 						ctx = dimCanvas.getContext('2d');
 						ctx.restore();
-							
+						//2nd restore to bring back context from changes done in createFOWCallbackObject
+						ctx.restore();
 						
 							
 						//label canvas
@@ -166,15 +171,13 @@ define(function () {
 								ctx = gridCanvas.getContext('2d');
 								ctx.restore();
 
-								//zoomer
-								//ctx.save()
-									obj = new Object();
-									obj.index = zoomerIndex;
+								obj = new Object();
+								obj.index = zoomerIndex;
 									
-									zoomerCallback(inputData,obj);
-									//ctx.restore();
-									//disable loading screen
-									document.getElementById("loading_screen").removeAttribute('class');
+								zoomerCallback(inputData,obj);
+									
+								//disable loading screen
+								document.getElementById("loading_screen").removeAttribute('class');
 							});
 						});//end label canvas callback
 					});//end of dim brush
