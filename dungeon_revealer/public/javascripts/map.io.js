@@ -12,6 +12,7 @@ define(function () {
 			dimCanvasIndex = 'dimCanvas',
 			gridCanvasIndex = 'gridCanvas',
 			mapImageCanvasIndex = 'mapImageCanvas',
+			mapImageIndex = 'mapImage',
 			gridIndex = 'grid',
 			zoomerIndex = 'zoomer',
 			selectionPanePlayersId = 'label_sel',
@@ -27,7 +28,8 @@ define(function () {
 			labelMap,
 			fow_brush,
 			grid,
-		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas, _zoomer, _fow_brush,_grid){
+			mapImage,
+		init = function(_width,_height,_fowCanvas,_dimCanvas,_indCanvas,_gridCanvas,_mapImageCanvas, _zoomer, _fow_brush,_grid,_mapImage,_labelMap){
 			width=_width;
 			height=_height;
 			fowCanvas=_fowCanvas;
@@ -38,6 +40,8 @@ define(function () {
 			zoomer=_zoomer;
 			fow_brush = _fow_brush;
 			grid = _grid;
+			mapImage=_mapImage;
+			labelMap=_labelMap;
 		},
 		
 		createFOWCallbackObject = function(canvas,canvasIndex,brushType){
@@ -65,17 +69,17 @@ define(function () {
 			
 			return obj;
 		}
-		loadAll = function(file,_labelMap){
-			labelMap = _labelMap;
+		loadAll = function(file){
 			readObjectFromFile(file,onFileRead);
 		},
-		saveAll = function(labelMap){
+		saveAll = function(){
 			var obj = new Object();
 			obj[indCanvasIndex] = indCanvas.toDataURL('image/png');
 			obj[mapImageCanvasIndex] = mapImageCanvas.toDataURL('image/png');
 			obj[fowCanvasIndex] = fowCanvas.toDataURL('image/png');
 			obj[dimCanvasIndex] = dimCanvas.toDataURL('image/png');
 			obj[gridCanvasIndex] = gridCanvas.toDataURL('image/png');
+			obj[mapImageIndex] = mapImage.src;
 			obj[labelMapIndex] = labelMap;
 			obj[zoomerIndex] = zoomer.getAttributes();
 			obj[gridIndex] = grid.getAttributes();		

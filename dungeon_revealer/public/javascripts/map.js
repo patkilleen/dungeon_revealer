@@ -35,8 +35,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             fogRGB = settings.fogRGB,
 			playerRGB= settings.playerRGB,
 			enemyRGB = settings.enemyRGB,
-			targetRGB = settings.targetRGB,
-			mapSaver = mapIO();
+			targetRGB = settings.targetRGB;
 			
 			function getLineWidth(){
 				var slider = document.getElementById("size_input");
@@ -111,7 +110,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.strokeStyle = indBrush.getCurrent();
 				currBrush=fowBrush;
 				currContext=fowContext;
-				mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,zoomer,fowBrush,gridBrush);
                 
                 createRender();
                 setUpDrawingEvents();
@@ -1749,15 +1747,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		function getZoomer(){
 			return zoomer;
 		}
-
-		function saveMap(){
-			mapSaver.saveAll(labelMap);
-		}
 		
-		function loadMap(file){
-			mapSaver.loadAll(file,labelMap);
+		function createMapIO(){
+			var mapSaver = mapIO();
+			mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,zoomer,fowBrush,gridBrush,mapImage,labelMap);
+			return mapSaver;
 		}
-		
 		
         return {
             create: create,
@@ -1770,8 +1765,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
 			getZoomer: getZoomer,
-			loadMap: loadMap,
-			saveMap: saveMap
+			createMapIO: createMapIO
         };
     }
 

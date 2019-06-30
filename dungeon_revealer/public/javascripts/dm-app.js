@@ -109,7 +109,10 @@ require(['common'], function(common) {
         });
 		
 		 $('#btn-save-map').click(function() {
-			 dmMap.saveMap();
+			
+			var mapIO  = dmMap.createMapIO();
+			mapIO.saveAll();
+		
 		 });
 		 
 		 $('#btn-load-map').click(function() {
@@ -126,7 +129,8 @@ require(['common'], function(common) {
 			 }
 			 
 			 try{
-				dmMap.loadMap(file);
+				var mapIO  = dmMap.createMapIO();
+				mapIO.loadAll(file);
 			 }catch(err){
 				 window.alert("Failed to load map due to "+err);
 			 }
