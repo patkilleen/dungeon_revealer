@@ -123,13 +123,30 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 
 		function setMapImageData(newImageData, callback){
 			
+			imgUrl = newImageData;
 			mapImage.onload = function () {
                
                 dimensions = getOptimalDimensions(mapImage.width, mapImage.height, settings.maxWidth, settings.maxHeight);
                 width = dimensions.width;
                 height = dimensions.height;
+				
+				fowCanvas.width = width;
+				fowCanvas.height = height;
+				dimCanvas.width = width;
+				dimCanvas.height = height;
+				indCanvas.width = width;
+				indCanvas.height = height;
+				gridCanvas.width = width;
+				gridCanvas.height = height;
+				cursorCanvas.width = width;
+				cursorCanvas.height = height;
+				mapImageCanvas.width = width;
+				mapImageCanvas.height = height;
+				
+				copyCanvas(mapImageContext, createImageCanvas(mapImage));
+				
 				callback();
-			  }
+			 }
 			mapImage.src = newImageData;
 		}
 		function labelVisibilityChange(){

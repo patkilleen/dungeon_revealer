@@ -22,6 +22,7 @@ require(['common'], function(common) {
                 });
                 
                 this.on('complete', function (file) {
+					debugger;
                     console.log('complete');
                     this.removeFile(file);
                     checkForMapUpload();
@@ -128,20 +129,10 @@ require(['common'], function(common) {
 				 return;
 			 }
 			 
-			 try{
-				 var mapIOBaseImage = mapIO();
-				 
-				 	//loadedNewMap=true
-				 mapIOBaseImage.loadMapImage(file,function (imageURLData){
-					 
-					 dmMap.setMapImageData(imageURLData,function(){
-						  //  dmMap.fitMapToWindow();
-
-							var mapIO  = dmMap.createMapIO();
-							mapIO.loadAll(file);
-					 });
-				 });
-				
+			 try{			 
+				var mapIO  = dmMap.createMapIO();
+				mapIO.loadAll(file);
+	
 			 }catch(err){
 				 window.alert("Failed to load map due to "+err);
 			 }

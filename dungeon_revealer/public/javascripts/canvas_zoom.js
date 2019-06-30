@@ -164,7 +164,7 @@ define(function () {
 			//	console.log(JSON.stringify(scaleHistory));
 				
 				var i = 0;
-				
+				ctx.save();
 				while(i < scaleHistory.length){
 					var factor = scaleHistory[i];
 					//console.log("scaling: "+factor);
@@ -179,6 +179,7 @@ define(function () {
 					i++;
 				}
 				redraw();
+				ctx.restore();
 			}
 					
 			return {
