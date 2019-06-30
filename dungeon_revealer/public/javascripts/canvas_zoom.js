@@ -160,14 +160,11 @@ define(function () {
 			},
 			
 			redrawHistory = function(){
-				//debugger;
-			//	console.log(JSON.stringify(scaleHistory));
-				
+				ctx.resetTransform();
 				var i = 0;
-				ctx.save();
+			
 				while(i < scaleHistory.length){
 					var factor = scaleHistory[i];
-					//console.log("scaling: "+factor);
 					ctx.scale(factor,factor);
 					i++;
 				}
@@ -179,7 +176,6 @@ define(function () {
 					i++;
 				}
 				redraw();
-				ctx.restore();
 			}
 					
 			return {
