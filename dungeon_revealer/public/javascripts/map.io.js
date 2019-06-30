@@ -4,7 +4,7 @@ define(function () {
     return function () {
         console.log('creating map io object');
 
-		var objectOutputFile = 'dungeon-revealer.json',
+		var objectOutputFile = 'dungeon-revealer.map',
 			fow_brush,
 			indCanvasIndex = 'indCanvas',
 			labelMapIndex = 'labelMap',
