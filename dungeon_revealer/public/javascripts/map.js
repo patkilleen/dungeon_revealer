@@ -1029,21 +1029,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			});
 			
             $('#btn-toggle-fow-brush').click(function () {
-				var toggleButton = this;
-				//fog of war canvas?
-				if(currBrush == fowBrush){
-					fowBrush.toggle();
-				}else if(currBrush == indBrush){//label canvas?
-					indBrush.toggle();
-					//are we on grid brush?
-					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
-						gridBrush.displayTempGrid();
-					}else{//remove the grid display 
-						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-					}
-				}
-               updateMsg();
+				toggleBrush();
             });
+			
+		
 			
 			$('#btn-visibility-brush').click(function (){
 				
@@ -1062,72 +1051,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				repaintAllLabels();
 			});
 			$('#btn-toggle-canvas').click(function() {
-				
-				//swapping to label/indicator canvas?
-				if(currBrush == fowBrush){
-					
-					//we on grid brush?
-					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
-						
-						var btns = document.getElementById('grid-btns');
-						btns.style='display: inline-block !important;';
-						btns = document.getElementById('label-btns');
-						btns.style='display: none';
-						gridBrush.displayTempGrid();
-					}else{
-						btns = document.getElementById('label-btns');
-						btns.style='display: inline-block !important;';
-					}
-					
-					//swap to indicator canvas
-					currBrush = indBrush;
-					currContext = indContext;
-					
-					//show the label canvas inputs
-					var dom = document.getElementById('btn-dark-all');
-					dom.style='display: none';
-					dom = document.getElementById('btn-dim-all');
-					dom.style='display: none';
-					dom = document.getElementById('labelText');
-					dom.style='display: inline-block !important;';
-					dom = document.getElementById('labelTextInput');
-					dom.style='display: inline-block !important;';
-					dom = document.getElementById('label_mng_container');
-					dom.style='display: block !important;';
-					
-					indBrush.currentBrushType=indBrush.brushTypes[0];
-					
-				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
-
-					//hide the grid inputs
-					var btns = document.getElementById('grid-btns');
-					btns.style='display: none';
-					btns = document.getElementById('label-btns');
-					btns.style='display: inline-block !important;';
-					
-					currBrush = fowBrush;
-					currContext=fowContext;
-					
-					//hide the label inputs
-					var dom = document.getElementById('btn-dark-all');
-					dom.style='';
-					dom = document.getElementById('btn-dim-all');
-					dom.style='';
-					dom = document.getElementById('labelText');
-					dom.style='display: none !important;';
-					dom = document.getElementById('labelTextInput');
-					dom.style='display: none !important;';
-					dom = document.getElementById('label_mng_container');
-					dom.style='display: none !important;';
-					
-					fowBrush.currentBrushType=fowBrush.brushTypes[0];
-					 
-				}
-				updateMsg();
+				toggleCanvas();
 			});
 			
-			
-		
 			
 			//set up ctrl z undo
 			window.onkeyup = function(e) {
@@ -1470,6 +1396,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			}
 			
 			
+				
+			
 			
 			function removeLabelFromSelect(label,dom_id){
 				if((label === undefined) || (dom_id === undefined)){
@@ -1733,6 +1661,90 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             $('#render').remove();
         }
 
+		function toggleCanvas(){
+				
+				//swapping to label/indicator canvas?
+				if(currBrush == fowBrush){
+					
+					//we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						
+						var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';
+						btns = document.getElementById('label-btns');
+						btns.style='display: none';
+						gridBrush.displayTempGrid();
+					}else{
+						btns = document.getElementById('label-btns');
+						btns.style='display: inline-block !important;';
+					}
+					
+					//swap to indicator canvas
+					currBrush = indBrush;
+					currContext = indContext;
+					
+					//show the label canvas inputs
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='display: none';
+					dom = document.getElementById('btn-dim-all');
+					dom.style='display: none';
+					dom = document.getElementById('labelText');
+					dom.style='display: inline-block !important;';
+					dom = document.getElementById('labelTextInput');
+					dom.style='display: inline-block !important;';
+					dom = document.getElementById('label_mng_container');
+					dom.style='display: block !important;';
+					
+					indBrush.currentBrushType=indBrush.brushTypes[0];
+					
+				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
+
+					//hide the grid inputs
+					var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+					btns = document.getElementById('label-btns');
+					btns.style='display: inline-block !important;';
+					
+					currBrush = fowBrush;
+					currContext=fowContext;
+					
+					//hide the label inputs
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='';
+					dom = document.getElementById('btn-dim-all');
+					dom.style='';
+					dom = document.getElementById('labelText');
+					dom.style='display: none !important;';
+					dom = document.getElementById('labelTextInput');
+					dom.style='display: none !important;';
+					dom = document.getElementById('label_mng_container');
+					dom.style='display: none !important;';
+					
+					fowBrush.currentBrushType=fowBrush.brushTypes[0];
+					 
+				}
+				updateMsg();
+			}
+			
+		
+		
+		function toggleBrush(){
+				var toggleButton = document.getElementById('btn-toggle-fow-brush');
+				//fog of war canvas?
+				if(currBrush == fowBrush){
+					fowBrush.toggle();
+				}else if(currBrush == indBrush){//label canvas?
+					indBrush.toggle();
+					//are we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						gridBrush.displayTempGrid();
+					}else{//remove the grid display 
+						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					}
+				}
+               updateMsg();
+			}
+			
         function createPlayerMapImage(bottomCanvas, topCanvas) {
 			var mergedImage = toImage();
 
@@ -1752,6 +1764,29 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			return mapSaver;
 		}
 		
+		function loadMap(file){
+			
+			//are we on the grid brush? get off it, cause when on grid brush, labels to load
+			//for saome reason
+			if(indBrush.getCurrentBrush() === "grid"){
+				
+				//are we on the fog of war canvas? swap to labels' canvas
+				if(currBrush == fowBrush){
+					toggleCanvas();
+				}
+				//swap off grid brush
+				toggleBrush();
+			}
+			
+			var mapIO  = createMapIO();
+			mapIO.loadAll(file);
+		}
+		
+		function saveMap(){
+			var mapIO  = createMapIO();
+			mapIO.saveAll();
+		}
+		
         return {
             create: create,
 			createRender2: createRender2,
@@ -1763,7 +1798,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
 			getZoomer: getZoomer,
-			createMapIO: createMapIO
+			loadMap:loadMap,
+			saveMap: saveMap
         };
     }
 

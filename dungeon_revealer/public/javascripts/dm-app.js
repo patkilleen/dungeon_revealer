@@ -2,7 +2,7 @@ require(['common'], function(common) {
     console.log('dm-app.js running');
 
     //refactor this later
-    require(['map', 'jquery', 'dropzone', 'settings', 'map.io'], function(map, jquery, Dropzone, settings, mapIO) {
+    require(['map', 'jquery', 'dropzone', 'settings'], function(map, jquery, Dropzone, settings) {
         var $ = jquery,
             mapWrapper = document.getElementById('map-wrapper'),
 			loadedNewMap = false,
@@ -110,8 +110,9 @@ require(['common'], function(common) {
 		
 		 $('#btn-save-map').click(function() {
 			
-			var mapIO  = dmMap.createMapIO();
-			mapIO.saveAll();
+			//var mapIO  = dmMap.createMapIO();
+			//mapIO.saveAll();
+			dmMap.saveMap();
 		
 		 });
 		 
@@ -133,11 +134,15 @@ require(['common'], function(common) {
 				 return;
 			 }
 			 try{			 
-				var mapIO  = dmMap.createMapIO();
-				enableLoadingScreen();
-				mapIO.loadAll(file);
 				
+				//var mapIO  = dmMap.createMapIO();
+				dmMap.loadMap(file);
+				enableLoadingScreen();
+				//mapIO.loadAll(file);
+				
+				//make sure to reset the chosen file, to allow to reload same file
 				this.value="";
+
 			 }catch(err){
 				 disableLoadingScreen();
 				 window.alert("Failed to load map due to "+err);
