@@ -175,7 +175,8 @@ define(function () {
 									
 									zoomerCallback(inputData,obj);
 									ctx.restore();
-								window.alert("Map Successfully loaded");
+									//disable loading screen
+									document.getElementById("loading_screen").removeAttribute('class');
 							});
 						});//end label canvas callback
 					});//end of dim brush

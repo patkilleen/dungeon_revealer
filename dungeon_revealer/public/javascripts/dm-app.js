@@ -121,22 +121,27 @@ require(['common'], function(common) {
 		 });
 		 
 		 $('#btn-choose-file').change(function(e) {
-			 var file = e.target.files[0];
+			enableLoadingScreen();
+	
+			var file = e.target.files[0];
 			 if(!file){
 				 window.alert("Failed to load map");
 				 console.log("failed to read file");
 				  document.getElementById('btn-choose-file').style = 'display: none;';
 				 return;
 			 }
-			 
 			 try{			 
 				var mapIO  = dmMap.createMapIO();
+				enableLoadingScreen();
 				mapIO.loadAll(file);
+				
 				this.value="";
 			 }catch(err){
+				 disableLoadingScreen();
 				 window.alert("Failed to load map due to "+err);
 			 }
 			 document.getElementById('btn-choose-file').style = 'display: none;';
+			
 			 return false;
 		 });
 		 
