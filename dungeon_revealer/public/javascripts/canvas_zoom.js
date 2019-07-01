@@ -9,6 +9,8 @@ define(function () {
         }
 	 
         var image = img,
+			ZOOM_ACTION = 0,
+			PAN_ACTION=1,
 			ctx = canvas.getContext('2d'),
 			lastX=canvas.width/2,
 			lastY=canvas.height/2,
@@ -20,8 +22,7 @@ define(function () {
 			scaleFactor=1.05,
 			dragFactor=0.3,
 			panLocked = false,
-			scaleHistory = [],
-			translateHistory = [],
+			actionHistory = [],
 			copy = function(zoomer){
 				//initValues();	
 				//image = zoomer.img,
@@ -34,8 +35,7 @@ define(function () {
 				dragged= zoomer.dragged;
 				scaleFactor= zoomer.scaleFactor;
 				panLocked= zoomer.panLocked;
-				scaleHistory = zoomer.scaleHistory;
-				translateHistory = zoomer.translateHistory;
+				actionHistory = zoomer.actionHistory;
 			},
 			getAttributes = function(){
 				return {
@@ -48,8 +48,7 @@ define(function () {
 					dragged: dragged,
 					scaleFactor: scaleFactor,
 					panLocked: panLocked,
-					scaleHistory : scaleHistory,
-					translateHistory : translateHistory
+					actionHistory : actionHistory,
 				}
 			},
 			
@@ -63,8 +62,7 @@ define(function () {
 				dragged= attributes.dragged;
 				scaleFactor= attributes.scaleFactor;
 				panLocked= attributes.panLocked;
-				scaleHistory = attributes.scaleHistory;
-				translateHistory = attributes.translateHistory;
+				actionHistory = attributes.actionHistory;
 			},
 			redraw = function(){
 			// Clear the entire canvas
@@ -114,7 +112,7 @@ define(function () {
 							var x = (dragFactor)*(lastX-dragStartX);
 							var y =dragFactor*(lastY-dragStartY);
 							ctx.translate(x,y);
-							translateHistory.push({x:x,y:y});
+							actionHistory.push(createPanAction(x,y));
 							redraw();
 						}
 					},false);
@@ -135,7 +133,7 @@ define(function () {
 			},
 			zoom = function(clicks){
 				var factor = Math.pow(scaleFactor,clicks);
-				scaleHistory.push(factor);
+				actionHistory.push(createZoomAction(factor));
 				ctx.scale(factor,factor);
 				redraw();
 			},
@@ -152,36 +150,53 @@ define(function () {
 			},	
 
 			resetMapImage = function(){
-		//		scaleHistory=[];
 				initValues();
 				ctx.clearRect(0,0,canvas.width,canvas.height);
 				ctx.resetTransform();
 				
 				//reset history
-				scaleHistory=[];
-				translateHistory=[];
-				
+				actionHistory=[];
 				
 				ctx.drawImage(image,0,0);
 			},
 			
 			redrawHistory = function(){
 				ctx.resetTransform();
+				
 				var i = 0;
 			
-				while(i < scaleHistory.length){
-					var factor = scaleHistory[i];
-					ctx.scale(factor,factor);
+				//iterate actions
+				while(i < actionHistory.length){
+					
+					var action = actionHistory[i];
+					//make sure action exists
+					if(action !== undefined){					
+						if(action.id === ZOOM_ACTION){//zoom?
+							var factor = action.object;
+							ctx.scale(factor,factor);
+							
+						}else if(action.id === PAN_ACTION){//translate?
+							var pt = action.object;
+							ctx.translate(pt.x,pt.y);
+						}else{
+							console.log("canvas zoom, unknown action: "+action.id);
+						}
+					
+					}
 					i++;
 				}
 				
-				var  i = 0;
-				while( i < translateHistory.length){
-					var pt = translateHistory[i];	
-					ctx.translate(pt.x,pt.y);
-					i++;
-				}
-				redraw();
+			redraw();
+			},
+			
+			createContextAction = function(actionId, actionObj){
+				return {id: actionId,object: actionObj};
+			},	
+			createZoomAction = function(factor){
+				return createContextAction(ZOOM_ACTION,factor);
+			},
+			createPanAction = function(x,y){
+				return createContextAction(PAN_ACTION,{x:x,y:y});
 			}
 					
 			return {
