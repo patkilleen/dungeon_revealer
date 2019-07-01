@@ -156,6 +156,12 @@ define(function () {
 				initValues();
 				ctx.clearRect(0,0,canvas.width,canvas.height);
 				ctx.resetTransform();
+				
+				//reset history
+				scaleHistory=[];
+				translateHistory=[];
+				
+				
 				ctx.drawImage(image,0,0);
 			},
 			
