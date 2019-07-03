@@ -21,7 +21,7 @@ define(function () {
 			dragged,
 			scaleFactor=1.05,
 			dragFactor=0.3,
-			panLocked = false,
+			panLocked = true,
 			actionHistory = [],
 			copy = function(zoomer){
 				//initValues();	
