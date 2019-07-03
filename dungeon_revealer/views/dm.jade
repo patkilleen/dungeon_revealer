@@ -24,9 +24,10 @@ block content
                     button#btn-zoom-in.btn.btn-default(type='button') +
                     button#btn-zoom-in-more.btn.btn-default(type='button') ++
                     button#btn-zoom-out.btn.btn-default(type='button') -
-                    button#btn-zoom-out-more.btn.btn-default(type='button') --    
-                input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.', checked=true)
-                label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
+                    button#btn-zoom-out-more.btn.btn-default(type='button') --           
+                .btn-group.zoom_btn_group
+                    input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.', checked=true)
+                    label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
                 .btn-group.zoom_btn_group
                     button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
                     a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes or turns white, this reloads it.') Reload Map

@@ -101,6 +101,7 @@ html, body, #wrapper {
 .zoom_btn_group{
 	position: relative;
 	left: 150px;
+	padding-right: 10px;
 }
 #control-panel-column{
 }
