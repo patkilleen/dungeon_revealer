@@ -18,16 +18,18 @@ block content
                 button#btn-save-map.btn.btn-default(type='button',data-toggle='tooltip',title='Create a save file for your populated map') Save
                 button#btn-load-map.btn.btn-default(type='button',data-toggle='tooltip',title='Load a map save file\n(Must be save file of same base map image)') Load
                 input#btn-choose-file.btn.btn-default(type='file',style='display: none;', accept=".map")
-                .btn-group#zoom_btn_group
+              form.navbar-form.navbar-left(role='search')
+                span#zoomLabel Zoom/Pan		  
+                .btn-group.zoom_btn_group
                     button#btn-zoom-in.btn.btn-default(type='button') +
                     button#btn-zoom-in-more.btn.btn-default(type='button') ++
                     button#btn-zoom-out.btn.btn-default(type='button') -
-                    button#btn-zoom-out-more.btn.btn-default(type='button') --
-                    label Zoom
+                    button#btn-zoom-out-more.btn.btn-default(type='button') --    
                 input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.', checked=true)
                 label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
-                button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
-                a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes or turns white, this reloads it.') Reload Map
+                .btn-group.zoom_btn_group
+                    button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
+                    a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes or turns white, this reloads it.') Reload Map
                 span#loading_screen
         #upload-wrapper
           form#upload.dropzone   
