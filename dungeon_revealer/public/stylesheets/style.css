@@ -80,11 +80,12 @@ html, body, #wrapper {
 #label_sel2{
 	background:#000000;
 	float: left; 
-	height: 300px;
+	height: 500px;
 	width: 150px;
 	padding-top: 10px;
 	margin-left: 10px;
     padding-bottom: 10px;
+	z-index: 150;
 }
 
 #selector-seperator{
@@ -108,9 +109,11 @@ html, body, #wrapper {
 	padding-top:10px;
 }
 #main-container{
+	position: fixed;
 	width: 10%;
 	float: left;
-	 display: inline-block;
+	display: inline-block;
+	z-index: 150;
 }
 #canvasContainer{
 	border-style:solid;
@@ -160,7 +163,7 @@ max-height: 512px;
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 100;
+ z-index: 100;
   background-color: rgba(255,255, 255);
 }
 
