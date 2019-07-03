@@ -18,7 +18,11 @@
     font-family: "KnightsTemplar";
     src: url("/fonts/KnightsTemplar.woff") format('woff');
 }
-
+#btn-send{
+	width: 110%;
+	height: 110%;
+	font-size: 18px;
+}
 #btn-fix-map{
 	width: 15%;
 	height: 10%;
