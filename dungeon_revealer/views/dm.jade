@@ -36,6 +36,10 @@ block content
         div#main-container
             div#control-panel-column
                 div#label_mng_container(style='display: none;')
+                    .btn-group#label-group
+                        label#labelText Label
+                        input#labelTextInput(type='input')
+                        a#btn-toggle-multi-label.btn.btn-default Add Multiple Labels
                     div
                         span#btn-clear-player-labels.closable(data-toggle='tooltip',title='Deletes all player labels')
                         select#label_sel.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')              
@@ -45,11 +49,6 @@ block content
                         select#label_sel2.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
                     div
                     div
-                    .btn-group#label-group
-                        label#labelText Label
-                        input#labelTextInput(type='input')
-                        a#btn-toggle-multi-label.btn.btn-default Add Multiple Labels
-
         #map-wrapper
         #dm-toolbar
             .toolbar-wrapper
