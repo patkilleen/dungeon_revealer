@@ -17,6 +17,7 @@ block content
                 button#btn-new-map.btn.btn-default(type='button') New Map
                 button#btn-save-map.btn.btn-default(type='button',data-toggle='tooltip',title='Create a save file for your populated map') Save
                 button#btn-load-map.btn.btn-default(type='button',data-toggle='tooltip',title='Load a map save file\n(Must be save file of same base map image)') Load
+                a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes or turns white, this reloads it.') Reload Map
                 input#btn-choose-file.btn.btn-default(type='file',style='display: none;', accept=".map")
                 .btn-group#zoom_btn_group
                     button#btn-zoom-in.btn.btn-default(type='button') +
@@ -75,7 +76,6 @@ block content
                         a#btn-add-grid.btn.btn-default(data-toggle='tooltip',title='Adds grid to map') Add Grid
                         a#btn-rm-grid.btn.btn-default(style='display: none;',data-toggle='tooltip',title='Removes the current grid from map') Remove Grid
                     .btn-group
-                        a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes, this reloads it.') Fix Map
                         a#btn-send.btn.btn-default Send
                         span#icon-send-state.yellow_dot(data-toggle='tooltip',title='Green when sent. Yellow when changes pending to be sent.')
             ul#messages.navbar-text
