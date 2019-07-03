@@ -1,11 +1,21 @@
 define(function () {
     console.log('grid.js starting');
 
-    return function (opts) {
+    return function ($,opts, _cursorCanvas,_gridCanvas, _createRender) {
         console.log('creating grid object');
 
+		
+			
+            
         var x1,y1,
 			addedGrid=false,
+			currentSquareSize,
+			cursorCanvas = _cursorCanvas,
+			cursorContext = cursorCanvas.getContext('2d'),
+			gridSlider = document.getElementById("grid_size_input"),
+			gridCanvas = _gridCanvas,
+			gridContext = gridCanvas.getContext('2d'),
+			createRender = _createRender,
 			addGrid = function (canvas,squareSize,color){
 				var numCols = canvas.width/squareSize;
 				var numRows = canvas.height/squareSize;
@@ -30,16 +40,41 @@ define(function () {
 				context.stroke();
 				context.restore();
 			},
-				
-			displayTempGrid = function(squareSize,cursorCanvas){
+			getAttributes=function(){
+				return{addedGrid:addedGrid,
+						currentSquareSize,currentSquareSize
+					};
+			},
+			displayTempGridFromSliderSize = function(){
+				displayTempGrid(gridSlider.value,cursorCanvas)
+			},
+			displayTempGrid = function(squareSize,_cursorCanvas){
 				//only display blue grid that will be painted if added if no grid on map
 				if(!hasGrid()){
-					addGrid(cursorCanvas,squareSize,undefined);
+					addGrid(_cursorCanvas,squareSize,undefined);
 				}
 			},
-			handleGridDistance = function(x,y,cursorCanvas,squareSize){
-
-				var squareSize = gridSlider.value;
+			setCurrentSquareSize = function(squareSize){
+				currentSquareSize = squareSize;
+			},
+			setSliderSize = function(squareSize){
+				gridSlider.value = squareSize;
+			},
+			getSliderSize = function(){
+				return gridSlider.value;
+			},
+			getCurrentSquareSize = function(){
+				return currentSquareSize;
+			},
+			handleGridDistance = function(x,y){
+				
+				var squareSize;
+				if(hasGrid()){
+					squareSize = currentSquareSize;
+				}else{
+					squareSize = gridSlider.value;
+				}
+				
 				
 				
 				var dist = distanceFromLastClick(x,y,squareSize);
@@ -127,7 +162,77 @@ define(function () {
 			},
 			hasGrid = function(){
 				return addedGrid;
+			},
+			renderGrid = function (){
+				addGridNoRender();
+				addGrid(gridCanvas,squareSize,'black');
+				cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+				createRender();
+			},
+			addGridNoRender = function(){
+				gridSlider.disabled = true;
+				squareSize = gridSlider.value;
+				setCurrentSquareSize(squareSize);		
+				setGridAdded(true);
+				hideAddButton();
+				revealRemoveButton();	
+			},
+		hideRemoveButton = function(){
+			var rmBtn = document.getElementById('btn-rm-grid');
+			rmBtn.style='display: none';
+		},
+		revealRemoveButton = function(){
+			var rmBtn = document.getElementById('btn-rm-grid');
+			rmBtn.style='display: inline-block !important;';
+		},
+		revealAddButton = function(){
+			var b= document.getElementById('btn-add-grid');
+			b.style='display: inline-block !important;';
+		},
+		hideAddButton = function(){
+			var b = document.getElementById('btn-add-grid');
+			b.style='display: none';
+		},
+		removeGridNoRender = function(){
+			setGridAdded(false);
+			gridSlider.disabled = false;
+			gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+			hideRemoveButton();
+			revealAddButton();
+		}
+		removeGrid = function(){
+			removeGridNoRender();
+			createRender();
+			displayTempGridFromSliderSize();
+		};
+
+			
+			$('#btn-smaller-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)-1;
+				displayTempGridFromSliderSize();
+            });
+			
+			$('#btn-bigger-grid').click(function () {
+				var slider = document.getElementById("grid_size_input");
+				slider.value = parseInt(slider.value)+1;
+				displayTempGridFromSliderSize();
+            });
+			
+			$('#btn-add-grid').click(function () {	
+				renderGrid();
+            });
+			
+			$('#btn-rm-grid').click(function () {
+				
+				removeGrid();
+            });
+					
+			//size of grid changed, display the light blue candidate grid?
+			gridSlider.onchange = function(e){		
+				displayTempGridFromSliderSize();
 			}
+			
         return {
            findCellClicked: findCellClicked,
 		   addGrid: addGrid,
@@ -138,8 +243,18 @@ define(function () {
 		   addPointClicked:addPointClicked,
 		   hasGrid:hasGrid,
 		   setGridAdded:setGridAdded,
-		   displayTempGrid:displayTempGrid,
-		   handleGridDistance:handleGridDistance
+		   displayTempGrid:displayTempGridFromSliderSize,
+		   handleGridDistance:handleGridDistance,
+		   setCurrentSquareSize:setCurrentSquareSize,
+		   getCurrentSquareSize:getCurrentSquareSize,
+		   setSliderSize: setSliderSize,
+		   renderGrid:renderGrid,
+		   getAttributes:getAttributes,
+		   addGridNoRender:addGridNoRender,
+		   removeGridNoRender: removeGridNoRender
         }
+
+			
+			
     };
 });

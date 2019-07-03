@@ -1,5 +1,5 @@
 var indicatorFlag = false;
-define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labelHandler'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid,labelHandler) {
+define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labelHandler','map.io'], function (settings, jquery, fow_brush,ind_brush,canvas_zoom,grid,labelHandler,mapIO) {
     console.log('map module loaded');
     return function () {
         var $ = jquery,
@@ -98,13 +98,13 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				gridContext = gridCanvas.getContext('2d');
 				dimContext = dimCanvas.getContext('2d');
 				gridContext.save();
-				gridSlider = document.getElementById("grid_size_input");
+				//gridSlider = document.getElementById("grid_size_input");
                 cursorContext = cursorCanvas.getContext('2d');
                 copyCanvas(mapImageContext, createImageCanvas(mapImage));
                 fowBrush = fow_brush(fowContext,dimContext, opts);
 				indBrush = ind_brush(indContext, opts);
 				lHandler = labelHandler();
-				gridBrush = grid(opts);
+				gridBrush = grid($,opts,cursorCanvas,gridCanvas,createRender);
                 fowContext.strokeStyle = fowBrush.getCurrent().dark;
 				dimContext.strokeStyle = fowBrush.getCurrent().dim;
 				indContext.strokeStyle = indBrush.getCurrent();
@@ -123,16 +123,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 
 		function labelVisibilityChange(){
 			
-		}
-		
-		function loadImage(){
-			//mapImage = new Image();
-			mapImage.onload = function(){
-				//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
-				copyCanvas(mapImageContext, createImageCanvas(mapImage));
-			};
-            mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
-            mapImage.src = imgUrl;
 		}
         // TODO: account for multiple containers
         function getContainer() {
@@ -221,6 +211,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			createRender();			
 		}
 		
+		function eraseAllMapLabelsRaw(){
+			
+		}
         function createCanvases() {
 
             function createCanvas(type, zIndex) {
@@ -263,7 +256,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		function setSendIconYellow(){
 			document.getElementById("icon-send-state").setAttribute('class',"yellow_dot");
 		}
-		
+		/*
 		function renderGrid(){
 			//enableLoadingScreen();
 			//give chance for loading screen to pop up
@@ -279,7 +272,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				//disableLoadingScreen();
 			//},0);
 		}
-		
+		*/
 		
 		
         function getMouseCoordinates(e) {
@@ -683,11 +676,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             }
             return limitedPointsSorted
         }
-		function handleGridDistance(x,y){
+		/*function handleGridDistance(x,y){
 
 			var squareSize = gridSlider.value;
 			gridBrush.handleGridDistance(x,y,cursorCanvas,squareSize);
-		}
+		}*/
         function setupCursorTracking() {
 			var lineWidth = getLineWidth();
             // Mouse Click
@@ -713,7 +706,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					//on grid brush?
 					if((currBrush == indBrush) && (indBrush.getCurrentBrush() === indBrush.brushTypes[3])){
 					//	renderGrid();
-						handleGridDistance(cords.x,cords.y);
+						gridBrush.handleGridDistance(cords.x,cords.y);
 						//var pt = gridBrush.findCellClicked(cords.x,cords.y,gridSlider.value);
 						//console.log("["+pt.row+","+pt.col+"]");
 					}else{
@@ -1003,7 +996,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				indContext.restore();
 			}
             indCanvas.draw = function (points) {
-            };
+            },
 			updateMsg = function (){
 				var msgdom = document.getElementById('messages');
 				if(currBrush == fowBrush){
@@ -1036,21 +1029,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			});
 			
             $('#btn-toggle-fow-brush').click(function () {
-				var toggleButton = this;
-				//fog of war canvas?
-				if(currBrush == fowBrush){
-					fowBrush.toggle();
-				}else if(currBrush == indBrush){//label canvas?
-					indBrush.toggle();
-					//are we on grid brush?
-					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
-						displayTempGrid();
-					}else{//remove the grid display 
-						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
-					}
-				}
-               updateMsg();
+				toggleBrush();
             });
+			
+		
 			
 			$('#btn-visibility-brush').click(function (){
 				
@@ -1069,72 +1051,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				repaintAllLabels();
 			});
 			$('#btn-toggle-canvas').click(function() {
-				
-				//swapping to label/indicator canvas?
-				if(currBrush == fowBrush){
-					
-					//we on grid brush?
-					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
-						
-						var btns = document.getElementById('grid-btns');
-						btns.style='display: inline-block !important;';
-						btns = document.getElementById('label-btns');
-						btns.style='display: none';
-						displayTempGrid();
-					}else{
-						btns = document.getElementById('label-btns');
-						btns.style='display: inline-block !important;';
-					}
-					
-					//swap to indicator canvas
-					currBrush = indBrush;
-					currContext = indContext;
-					
-					//show the label canvas inputs
-					var dom = document.getElementById('btn-dark-all');
-					dom.style='display: none';
-					dom = document.getElementById('btn-dim-all');
-					dom.style='display: none';
-					dom = document.getElementById('labelText');
-					dom.style='display: inline-block !important;';
-					dom = document.getElementById('labelTextInput');
-					dom.style='display: inline-block !important;';
-					dom = document.getElementById('label_mng_container');
-					dom.style='display: block !important;';
-					
-					indBrush.currentBrushType=indBrush.brushTypes[0];
-					
-				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
-
-					//hide the grid inputs
-					var btns = document.getElementById('grid-btns');
-					btns.style='display: none';
-					btns = document.getElementById('label-btns');
-					btns.style='display: inline-block !important;';
-					
-					currBrush = fowBrush;
-					currContext=fowContext;
-					
-					//hide the label inputs
-					var dom = document.getElementById('btn-dark-all');
-					dom.style='';
-					dom = document.getElementById('btn-dim-all');
-					dom.style='';
-					dom = document.getElementById('labelText');
-					dom.style='display: none !important;';
-					dom = document.getElementById('labelTextInput');
-					dom.style='display: none !important;';
-					dom = document.getElementById('label_mng_container');
-					dom.style='display: none !important;';
-					
-					fowBrush.currentBrushType=fowBrush.brushTypes[0];
-					 
-				}
-				updateMsg();
+				toggleCanvas();
 			});
 			
-			
-		
 			
 			//set up ctrl z undo
 			window.onkeyup = function(e) {
@@ -1447,7 +1366,15 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			
 			$('#btn-fix-map').click(function() {
 				console.log("reload map.")
-				loadImage();
+				//mapImage = new Image();
+				mapImage.onload = function(){
+					//mapImageContext.clearRect(0, 0, mapImageCanvas.width, mapImageCanvas.height);
+					copyCanvas(mapImageContext, createImageCanvas(mapImage));
+					zoomer.redrawHistory();
+				};
+				mapImage.crossOrigin = 'Anonymous'; // to prevent tainted canvas errors
+				mapImage.src = imgUrl;
+			
 			});
 			function findLabelIndex(label,dom_id){
 				
@@ -1468,6 +1395,8 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				return targetIndex;
 			}
 			
+			
+				
 			
 			
 			function removeLabelFromSelect(label,dom_id){
@@ -1509,17 +1438,17 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				removeLabelFromSelect(e.target.value,'label_sel2');
 				return false;
 			});
-			
+			/*
 			function displayTempGrid(){
 				gridBrush.displayTempGrid(gridSlider.value,cursorCanvas)
 			}
-			
+			*/
             $('#btn-shrink-brush').click(function () {
 				var slider = document.getElementById("size_input");
 				slider.value = parseInt(slider.value)-10;
 				lineWidth = slider.value;
             });
-			
+			/*
 			$('#btn-smaller-grid').click(function () {
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)-1;
@@ -1550,7 +1479,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			//size of grid changed, display the light blue candidate grid?
 			gridSlider.onchange = function(e){		
 				displayTempGrid();
-			}
+			}*/
 			
             $('#btn-shape-brush').click(function () {
                 var toggleButton = this;
@@ -1567,16 +1496,19 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
                 createRender();
             });
 			
-			function clearLabelSelections(dom_id){
-				if(confirm('Are you sure you want to clear away a selection pane labels?')){
-				
-					var selection = document.getElementById(dom_id);
+			function clearLabelSelectionsRaw(dom_id){
+				var selection = document.getElementById(dom_id);
 
 					while (selection.firstChild) {
 						//get label value and remove from map
 						labelMap[selection.firstChild.innerHTML] = undefined;						
 						selection.removeChild(selection.firstChild);
 					}
+			}
+			function clearLabelSelections(dom_id){
+				if(confirm('Are you sure you want to clear away a selection pane labels?')){
+				
+					clearLabelSelectionsRaw(dom_id);
 				}
 			}
 			
@@ -1729,6 +1661,90 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             $('#render').remove();
         }
 
+		function toggleCanvas(){
+				
+				//swapping to label/indicator canvas?
+				if(currBrush == fowBrush){
+					
+					//we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						
+						var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';
+						btns = document.getElementById('label-btns');
+						btns.style='display: none';
+						gridBrush.displayTempGrid();
+					}else{
+						btns = document.getElementById('label-btns');
+						btns.style='display: inline-block !important;';
+					}
+					
+					//swap to indicator canvas
+					currBrush = indBrush;
+					currContext = indContext;
+					
+					//show the label canvas inputs
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='display: none';
+					dom = document.getElementById('btn-dim-all');
+					dom.style='display: none';
+					dom = document.getElementById('labelText');
+					dom.style='display: inline-block !important;';
+					dom = document.getElementById('labelTextInput');
+					dom.style='display: inline-block !important;';
+					dom = document.getElementById('label_mng_container');
+					dom.style='display: block !important;';
+					
+					indBrush.currentBrushType=indBrush.brushTypes[0];
+					
+				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
+
+					//hide the grid inputs
+					var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+					btns = document.getElementById('label-btns');
+					btns.style='display: inline-block !important;';
+					
+					currBrush = fowBrush;
+					currContext=fowContext;
+					
+					//hide the label inputs
+					var dom = document.getElementById('btn-dark-all');
+					dom.style='';
+					dom = document.getElementById('btn-dim-all');
+					dom.style='';
+					dom = document.getElementById('labelText');
+					dom.style='display: none !important;';
+					dom = document.getElementById('labelTextInput');
+					dom.style='display: none !important;';
+					dom = document.getElementById('label_mng_container');
+					dom.style='display: none !important;';
+					
+					fowBrush.currentBrushType=fowBrush.brushTypes[0];
+					 
+				}
+				updateMsg();
+			}
+			
+		
+		
+		function toggleBrush(){
+				var toggleButton = document.getElementById('btn-toggle-fow-brush');
+				//fog of war canvas?
+				if(currBrush == fowBrush){
+					fowBrush.toggle();
+				}else if(currBrush == indBrush){//label canvas?
+					indBrush.toggle();
+					//are we on grid brush?
+					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
+						gridBrush.displayTempGrid();
+					}else{//remove the grid display 
+						cursorContext.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
+					}
+				}
+               updateMsg();
+			}
+			
         function createPlayerMapImage(bottomCanvas, topCanvas) {
 			var mergedImage = toImage();
 
@@ -1741,7 +1757,36 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 		function getZoomer(){
 			return zoomer;
 		}
-
+		
+		function createMapIO(){
+			var mapSaver = mapIO();
+			mapSaver.init(width,height,fowCanvas,dimCanvas,indCanvas,gridCanvas,mapImageCanvas,zoomer,fowBrush,gridBrush,mapImage,labelMap);
+			return mapSaver;
+		}
+		
+		function loadMap(file){
+			
+			//are we on the grid brush? get off it, cause when on grid brush, labels to load
+			//for saome reason
+			if(indBrush.getCurrentBrush() === "grid"){
+				
+				//are we on the fog of war canvas? swap to labels' canvas
+				if(currBrush == fowBrush){
+					toggleCanvas();
+				}
+				//swap off grid brush
+				toggleBrush();
+			}
+			
+			var mapIO  = createMapIO();
+			mapIO.loadAll(file);
+		}
+		
+		function saveMap(){
+			var mapIO  = createMapIO();
+			mapIO.saveAll();
+		}
+		
         return {
             create: create,
 			createRender2: createRender2,
@@ -1752,7 +1797,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
             fitMapToWindow: fitMapToWindow,
 			loadAllLabels: loadAllLabels,
 			saveAllLabels: saveAllLabels,
-			getZoomer: getZoomer
+			getZoomer: getZoomer,
+			loadMap:loadMap,
+			saveMap: saveMap
         };
     }
 

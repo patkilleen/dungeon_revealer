@@ -41,7 +41,7 @@ require(['common'], function(common) {
         checkForMapUpload();
         
 		function enableLoadingScreen(){
-				document.getElementById("loading_screen").setAttribute('class',"modal");
+			document.getElementById("loading_screen").setAttribute('class',"modal");
 		}
 			
 		function disableLoadingScreen(){
@@ -108,6 +108,50 @@ require(['common'], function(common) {
 			$('#upload').show();
         });
 		
+		 $('#btn-save-map').click(function() {
+			
+			//var mapIO  = dmMap.createMapIO();
+			//mapIO.saveAll();
+			dmMap.saveMap();
+		
+		 });
+		 
+		 $('#btn-load-map').click(function() {
+			 document.getElementById('btn-choose-file').style = 'display: inline-block !important';		 
+		 });
+		 
+		 $('#btn-choose-file').change(function(e) {
+			  alert("Make sure the map save file you are choosing is a save file for the currently loaded map.\n"+
+			 "Otherwise, load the map first using the 'New Map' button, and then load your saved map file.");
+			 
+			enableLoadingScreen();
+	
+			var file = e.target.files[0];
+			 if(!file){
+				 window.alert("Failed to load map");
+				 console.log("failed to read file");
+				  document.getElementById('btn-choose-file').style = 'display: none;';
+				 return;
+			 }
+			 try{			 
+				
+				//var mapIO  = dmMap.createMapIO();
+				dmMap.loadMap(file);
+				enableLoadingScreen();
+				//mapIO.loadAll(file);
+				
+				//make sure to reset the chosen file, to allow to reload same file
+				this.value="";
+
+			 }catch(err){
+				 disableLoadingScreen();
+				 window.alert("Failed to load map due to "+err);
+			 }
+			 document.getElementById('btn-choose-file').style = 'display: none;';
+			
+			 return false;
+		 });
+		 
 		$('#btn-zoom-in').click(function() {
 			var zoomer = dmMap.getZoomer();
 			zoomer.zoom(zoomFactor);
