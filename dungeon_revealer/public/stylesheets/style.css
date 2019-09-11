@@ -18,7 +18,17 @@
     font-family: "KnightsTemplar";
     src: url("/fonts/KnightsTemplar.woff") format('woff');
 }
-
+#btn-send{
+	width: 110%;
+	height: 110%;
+	font-size: 18px;
+}/*
+#btn-fix-map{
+	#width: 10%;
+	height: 10%;
+	font-size: 12px;
+}
+*/
 html, body, #wrapper {
   width:  100%;
   height: 100%;
@@ -70,11 +80,12 @@ html, body, #wrapper {
 #label_sel2{
 	background:#000000;
 	float: left; 
-	height: 200px;
+	height: 500px;
 	width: 150px;
 	padding-top: 10px;
 	margin-left: 10px;
     padding-bottom: 10px;
+	z-index: 150;
 }
 
 #selector-seperator{
@@ -82,9 +93,15 @@ html, body, #wrapper {
 }
 #map-wrapper{
 }
-#zoom_btn_group{
+
+#zoomLabel{
 	position: relative;
-	left: 550px;
+	left: 125px;
+}
+.zoom_btn_group{
+	position: relative;
+	left: 150px;
+	padding-right: 10px;
 }
 #control-panel-column{
 }
@@ -93,9 +110,11 @@ html, body, #wrapper {
 	padding-top:10px;
 }
 #main-container{
+	position: fixed;
 	width: 10%;
 	float: left;
-	 display: inline-block;
+	display: inline-block;
+	z-index: 150;
 }
 #canvasContainer{
 	border-style:solid;
@@ -118,6 +137,8 @@ max-height: 512px;
 #messages{
 	font-size: 150%;
 	background-color: white;
+	position: relative;
+	left: 150px;
 }
 #dm-link {
   position: absolute;
@@ -145,7 +166,7 @@ max-height: 512px;
   bottom: 0;
   left: 0;
   width: 100%;
-  z-index: 100;
+ z-index: 100;
   background-color: rgba(255,255, 255);
 }
 

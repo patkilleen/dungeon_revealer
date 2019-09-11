@@ -18,21 +18,29 @@ block content
                 button#btn-save-map.btn.btn-default(type='button',data-toggle='tooltip',title='Create a save file for your populated map') Save
                 button#btn-load-map.btn.btn-default(type='button',data-toggle='tooltip',title='Load a map save file\n(Must be save file of same base map image)') Load
                 input#btn-choose-file.btn.btn-default(type='file',style='display: none;', accept=".map")
-                .btn-group#zoom_btn_group
+              form.navbar-form.navbar-left(role='search')
+                span#zoomLabel Zoom/Pan		  
+                .btn-group.zoom_btn_group
                     button#btn-zoom-in.btn.btn-default(type='button') +
                     button#btn-zoom-in-more.btn.btn-default(type='button') ++
                     button#btn-zoom-out.btn.btn-default(type='button') -
-                    button#btn-zoom-out-more.btn.btn-default(type='button') --
-                    label Zoom
-                input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.')
-                label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
-                button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
+                    button#btn-zoom-out-more.btn.btn-default(type='button') --           
+                .btn-group.zoom_btn_group
+                    input#check-box-pan-lock.form-check-input(data-toggle='tooltip',type='checkbox',title='Right-click and dragging will pan the map unless panning is locked.', checked=true)
+                    label.form-check-label(data-toggle='tooltip',title='Right-click and dragging will pan the map unless panning is locked.') Pan Lock
+                .btn-group.zoom_btn_group
+                    button#btn-map-reset.btn.btn-default(type='button') Reset Map Image
+                    a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes or turns white, this reloads it.') Reload Map
                 span#loading_screen
         #upload-wrapper
           form#upload.dropzone   
         div#main-container
             div#control-panel-column
                 div#label_mng_container(style='display: none;')
+                    .btn-group#label-group
+                        label#labelText Label
+                        input#labelTextInput(type='input')
+                        a#btn-toggle-multi-label.btn.btn-default Add Multiple Labels
                     div
                         span#btn-clear-player-labels.closable(data-toggle='tooltip',title='Deletes all player labels')
                         select#label_sel.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')              
@@ -42,11 +50,6 @@ block content
                         select#label_sel2.row.form-control(multiple,data-toggle='tooltip',title='Click item to load label for painting.\nDouble-click item to erase from map.\nRight-click to delete label from list.')
                     div
                     div
-                    .btn-group#label-group
-                        label#labelText Label
-                        input#labelTextInput(type='input')
-                        a#btn-toggle-multi-label.btn.btn-default Add Multiple Labels
-
         #map-wrapper
         #dm-toolbar
             .toolbar-wrapper
@@ -75,7 +78,6 @@ block content
                         a#btn-add-grid.btn.btn-default(data-toggle='tooltip',title='Adds grid to map') Add Grid
                         a#btn-rm-grid.btn.btn-default(style='display: none;',data-toggle='tooltip',title='Removes the current grid from map') Remove Grid
                     .btn-group
-                        a#btn-fix-map.btn.btn-default(data-toggle='tooltip',title='If map freezes, this reloads it.') Fix Map
                         a#btn-send.btn.btn-default Send
                         span#icon-send-state.yellow_dot(data-toggle='tooltip',title='Green when sent. Yellow when changes pending to be sent.')
             ul#messages.navbar-text
