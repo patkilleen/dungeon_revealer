@@ -1669,10 +1669,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					//we on grid brush?
 					if(indBrush.getCurrentBrush() === indBrush.brushTypes[3]){
 						
-						var btns = document.getElementById('grid-btns');
-						btns.style='display: inline-block !important;';
+						/*var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';*/
+						gridBrush.displayGridButtons();
 						btns = document.getElementById('label-btns');
 						btns.style='display: none';
+						
 						gridBrush.displayTempGrid();
 					}else{
 						btns = document.getElementById('label-btns');
@@ -1700,10 +1702,12 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				}else if(currBrush == indBrush){ //swappin got fog of war canvas?
 
 					//hide the grid inputs
-					var btns = document.getElementById('grid-btns');
-					btns.style='display: none';
+					/*var btns = document.getElementById('grid-btns');
+					btns.style='display: none';*/
+					gridBrush.hideGridButtons();
 					btns = document.getElementById('label-btns');
 					btns.style='display: inline-block !important;';
+					
 					
 					currBrush = fowBrush;
 					currContext=fowContext;

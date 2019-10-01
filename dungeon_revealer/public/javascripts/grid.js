@@ -204,7 +204,18 @@ define(function () {
 			removeGridNoRender();
 			createRender();
 			displayTempGridFromSliderSize();
-		};
+		},
+		
+		hideGridButtons = function(){
+			var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+		},
+		
+		displayGridButtons = function(){
+			var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';				
+		},
+
 
 			
 			$('#brush_size_ft').change(function () {
@@ -275,7 +286,9 @@ define(function () {
 		   renderGrid:renderGrid,
 		   getAttributes:getAttributes,
 		   addGridNoRender:addGridNoRender,
-		   removeGridNoRender: removeGridNoRender
+		   removeGridNoRender: removeGridNoRender,
+		   hideGridButtons: hideGridButtons,
+		   displayGridButtons: displayGridButtons
         }
 
 			
