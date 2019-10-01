@@ -225,7 +225,7 @@ define(function () {
 				var pixels = gridCellSize * numSquares;
 				
 				slider.value = pixels;
-				alert("num feet: "+brushFtInput.value +", num squares: "+numSquares+", num pixels :"+pixels);
+				alert("Brush size changed to "+brushFtInput.value+" ft.");
 				//var slider = document.getElementById("size_input");
 				//slider.value = parseInt(slider.value)-1;
 				
