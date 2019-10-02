@@ -1687,9 +1687,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					
 					//show the label canvas inputs
 					var dom = document.getElementById('btn-dark-all');
-					dom.style='display: none';
+					dom.classList.add("disabled");
 					dom = document.getElementById('btn-dim-all');
-					dom.style='display: none';
+					dom.classList.add("disabled");
 					dom = document.getElementById('labelText');
 					dom.style='display: inline-block !important;';
 					dom = document.getElementById('labelTextInput');
@@ -1714,9 +1714,9 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					
 					//hide the label inputs
 					var dom = document.getElementById('btn-dark-all');
-					dom.style='';
+					dom.classList.remove("disabled");
 					dom = document.getElementById('btn-dim-all');
-					dom.style='';
+					dom.classList.remove("disabled");
 					dom = document.getElementById('labelText');
 					dom.style='display: none !important;';
 					dom = document.getElementById('labelTextInput');
