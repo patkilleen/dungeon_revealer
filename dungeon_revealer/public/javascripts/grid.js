@@ -207,6 +207,11 @@ define(function () {
 		},
 		
 		feetToBrushSizePixels = function(feet, gridCellSize){
+			if(isNaN(feet) || isNaN(gridCellSize)){
+				console.log("cannot convert feet to pixels for feet: "+feet+" and grid cell size: "+gridCellSize);	
+				return 0;
+			}
+			console.log("ft to pixels: "+feet+" feet and "+gridCellSize+" cell size.");
 			var numSquares = feet/5;
 			return gridCellSize * numSquares;
 		},
@@ -245,7 +250,18 @@ define(function () {
 			$('#brush_size_ft').change(function () {
 				
 				var brushFtInput =  document.getElementById("brush_size_ft");
-				var gridCellSize = document.getElementById("grid_size_input").value;
+				var gridCellSize;
+				
+				//choose grid cell size from temporary grid size (blue grid) when no grid exists
+				//otherwise, when grid exists choose cell size of the grid
+				if(hasGrid()){
+					//choose from added grid
+					gridCellSize	= currentSquareSize;
+				}else{
+					//choose from tmp grid
+					gridCellSize	= document.getElementById("grid_size_input").value;
+				}
+				
 					
 				//convert to pixels
 				var pixels = feetToBrushSizePixels(brushFtInput.value,gridCellSize);
