@@ -231,7 +231,6 @@ define(function () {
 				console.log("cannot convert feet to pixels for feet: "+feet+" and grid cell size: "+gridCellSize);	
 				return 0;
 			}
-			console.log("ft to pixels: "+feet+" feet and "+gridCellSize+" cell size.");
 			var numSquares = feet/5;
 			return gridCellSize * numSquares;
 		},
@@ -272,6 +271,9 @@ define(function () {
 			//hide the apply button
 			var btns = document.getElementById('btn-grid-apply-feet-brush-size');
 			btns.style='display: none';	
+			
+			//reset to placeholder text (erase entry)
+			brushFtInput.value = '';
 			
 		},
 		$('#btn-grid-apply-feet-brush-size').click(function () {
