@@ -212,6 +212,26 @@ define(function () {
 		},
 		
 		displayGridButtons = function(){
+			/*there may be a 
+			//take the current brush size in pixels, convert to ft, and put into input field
+			
+		//	*******************
+				var slider = document.getElementById("size_input");
+				
+				var brushFtInput =  document.getElementById("brush_size_ft");
+				var numSquares = brushFtInput.value/5;//convert 5fts to number of squares
+				
+				var gridCellSize = document.getElementById("grid_size_input").value;
+				
+				//there is a bug below , make sure cast value to int
+				var ft = (parseInt(slider.value) / gridCellSize) * 5;
+				brushFtInput.value = ft;
+				alert("brush to feet:" +ft);
+				
+				//convert to pixels
+				
+				*/
+				//below, here is super fine, no bugs, but above isn't. Maybe the code below is called from somewhere else, not via this function
 			var btns = document.getElementById('grid-btns');
 						btns.style='display: inline-block !important;';				
 		},
@@ -220,10 +240,6 @@ define(function () {
 			
 			$('#brush_size_ft').change(function () {
 				
-				//if(addedGrid == false){
-					//	window.alert("Grid must be added");
-					//return;
-				//}
 				
 				var slider = document.getElementById("size_input");
 				
@@ -237,10 +253,7 @@ define(function () {
 				
 				slider.value = pixels;
 				alert("Brush size changed to "+brushFtInput.value+" ft.");
-				//var slider = document.getElementById("size_input");
-				//slider.value = parseInt(slider.value)-1;
-				
-				//displayTempGridFromSliderSize();
+
             });
 			$('#btn-smaller-grid').click(function () {
 				var slider = document.getElementById("grid_size_input");

@@ -70,6 +70,9 @@ block content
                         a#btn-enlarge-brush.btn.btn-default Enlarge Brush
                         a#btn-shape-brush.btn.btn-default Square Brush
                         a#btn-visibility-brush.btn.btn-default Hide
+                        div#gridBrushSizeContainer
+                            label Brush Size in Feet <br> (Radius/Square-length)
+                            input#brush_size_ft(type='number')
                     .btn-group#grid-btns(style='display: none;')
                         div#gridslidecontainer
                             input#grid_size_input(type='Range',min="10",max="200", value="75")
@@ -77,9 +80,6 @@ block content
                         a#btn-bigger-grid.btn.btn-default Enlarge Grid
                         a#btn-add-grid.btn.btn-default(data-toggle='tooltip',title='Adds grid to map') Add Grid
                         a#btn-rm-grid.btn.btn-default(style='display: none;',data-toggle='tooltip',title='Removes the current grid from map') Remove Grid
-                        div#gridBrushSizeContainer
-                            label Brush Size in Feet <br> (Radius/Square-length)
-                            input#brush_size_ft(type='number')
                     .btn-group
                         a#btn-send.btn.btn-default Send
                         span#icon-send-state.yellow_dot(data-toggle='tooltip',title='Green when sent. Yellow when changes pending to be sent.')
