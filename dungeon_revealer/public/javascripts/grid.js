@@ -241,54 +241,52 @@ define(function () {
 		},
 		
 		displayGridButtons = function(){
-			/*there may be a 
-			//take the current brush size in pixels, convert to ft, and put into input field
-			
-		//	*******************
-				var slider = document.getElementById("size_input");
-				
-				var brushFtInput =  document.getElementById("brush_size_ft");
-				var numSquares = brushFtInput.value/5;//convert 5fts to number of squares
-				
-				var gridCellSize = document.getElementById("grid_size_input").value;
-				
-				//there is a bug below , make sure cast value to int
-				var ft = (parseInt(slider.value) / gridCellSize) * 5;
-				brushFtInput.value = ft;
-				alert("brush to feet:" +ft);
-				
-				//convert to pixels
-				
-				*/
-				//below, here is super fine, no bugs, but above isn't. Maybe the code below is called from somewhere else, not via this function
 			var btns = document.getElementById('grid-btns');
 						btns.style='display: inline-block !important;';				
 		},
 
 
+		applyFeetToPixels = function(){
+			
+			var brushFtInput =  document.getElementById("brush_size_ft");
+			var gridCellSize;
+			
+			//choose grid cell size from temporary grid size (blue grid) when no grid exists
+			//otherwise, when grid exists choose cell size of the grid
+			if(hasGrid()){
+				//choose from added grid
+				gridCellSize	= currentSquareSize;
+			}else{
+				//choose from tmp grid
+				gridCellSize	= document.getElementById("grid_size_input").value;
+			}
+			
+				
+			//convert to pixels
+			var pixels = feetToBrushSizePixels(brushFtInput.value,gridCellSize);
+			
+			//update brush size
+			var slider = document.getElementById("size_input");
+			slider.value = pixels;
+			
+			//hide the apply button
+			var btns = document.getElementById('btn-grid-apply-feet-brush-size');
+			btns.style='display: none';	
+			
+		},
+		$('#btn-grid-apply-feet-brush-size').click(function () {
+			applyFeetToPixels();
+		});
 			
 			$('#brush_size_ft').change(function () {
+				applyFeetToPixels();		
+            });
+			
+			$('#brush_size_ft').focus(function () {
+				//show the apply button
+				var btns = document.getElementById('btn-grid-apply-feet-brush-size');
+				btns.style='display: inline-block !important;';		
 				
-				var brushFtInput =  document.getElementById("brush_size_ft");
-				var gridCellSize;
-				
-				//choose grid cell size from temporary grid size (blue grid) when no grid exists
-				//otherwise, when grid exists choose cell size of the grid
-				if(hasGrid()){
-					//choose from added grid
-					gridCellSize	= currentSquareSize;
-				}else{
-					//choose from tmp grid
-					gridCellSize	= document.getElementById("grid_size_input").value;
-				}
-				
-					
-				//convert to pixels
-				var pixels = feetToBrushSizePixels(brushFtInput.value,gridCellSize);
-				
-				//update brush size
-				var slider = document.getElementById("size_input");
-				slider.value = pixels;
             });
 			$('#btn-smaller-grid').click(function () {
 				
