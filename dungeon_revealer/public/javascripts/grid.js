@@ -175,8 +175,27 @@ define(function () {
 				setCurrentSquareSize(squareSize);		
 				setGridAdded(true);
 				hideAddButton();
-				revealRemoveButton();	
+				revealRemoveButton();
+				disableResizeButtons();
 			},
+		disableResizeButtons = function(){
+			var smallerBtn = document.getElementById('btn-smaller-grid');
+			var largerBtn = document.getElementById('btn-bigger-grid');
+			
+			//rmBtn.disabled = true;
+			//addBtn.disabled = true;
+			smallerBtn.classList.add("disabled");
+			largerBtn.classList.add("disabled");
+		},
+		enableResizeButtons = function(){
+			var smallerBtn = document.getElementById('btn-smaller-grid');
+			var largerBtn = document.getElementById('btn-bigger-grid');
+			
+			//rmBtn.disabled = false;
+			//addBtn.disabled = false;
+			smallerBtn.classList.remove("disabled");
+			largerBtn.classList.remove("disabled");
+		},
 		hideRemoveButton = function(){
 			var rmBtn = document.getElementById('btn-rm-grid');
 			rmBtn.style='display: none';
@@ -199,6 +218,7 @@ define(function () {
 			gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 			hideRemoveButton();
 			revealAddButton();
+			enableResizeButtons();
 		}
 		removeGrid = function(){
 			removeGridNoRender();
@@ -271,12 +291,22 @@ define(function () {
 				slider.value = pixels;
             });
 			$('#btn-smaller-grid').click(function () {
+				
+				//don't change grid size slide when already added grid
+				if(hasGrid()){
+					return;
+				}
+				
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)-1;
 				displayTempGridFromSliderSize();
             });
 			
 			$('#btn-bigger-grid').click(function () {
+				//don't change grid size slide when already added grid
+				if(hasGrid()){
+					return;
+				}
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)+1;
 				displayTempGridFromSliderSize();
