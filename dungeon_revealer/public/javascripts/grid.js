@@ -206,6 +206,10 @@ define(function () {
 			displayTempGridFromSliderSize();
 		},
 		
+		feetToBrushSizePixels = function(feet, gridCellSize){
+			var numSquares = feet/5;
+			return gridCellSize * numSquares;
+		},
 		hideGridButtons = function(){
 			var btns = document.getElementById('grid-btns');
 					btns.style='display: none';
@@ -240,20 +244,15 @@ define(function () {
 			
 			$('#brush_size_ft').change(function () {
 				
-				
-				var slider = document.getElementById("size_input");
-				
 				var brushFtInput =  document.getElementById("brush_size_ft");
-				var numSquares = brushFtInput.value/5;//convert 5fts to number of squares
-				
 				var gridCellSize = document.getElementById("grid_size_input").value;
 					
 				//convert to pixels
-				var pixels = gridCellSize * numSquares;
+				var pixels = feetToBrushSizePixels(brushFtInput.value,gridCellSize);
 				
+				//update brush size
+				var slider = document.getElementById("size_input");
 				slider.value = pixels;
-				alert("Brush size changed to "+brushFtInput.value+" ft.");
-
             });
 			$('#btn-smaller-grid').click(function () {
 				var slider = document.getElementById("grid_size_input");
