@@ -175,8 +175,27 @@ define(function () {
 				setCurrentSquareSize(squareSize);		
 				setGridAdded(true);
 				hideAddButton();
-				revealRemoveButton();	
+				revealRemoveButton();
+				disableResizeButtons();
 			},
+		disableResizeButtons = function(){
+			var smallerBtn = document.getElementById('btn-smaller-grid');
+			var largerBtn = document.getElementById('btn-bigger-grid');
+			
+			//rmBtn.disabled = true;
+			//addBtn.disabled = true;
+			smallerBtn.classList.add("disabled");
+			largerBtn.classList.add("disabled");
+		},
+		enableResizeButtons = function(){
+			var smallerBtn = document.getElementById('btn-smaller-grid');
+			var largerBtn = document.getElementById('btn-bigger-grid');
+			
+			//rmBtn.disabled = false;
+			//addBtn.disabled = false;
+			smallerBtn.classList.remove("disabled");
+			largerBtn.classList.remove("disabled");
+		},
 		hideRemoveButton = function(){
 			var rmBtn = document.getElementById('btn-rm-grid');
 			rmBtn.style='display: none';
@@ -199,21 +218,95 @@ define(function () {
 			gridContext.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 			hideRemoveButton();
 			revealAddButton();
+			enableResizeButtons();
 		}
 		removeGrid = function(){
 			removeGridNoRender();
 			createRender();
 			displayTempGridFromSliderSize();
-		};
+		},
+		
+		feetToBrushSizePixels = function(feet, gridCellSize){
+			if(isNaN(feet) || isNaN(gridCellSize)){
+				console.log("cannot convert feet to pixels for feet: "+feet+" and grid cell size: "+gridCellSize);	
+				return 0;
+			}
+			var numSquares = feet/5;
+			return gridCellSize * numSquares;
+		},
+		hideGridButtons = function(){
+			var btns = document.getElementById('grid-btns');
+					btns.style='display: none';
+		},
+		
+		displayGridButtons = function(){
+			var btns = document.getElementById('grid-btns');
+						btns.style='display: inline-block !important;';				
+		},
 
+
+		applyFeetToPixels = function(){
 			
+			var brushFtInput =  document.getElementById("brush_size_ft");
+			var gridCellSize;
+			
+			//choose grid cell size from temporary grid size (blue grid) when no grid exists
+			//otherwise, when grid exists choose cell size of the grid
+			if(hasGrid()){
+				//choose from added grid
+				gridCellSize	= currentSquareSize;
+			}else{
+				//choose from tmp grid
+				gridCellSize	= document.getElementById("grid_size_input").value;
+			}
+			
+				
+			//convert to pixels
+			var pixels = feetToBrushSizePixels(brushFtInput.value,gridCellSize);
+			
+			//update brush size
+			var slider = document.getElementById("size_input");
+			slider.value = pixels;
+			
+			//hide the apply button
+			var btns = document.getElementById('btn-grid-apply-feet-brush-size');
+			btns.style='display: none';	
+			
+			//reset to placeholder text (erase entry)
+			brushFtInput.value = '';
+			
+		},
+		$('#btn-grid-apply-feet-brush-size').click(function () {
+			applyFeetToPixels();
+		});
+			
+			$('#brush_size_ft').change(function () {
+				applyFeetToPixels();		
+            });
+			
+			$('#brush_size_ft').focus(function () {
+				//show the apply button
+				var btns = document.getElementById('btn-grid-apply-feet-brush-size');
+				btns.style='display: inline-block !important;';		
+				
+            });
 			$('#btn-smaller-grid').click(function () {
+				
+				//don't change grid size slide when already added grid
+				if(hasGrid()){
+					return;
+				}
+				
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)-1;
 				displayTempGridFromSliderSize();
             });
 			
 			$('#btn-bigger-grid').click(function () {
+				//don't change grid size slide when already added grid
+				if(hasGrid()){
+					return;
+				}
 				var slider = document.getElementById("grid_size_input");
 				slider.value = parseInt(slider.value)+1;
 				displayTempGridFromSliderSize();
@@ -251,7 +344,9 @@ define(function () {
 		   renderGrid:renderGrid,
 		   getAttributes:getAttributes,
 		   addGridNoRender:addGridNoRender,
-		   removeGridNoRender: removeGridNoRender
+		   removeGridNoRender: removeGridNoRender,
+		   hideGridButtons: hideGridButtons,
+		   displayGridButtons: displayGridButtons
         }
 
 			
