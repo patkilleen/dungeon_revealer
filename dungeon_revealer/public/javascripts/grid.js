@@ -31,14 +31,49 @@ define(function () {
 				context.clearRect(0, 0, canvas.width, canvas.height);
 				while (row < numRows){
 					col=0;
+				
 					while (col < numCols){
-						context.rect(col*squareSize, row*squareSize, squareSize, squareSize);
+						var xPos = col*squareSize;
+						var yPos = row*squareSize;
+						var xSize = squareSize
+						var ySize = squareSize
+						context.rect(xPos, yPos, xSize, ySize);//draw next cell
+						
+						
+						//do we add a cell (first row or first column) label/index to this cell?
+						if((row == 0) || col == 0){
+							drawCellIndex(context,xPos,yPos,xSize,ySize,row,col);
+						}
+						
 						col++;
+						
+						
 					}
 					row++;
 				}
 				context.stroke();
 				context.restore();
+			},
+			
+			drawCellIndex=function(context,xPos,yPos,xSize,ySize,row,col){//draw the cell's index to grid
+				context.save();//save the context  used to draw cells
+				context.shadowColor = "black";
+				context.shadowOffsetX = 3; 
+				context.shadowOffsetY = 3; 
+				context.shadowBlur = 1;
+				context.fillStyle="white"
+				context.font = (5 + (xSize/10))+"px Arial";//since cells a sqaure, xSize == ySize, so either can be used as width of square
+				
+				
+				//top left of cell position
+				var x = xPos + (xSize * (1/4))
+				var y = yPos + (ySize * (1/4))
+				
+				//make label to draw as index of cell 
+				var label = row+","+col
+				context.fillText(label,x,y);
+				context.restore();//restor context used to draw cell
+				
 			},
 			getAttributes=function(){
 				return{addedGrid:addedGrid,
