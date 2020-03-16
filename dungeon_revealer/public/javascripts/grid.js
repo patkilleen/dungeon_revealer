@@ -41,8 +41,12 @@ define(function () {
 						
 						
 						//do we add a cell (first row or first column) label/index to this cell?
-						if((row == 0) || col == 0){
-							drawCellIndex(context,xPos,yPos,xSize,ySize,row,col);
+						if(row == 0){
+							var label = ""+col;
+							drawCellIndex(context,xPos,yPos,xSize,ySize,""+col);
+						}else if(col == 0){
+							var label = ""+row;
+							drawCellIndex(context,xPos,yPos,xSize,ySize,""+row);
 						}
 						
 						col++;
@@ -55,7 +59,7 @@ define(function () {
 				context.restore();
 			},
 			
-			drawCellIndex=function(context,xPos,yPos,xSize,ySize,row,col){//draw the cell's index to grid
+			drawCellIndex=function(context,xPos,yPos,xSize,ySize,label){//draw the cell's index to grid
 				context.save();//save the context  used to draw cells
 				context.shadowColor = "black";
 				context.shadowOffsetX = 3; 
@@ -69,8 +73,6 @@ define(function () {
 				var x = xPos + (xSize * (1/4))
 				var y = yPos + (ySize * (1/4))
 				
-				//make label to draw as index of cell 
-				var label = row+","+col
 				context.fillText(label,x,y);
 				context.restore();//restor context used to draw cell
 				
