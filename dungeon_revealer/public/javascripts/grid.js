@@ -127,7 +127,21 @@ define(function () {
 						highlightCell(cursorCanvas,x,y,squareSize,color);
 					}
 				}else{
-					alert("Distance between these cells is  "+(Math.ceil(dist/5)*5)+" ft (5ft squares).");
+					
+					var playerHeightTxt = window.prompt("Please enter the player's height.","0");
+					//do some error checking, make sure it's an int
+					var playerHeightInt = parseInt(playerHeightTxt);
+					console.log("playe rheigh 3d input: "+playerHeightInt)
+					if(Number.isInteger(playerHeightInt) == false){
+						playerHeightInt=0;
+					}
+					
+					//compute the 3d distance given height (it's 2d if height = 0)
+					var dist3D = Math.sqrt(dist*dist + playerHeightInt*playerHeightInt)
+					
+					//alert("Distance between these cells is  "+(Math.ceil(dist/5)*5)+" ft (5ft squares).");
+					alert("Distance (2D): "+(Math.ceil(dist/5)*5)+" ("+dist.toFixed(2)+") ft \n"+
+					"Distance (3D) with height "+playerHeightInt+" ft: "+(Math.ceil(dist3D/5)*5)+" ("+dist3D.toFixed(2)+") ft");
 					clearPointClicked();
 					
 					//do we have a grid?
