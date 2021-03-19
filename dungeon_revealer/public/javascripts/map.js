@@ -992,7 +992,6 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				
 				//add black outline to label
 				indContext.strokeStyle="black"
-				//indContext.lineWidth=3; // width of black outline (TODO: resize line width based on brush size)
 				indContext.lineWidth=fontSize * 0.15; //15% of font size is line width to scale with brush size
 				//create outline
 				indContext.strokeText(label.label,newX,newY);
