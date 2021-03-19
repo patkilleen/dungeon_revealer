@@ -986,13 +986,14 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 	
 				indContext.save();
 				
+				var fontSize = (12 + (lineWidth/10));
 				//size of font (minimum 12) and sacales with size of brush
-				indContext.font = (12 + (lineWidth/10))+"px Arial";
+				indContext.font = fontSize+"px Arial";
 				
 				//add black outline to label
 				indContext.strokeStyle="black"
-				indContext.lineWidth=3; // width of black outline (TODO: resize line width based on brush size)
-				
+				//indContext.lineWidth=3; // width of black outline (TODO: resize line width based on brush size)
+				indContext.lineWidth=fontSize * 0.15; //15% of font size is line width to scale with brush size
 				//create outline
 				indContext.strokeText(label.label,newX,newY);
 
