@@ -985,14 +985,21 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				}
 	
 				indContext.save();
-				indContext.shadowColor = "black";
-				indContext.shadowOffsetX = 3; 
-				indContext.shadowOffsetY = 3; 
-				indContext.shadowBlur = 1;
-				indContext.fillStyle="white"
+				
+				//size of font (minimum 12) and sacales with size of brush
 				indContext.font = (12 + (lineWidth/10))+"px Arial";
-				//indContext.font = (lineWidth/2)+"px Arial";
+				
+				//add black outline to label
+				indContext.strokeStyle="black"
+				indContext.lineWidth=3; // width of black outline (TODO: resize line width based on brush size)
+				
+				//create outline
+				indContext.strokeText(label.label,newX,newY);
+
+				//now filll the outline
+				indContext.fillStyle="white"
 				indContext.fillText(label.label,newX,newY);
+				
 				indContext.restore();
 			}
             indCanvas.draw = function (points) {
