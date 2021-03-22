@@ -61,19 +61,27 @@ define(function () {
 			
 			drawCellIndex=function(context,xPos,yPos,xSize,ySize,label){//draw the cell's index to grid
 				context.save();//save the context  used to draw cells
-				context.shadowColor = "black";
-				context.shadowOffsetX = 3; 
-				context.shadowOffsetY = 3; 
-				context.shadowBlur = 1;
+				
+				//font is half size of cell's width
+				var fontSize = (1.0/2.0)* xSize;
+				
+				//center of cell print label
+				var x = xPos + (xSize * (1/2)) - (xSize * (1/4)); //offset left, since large number will take up more space to the right
+				var y = yPos + (ySize * (1/2))
+				
+				//size of font (minimum 12) and sacales with size of brush
+				context.font = fontSize+"px Arial";
+				
+				//add black outline to label
+				context.strokeStyle="black"
+				context.lineWidth=fontSize * 0.15; //15% of font size is line width to scale with brush size
+				//create outline
+				context.strokeText(label,x,y);
+
+				//now filll the outline
 				context.fillStyle="white"
-				context.font = (5 + (xSize/10))+"px Arial";//since cells a sqaure, xSize == ySize, so either can be used as width of square
-				
-				
-				//top left of cell position
-				var x = xPos + (xSize * (1/4))
-				var y = yPos + (ySize * (1/4))
-				
 				context.fillText(label,x,y);
+				
 				context.restore();//restor context used to draw cell
 				
 			},
