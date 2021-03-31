@@ -122,8 +122,9 @@ define(function () {
 				
 				
 				
-				var dist = distanceFromLastClick(x,y,squareSize);
-				if(dist == -1){
+				
+				//if(dist == -1){
+				if(!x1){
 					addPointClicked(x,y);
 					if(hasGrid()){
 						cursorCanvas.getContext('2d').clearRect(0, 0, cursorCanvas.width, cursorCanvas.height);
@@ -134,33 +135,36 @@ define(function () {
 						var color = 'rgba(' + opts.gridSelectedRGB + ',' + opts.gridSelectedOpacity + ')';
 						highlightCell(cursorCanvas,x,y,squareSize,color);
 					}
-				}else{
-					
-					var playerHeightTxt = window.prompt("Please enter the player's height.","0");
-					//do some error checking, make sure it's an int
-					var playerHeightInt = parseInt(playerHeightTxt);
-					console.log("playe rheigh 3d input: "+playerHeightInt)
-					if(Number.isInteger(playerHeightInt) == false){
-						playerHeightInt=0;
-					}
-					
-					//compute the 3d distance given height (it's 2d if height = 0)
-					var dist3D = Math.sqrt(dist*dist + playerHeightInt*playerHeightInt)
-					
-					//alert("Distance between these cells is  "+(Math.ceil(dist/5)*5)+" ft (5ft squares).");
-					alert("Distance (2D): "+(Math.ceil(dist/5)*5)+" ("+dist.toFixed(2)+") ft \n"+
-					"Distance (3D) with height "+playerHeightInt+" ft: "+(Math.ceil(dist3D/5)*5)+" ("+dist3D.toFixed(2)+") ft");
-					clearPointClicked();
-					
-					//do we have a grid?
-					if(hasGrid()){
-						highlightCell(cursorCanvas,x,y,squareSize);
-					}else{
-						//only color with specifide color if not added grid
-						var color = 'rgba(' + opts.gridSelectedRGB + ',' + opts.gridSelectedOpacity + ')';
-						highlightCell(cursorCanvas,x,y,squareSize,color);
-					}
+					return;
 				}
+				
+				var playerHeightTxt = window.prompt("Please enter the player's height.","0");
+				//do some error checking, make sure it's an int
+				var playerHeightInt = parseInt(playerHeightTxt);
+				console.log("playe rheigh 3d input: "+playerHeightInt)
+				if(Number.isInteger(playerHeightInt) == false){
+					playerHeightInt=0;
+				}
+				var dist = distanceFromLastClick(x,y,playerHeightInt,squareSize);
+				//compute the 3d distance given height (it's 2d if height = 0)
+				//var dist3D = Math.sqrt(dist*dist + playerHeightInt*playerHeightInt)
+				
+				//alert("Distance between these cells is  "+(Math.ceil(dist/5)*5)+" ft (5ft squares).");
+				//alert("Distance (2D): "+(Math.ceil(dist/5)*5)+" ("+dist.toFixed(2)+") ft \n"+
+				//"Distance (3D) with height "+playerHeightInt+" ft: "+(Math.ceil(dist3D/5)*5)+" ("+dist3D.toFixed(2)+") ft");
+				alert("Distance: "+dist+" ft");
+				//"Distance (3D) with height "+playerHeightInt+" ft: "+(Math.ceil(dist3D/5)*5)+" ("+dist3D.toFixed(2)+") ft");
+				clearPointClicked();
+				
+				//do we have a grid?
+				if(hasGrid()){
+					highlightCell(cursorCanvas,x,y,squareSize);
+				}else{
+					//only color with specifide color if not added grid
+					var color = 'rgba(' + opts.gridSelectedRGB + ',' + opts.gridSelectedOpacity + ')';
+					highlightCell(cursorCanvas,x,y,squareSize,color);
+				}
+				
 			},
 			highlightCell = function(canvas,x,y,squareSize,color){
 				
@@ -188,16 +192,19 @@ define(function () {
 				x1 = x;
 				y1 = y;
 			},
-			distanceFromLastClick = function(x,y,squareSize){
+			distanceFromLastClick = function(x,y,height,squareSize){
 				if(!x1){
 					return -1;
 				}
+				//take absolute value of height, since even if moving down, doesn't matter, height distance stays same
+				height = Math.abs(height);
 				
 				var pt1 = findCellClicked(x1,y1,squareSize);
 				var pt2 = findCellClicked(x,y,squareSize);
 				
 				var movingRowIx = pt1.row;
 				var movingColIx = pt1.col;
+				var movingHeight = 0; //in 5ft intervals
 				var distance = 0;
 				var diagonalsTravelled = 0;
 				//must consider D&D diagnal distances, where diagnal once is 5ft, twice is 10ft, third is 5ft, etc
@@ -205,6 +212,10 @@ define(function () {
 				while(movingRowIx != pt2.row && movingColIx != pt2.col){
 					diagonalsTravelled++;
 					
+					//player moving in z-dimension?
+					if(movingHeight != height){
+						movingHeight= movingHeight +5; //player's height changes by doing a diagonal towards z dimension
+					}
 					//we doing a 2nd diagnoal to take extra movement?
 					if(diagonalsTravelled % 2 ==0){
 						distance = distance + 10;
@@ -234,7 +245,30 @@ define(function () {
 				//at this point we reach a horizontal or vertical alignment
 				//travel directly to destination and count normally
 				while(movingRowIx != pt2.row ){
-					distance = distance + 5;
+					
+					//we may still not have arrived at our target height, so move up diagonally as we advance in straight line
+					
+					
+					
+					//player moving in z-dimension?
+					if(movingHeight != height){
+						diagonalsTravelled++;
+						movingHeight= movingHeight +5; //player's height changes by doing a diagonal towards z dimension
+						
+						//we doing a 2nd diagnoal to take extra movement?
+						if(diagonalsTravelled % 2 ==0){
+							distance = distance + 10;
+						}else{
+							distance = distance + 5;
+						}
+						
+						
+					}else{
+						//no height diagonals, simple 5 ft increment
+						distance = distance + 5;
+					}
+					
+					
 					if(pt2.row < movingRowIx){
 						//move up
 						movingRowIx = movingRowIx -1
@@ -245,7 +279,24 @@ define(function () {
 					
 				}
 				while(movingColIx != pt2.col){
-					distance = distance + 5;
+						//player moving in z-dimension?
+					if(movingHeight != height){
+						diagonalsTravelled++;
+						movingHeight= movingHeight +5; //player's height changes by doing a diagonal towards z dimension
+						
+						//we doing a 2nd diagnoal to take extra movement?
+						if(diagonalsTravelled % 2 ==0){
+							distance = distance + 10;
+						}else{
+							distance = distance + 5;
+						}
+						
+						
+					}else{
+						//no height diagonals, simple 5 ft increment
+						distance = distance + 5;
+					}
+					
 					if(pt2.col < movingColIx){
 						//move left
 						movingColIx = movingColIx -1
@@ -253,6 +304,15 @@ define(function () {
 						//move right
 						movingColIx = movingColIx +1
 					}
+				}
+				
+				//arrive in x-y but not height?
+				
+				//player moving in z-dimension?
+				while(movingHeight != height){
+				
+					movingHeight= movingHeight +5; //player's height changes by doing a diagonal towards z dimension
+					distance = distance + 5;
 				}
 			/*	var a = pt1.row - pt2.row;
 				var b = pt1.col - pt2.col;
@@ -265,6 +325,7 @@ define(function () {
 				return Math.sqrt(a*a + b*b);*/
 				return distance;
 			},
+			
 			clearPointClicked = function(){
 				x1 = undefined;
 				y1 = undefined;
