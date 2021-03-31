@@ -22,21 +22,75 @@ define(function () {
 				var context = canvas.getContext('2d');
 
 				context.save();
-				context.beginPath();
-				if(color != undefined){
-					context.strokeStyle = color;
-				}		
+				
 				var row = 0;
 				var col = 0;
 				context.clearRect(0, 0, canvas.width, canvas.height);
+				
+				//draw the 30-ft delimeter lines
+				
+				//context.restore();
+				
+				//create the 30-ft line delimeters
+				context.save();
+				context.strokeStyle = "black";
+				context.lineWidth = squareSize * 0.1; //10% of square size
+				row = 0;
 				while (row < numRows){
 					col=0;
 				
 					while (col < numCols){
+						
 						var xPos = col*squareSize;
 						var yPos = row*squareSize;
 						var xSize = squareSize
 						var ySize = squareSize
+						
+					//do we draw a 30-ft delimeter thicker line
+						if ((col % 6 ==0) || (row % 6 == 0)){
+							
+							
+							context.beginPath();
+							context.moveTo(xPos, yPos);
+							
+							if (col % 6 ==0){
+								context.lineTo(xPos, numRows*squareSize);	
+							}else{
+								context.lineTo(numCols*squareSize,yPos);	
+							}
+							
+							context.stroke();
+							
+						}
+						col++;
+					}
+					row++;
+				}
+				context.restore();
+				context.save();
+				context.beginPath();
+				if(color != undefined){
+					context.strokeStyle = color;
+				}//else{
+					//context.strokeStyle = "black";
+				//}
+				context.lineWidth = 2;
+				col=0;
+				row=0;
+				//draw the grid, cell by cell
+				while (row < numRows){
+					col=0;
+				
+					while (col < numCols){
+						
+						
+						var xPos = col*squareSize;
+						var yPos = row*squareSize;
+						var xSize = squareSize
+						var ySize = squareSize
+						
+					
+						
 						context.rect(xPos, yPos, xSize, ySize);//draw next cell
 						
 						
@@ -56,7 +110,10 @@ define(function () {
 					row++;
 				}
 				context.stroke();
+				
+				
 				context.restore();
+				
 			},
 			
 			drawCellIndex=function(context,xPos,yPos,xSize,ySize,label){//draw the cell's index to grid
