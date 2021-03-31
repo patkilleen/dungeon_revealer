@@ -196,7 +196,65 @@ define(function () {
 				var pt1 = findCellClicked(x1,y1,squareSize);
 				var pt2 = findCellClicked(x,y,squareSize);
 				
-				var a = pt1.row - pt2.row;
+				var movingRowIx = pt1.row;
+				var movingColIx = pt1.col;
+				var distance = 0;
+				var diagonalsTravelled = 0;
+				//must consider D&D diagnal distances, where diagnal once is 5ft, twice is 10ft, third is 5ft, etc
+				//slowly inch toward destination diagonally until we align vertically or horizontally
+				while(movingRowIx != pt2.row && movingColIx != pt2.col){
+					diagonalsTravelled++;
+					
+					//we doing a 2nd diagnoal to take extra movement?
+					if(diagonalsTravelled % 2 ==0){
+						distance = distance + 10;
+					}else{
+						distance = distance + 5;
+					}
+					
+					//move row/col indices diagonally toward distination
+					if(pt2.row < movingRowIx){
+						//move up
+						movingRowIx = movingRowIx -1
+					}else{
+						//move down
+						movingRowIx = movingRowIx +1
+					}
+					
+					if(pt2.col < movingColIx){
+						//move left
+						movingColIx = movingColIx -1
+					}else{
+						//move right
+						movingColIx = movingColIx +1
+					}
+					
+				}
+				
+				//at this point we reach a horizontal or vertical alignment
+				//travel directly to destination and count normally
+				while(movingRowIx != pt2.row ){
+					distance = distance + 5;
+					if(pt2.row < movingRowIx){
+						//move up
+						movingRowIx = movingRowIx -1
+					}else{
+						//move down
+						movingRowIx = movingRowIx +1
+					}
+					
+				}
+				while(movingColIx != pt2.col){
+					distance = distance + 5;
+					if(pt2.col < movingColIx){
+						//move left
+						movingColIx = movingColIx -1
+					}else{
+						//move right
+						movingColIx = movingColIx +1
+					}
+				}
+			/*	var a = pt1.row - pt2.row;
 				var b = pt1.col - pt2.col;
 
 				//assuming 5ft squares
@@ -204,7 +262,8 @@ define(function () {
 				b=b*5;
 				//clear the last clicked point
 				
-				return Math.sqrt(a*a + b*b);
+				return Math.sqrt(a*a + b*b);*/
+				return distance;
 			},
 			clearPointClicked = function(){
 				x1 = undefined;
