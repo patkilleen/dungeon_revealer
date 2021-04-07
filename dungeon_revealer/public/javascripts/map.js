@@ -923,15 +923,29 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					if(!(label === undefined)){
 						//change the size and shape if dm changed it before drawing
 				
-						
+						//already on map?
 						if (!(label.coords === undefined)){
+							
+		
+							//here, we call the hook that will deal with case when
+							//moving a group of labels together (can only move a group if moving
+							//a label already present on the map)
+							moveLabelGroupHook(label,coords);
+							
 							//only erase the label if already on map 
 							eraseMapLabel(labelValue);
+							
+							
+							
 						}
 							
 					}else{
 						//add the label to map
 						saveLabelState(labelValue,coords);	
+						
+						//clear all previously highlited label names, since adding new label
+						unselectAllLabelNames('label_sel2',undefined);//undefined since don't want to keep any selected lable name in  list
+						unselectAllLabelNames('label_sel',undefined);
 					}
 					
 					label = labelMap[labelValue]
@@ -1069,7 +1083,120 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			   if (e.keyCode == 90 && e.ctrlKey) undo();
 			}
 			
+			//this function will move a group of labels together, which are
+			//specified by the highlighted labels in the label selections ui
+			//based on the distance a signel label moved
+			//param label: the label object that we are about to move to a destination
+			//param dest_coords: 2d point where the label will be moved to by calling function
+			function moveLabelGroupHook(label,dest_coords){
 			
+
+				var oldCoords = label.coords;
+				//distance the label will be moved (and the group will move) in x/y direction
+				var deltaX = dest_coords.x - oldCoords.x;
+				var deltaY = dest_coords.y - oldCoords.y;
+				
+				//encapsulate delta distance into 2d point
+				//var deltaCoord = {x:deltaX,y:deltaY};
+				 
+
+				var  playerLabelNameList = document.getElementById('label_sel');
+				var  otherLabelNameList = document.getElementById('label_sel2');
+				//var  labelNameList = $('#'+optionSelectionPaneId);
+				
+				
+				//get the selected/highlighted label names from player select
+				var selectedLabels = getSelectValues(playerLabelNameList);
+				//also add the select targets/enemies to highlighted list
+				var otherSelectedLabels = getSelectValues(otherLabelNameList);
+				
+				//merge arrays
+				for(var i = 0;i<otherSelectedLabels.length;i++){
+					selectedLabels.push(otherSelectedLabels[i]);
+				}
+				
+				//player will have to click + ctrl key to unselect labels
+				
+				//iterate all labels, and move them the delta distance as a group
+				//for(labelName in selectedLabels){
+				for(var i=0;i<selectedLabels.length;i++){
+					var labelName = selectedLabels[i];
+					//skip over the label used as anchor to move group (already moving it)
+					if (labelName == label.label){
+						continue;
+					}
+					//eraseMapLabel(labelName);
+						
+					var l = labelMap[labelName]
+					
+					//don't move labels that aren't on map and are highlighted
+					if (l.coords === undefined){
+						continue;
+					}
+					l.coords.x = l.coords.x + deltaX
+					l.coords.y = l.coords.y + deltaY
+					
+						
+				}
+				
+				//now that we moved te labels, repaitn the map to redner the changes on canvas
+				repaintAllLabels()
+			}
+			
+			//returns array of label names that are hilighted in given option selection 
+			function getSelectValues(select) {
+			  var result = [];
+			  var options = select && select.options;
+			  var opt;
+
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+
+				if (opt.selected) {
+				  result.push(opt.value || opt.text);
+				}
+			  }
+			  return result;
+			}
+			
+			//unselect all the items in provided selection noption list
+			//param selectId: the dom id of selection option list to unsellect items in
+			//param exceptionLabelName: the name of element to keep selected
+			function unselectAllLabelNames(selectId,exceptionLabelName) {
+					
+			  var select = document.getElementById(selectId);
+			  var options = select && select.options;
+			  var opt;
+		
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+				
+				if(opt.text != exceptionLabelName){
+					opt.selected = false;//unselect label
+				}else{
+					opt.selected = true;
+				}
+			  }
+			  
+			}
+			
+			//returns true when many labels hightlighted, and false if 1 or fewer are selected
+			function selectOptionLabelListHasMultipleSelections(selectId){
+			  var select = document.getElementById(selectId);
+			  var options = select && select.options;
+			  var opt;
+			  var selectCount = 0;
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+				
+				if(opt.selected){
+					selectCount++;
+				}
+			  }
+			  return selectCount>1;
+			}
+			
+			//this feature is outdated, undo may not undo more recently added features.
 			function undo(){
 				if(currBrush == fowBrush){
 	
@@ -1331,22 +1458,51 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				return e.options[e.selectedIndex].value;
 			}
 			
-			$('#label_sel').click(function () {
+			/*$('#label_sel').click(function (evt) {
 				
-				var label = getSelectedLabel('label_sel');
+				handleLabelSelectClick(evt,this.id,'label_se2');
+            });
+			
+			$('#label_sel2').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.id,'label_sel');
+            });*/
+			
+			$('#label_sel').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.value,this.id,'label_sel2');
+            });
+			
+			$('#label_sel2').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.value,this.id,'label_sel');
+            });
+			
+			//this will determine what label selections are clear and load the label info to the ui
+			//param evt: the event object of click
+			//param selectId: the id of option selection DOM that was clicked
+			//param selectId: the id of the other option selection DOM that was clicked (e.g., the enemy label list if player list was clicked)
+			function handleLabelSelectClick(evt,labelNameSelected,selectId,opposingSelectId){
+
+				//holding control or shift to highlight many labels?
+				if(evt.ctrlKey || evt.shiftKey){
+					//do nothing, let user se3lect multiple items to move as group
+				}else{
+					
+					//a non-ctrl non-shift click will clear all hightlighted/selected label names
+					// (won't move groups of labels)
+					unselectAllLabelNames(opposingSelectId,undefined);//undefined since don't want to keep any selected lable name in opposing list
+					unselectAllLabelNames(selectId,labelNameSelected);
+			
+				}
+				
+				//load the label info into ui 
+				var label = getSelectedLabel(selectId);
+				
 				if(label !== undefined){
 					restoreLabelState(label);
 				}	
-            });
-			
-			$('#label_sel2').click(function () {
-				
-				var label = getSelectedLabel('label_sel2');
-				if(label !== undefined){
-					restoreLabelState(label);
-				}
-            });
-			
+			}
 			$('#label_sel').dblclick(function () {
 				//enableLoadingScreen();			
 				//give chance for loading screen to pop up
