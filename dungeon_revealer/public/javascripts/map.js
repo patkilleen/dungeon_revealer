@@ -925,8 +925,18 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				
 						
 						if (!(label.coords === undefined)){
+							
+		
+							//here, we call the hook that will deal with case when
+							//moving a group of labels together (can only move a group if moving
+							//a label already present on the map)
+							moveLabelGroupHook(label,coords);
+							
 							//only erase the label if already on map 
 							eraseMapLabel(labelValue);
+							
+							
+							
 						}
 							
 					}else{
@@ -1069,6 +1079,80 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			   if (e.keyCode == 90 && e.ctrlKey) undo();
 			}
 			
+			//this function will move a group of labels together
+			//based on the distance a signel label moved
+			//param label: the label object that we are about to move to a destination
+			//param dest_coords: 2d point where the label will be moved to by calling function
+			
+			function moveLabelGroupHook(label,dest_coords){
+			
+
+				var oldCoords = label.coords;
+				//distance the label will be moved (and the group will move) in x/y direction
+				var deltaX = dest_coords.x - oldCoords.x;
+				var deltaY = dest_coords.y - oldCoords.y;
+				
+				//encapsulate delta distance into 2d point
+				//var deltaCoord = {x:deltaX,y:deltaY};
+				 
+				 //param selection pane id: the id of option select pane where the label names are stored that lable belongs to (label_sel or label_sel2)
+				 var optionSelectionPaneId
+				 
+				//choose which select pane is being used 
+				if(label.brushType === 'player'){
+					optionSelectionPaneId = 'label_sel';
+				}else{
+					optionSelectionPaneId = 'label_sel2';
+				}
+				var  labelNameList = document.getElementById(optionSelectionPaneId);
+				//var  labelNameList = $('#'+optionSelectionPaneId);
+				
+				
+				//get the selected/highlighted label names from ui
+				//var selectedLabels = labelNameList.val();
+				var selectedLabels = getSelectValues(labelNameList);
+				
+				//iterate all labels, and move them the delta distance as a group
+				//for(labelName in selectedLabels){
+				for(var i=0;i<selectedLabels.length;i++){
+					var labelName = selectedLabels[i];
+					//skip over the label used as anchor to move group (already moving it)
+					if (labelName == label.label){
+						continue;
+					}
+					//eraseMapLabel(labelName);
+						
+					var l = labelMap[labelName]
+					
+					//don't move labels that aren't on map and are highlighted
+					if (l.coords === undefined){
+						continue;
+					}
+					l.coords.x = l.coords.x + deltaX
+					l.coords.y = l.coords.y + deltaY
+					
+						
+				}
+				
+				//now that we moved te labels, repaitn the map to redner the changes on canvas
+				repaintAllLabels()
+			}
+			
+			//returns array of label names that are hilighted in given option selection 
+			function getSelectValues(select) {
+			  var result = [];
+			  var options = select && select.options;
+			  var opt;
+
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+
+				if (opt.selected) {
+				  result.push(opt.value || opt.text);
+				}
+			  }
+			  return result;
+			}
 			
 			function undo(){
 				if(currBrush == fowBrush){
