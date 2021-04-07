@@ -1130,7 +1130,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					var l = labelMap[labelName]
 					
 					//don't move labels that aren't on map and are highlighted
-					if (l.coords === undefined){
+					if (l == undefined || l.coords === undefined){
 						continue;
 					}
 					l.coords.x = l.coords.x + deltaX
