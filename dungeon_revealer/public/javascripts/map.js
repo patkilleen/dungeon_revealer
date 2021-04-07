@@ -1079,11 +1079,11 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			   if (e.keyCode == 90 && e.ctrlKey) undo();
 			}
 			
-			//this function will move a group of labels together
+			//this function will move a group of labels together, which are
+			//specified by the highlighted labels in the label selections ui
 			//based on the distance a signel label moved
 			//param label: the label object that we are about to move to a destination
 			//param dest_coords: 2d point where the label will be moved to by calling function
-			
 			function moveLabelGroupHook(label,dest_coords){
 			
 
@@ -1095,22 +1095,23 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				//encapsulate delta distance into 2d point
 				//var deltaCoord = {x:deltaX,y:deltaY};
 				 
-				 //param selection pane id: the id of option select pane where the label names are stored that lable belongs to (label_sel or label_sel2)
-				 var optionSelectionPaneId
-				 
-				//choose which select pane is being used 
-				if(label.brushType === 'player'){
-					optionSelectionPaneId = 'label_sel';
-				}else{
-					optionSelectionPaneId = 'label_sel2';
-				}
-				var  labelNameList = document.getElementById(optionSelectionPaneId);
+
+				var  playerLabelNameList = document.getElementById('label_sel');
+				var  otherLabelNameList = document.getElementById('label_sel2');
 				//var  labelNameList = $('#'+optionSelectionPaneId);
 				
 				
-				//get the selected/highlighted label names from ui
-				//var selectedLabels = labelNameList.val();
-				var selectedLabels = getSelectValues(labelNameList);
+				//get the selected/highlighted label names from player select
+				var selectedLabels = getSelectValues(playerLabelNameList);
+				//also add the select targets/enemies to highlighted list
+				var otherSelectedLabels = getSelectValues(otherLabelNameList);
+				
+				//merge arrays
+				for(var i = 0;i<otherSelectedLabels.length;i++){
+					selectedLabels.push(otherSelectedLabels[i]);
+				}
+				
+				//player will have to click + ctrl key to unselect labels
 				
 				//iterate all labels, and move them the delta distance as a group
 				//for(labelName in selectedLabels){
@@ -1154,6 +1155,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 			  return result;
 			}
 			
+			//this feature is outdated, undo may not undo more recently added features.
 			function undo(){
 				if(currBrush == fowBrush){
 	
