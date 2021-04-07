@@ -923,7 +923,7 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					if(!(label === undefined)){
 						//change the size and shape if dm changed it before drawing
 				
-						
+						//already on map?
 						if (!(label.coords === undefined)){
 							
 		
@@ -942,6 +942,10 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 					}else{
 						//add the label to map
 						saveLabelState(labelValue,coords);	
+						
+						//clear all previously highlited label names, since adding new label
+						unselectAllLabelNames('label_sel2',undefined);//undefined since don't want to keep any selected lable name in  list
+						unselectAllLabelNames('label_sel',undefined);
 					}
 					
 					label = labelMap[labelValue]
@@ -1153,6 +1157,43 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				}
 			  }
 			  return result;
+			}
+			
+			//unselect all the items in provided selection noption list
+			//param selectId: the dom id of selection option list to unsellect items in
+			//param exceptionLabelName: the name of element to keep selected
+			function unselectAllLabelNames(selectId,exceptionLabelName) {
+					
+			  var select = document.getElementById(selectId);
+			  var options = select && select.options;
+			  var opt;
+		
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+				
+				if(opt.text != exceptionLabelName){
+					opt.selected = false;//unselect label
+				}else{
+					opt.selected = true;
+				}
+			  }
+			  
+			}
+			
+			//returns true when many labels hightlighted, and false if 1 or fewer are selected
+			function selectOptionLabelListHasMultipleSelections(selectId){
+			  var select = document.getElementById(selectId);
+			  var options = select && select.options;
+			  var opt;
+			  var selectCount = 0;
+			  for (var i=0, iLen=options.length; i<iLen; i++) {
+				opt = options[i];
+				
+				if(opt.selected){
+					selectCount++;
+				}
+			  }
+			  return selectCount>1;
 			}
 			
 			//this feature is outdated, undo may not undo more recently added features.
@@ -1417,22 +1458,51 @@ define(['settings', 'jquery', 'fow_brush','ind_brush','canvas_zoom','grid','labe
 				return e.options[e.selectedIndex].value;
 			}
 			
-			$('#label_sel').click(function () {
+			/*$('#label_sel').click(function (evt) {
 				
-				var label = getSelectedLabel('label_sel');
+				handleLabelSelectClick(evt,this.id,'label_se2');
+            });
+			
+			$('#label_sel2').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.id,'label_sel');
+            });*/
+			
+			$('#label_sel').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.value,this.id,'label_sel2');
+            });
+			
+			$('#label_sel2').click(function (evt) {
+				
+				handleLabelSelectClick(evt,this.value,this.id,'label_sel');
+            });
+			
+			//this will determine what label selections are clear and load the label info to the ui
+			//param evt: the event object of click
+			//param selectId: the id of option selection DOM that was clicked
+			//param selectId: the id of the other option selection DOM that was clicked (e.g., the enemy label list if player list was clicked)
+			function handleLabelSelectClick(evt,labelNameSelected,selectId,opposingSelectId){
+
+				//holding control or shift to highlight many labels?
+				if(evt.ctrlKey || evt.shiftKey){
+					//do nothing, let user se3lect multiple items to move as group
+				}else{
+					
+					//a non-ctrl non-shift click will clear all hightlighted/selected label names
+					// (won't move groups of labels)
+					unselectAllLabelNames(opposingSelectId,undefined);//undefined since don't want to keep any selected lable name in opposing list
+					unselectAllLabelNames(selectId,labelNameSelected);
+			
+				}
+				
+				//load the label info into ui 
+				var label = getSelectedLabel(selectId);
+				
 				if(label !== undefined){
 					restoreLabelState(label);
 				}	
-            });
-			
-			$('#label_sel2').click(function () {
-				
-				var label = getSelectedLabel('label_sel2');
-				if(label !== undefined){
-					restoreLabelState(label);
-				}
-            });
-			
+			}
 			$('#label_sel').dblclick(function () {
 				//enableLoadingScreen();			
 				//give chance for loading screen to pop up
