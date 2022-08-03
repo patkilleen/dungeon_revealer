@@ -20,7 +20,7 @@ Installation
 (This is the simplest way I know to install. If you know a better way, please shoot me a message.)
 
 1. Install git. On Windows, I believe if you install the Github version of git it should add git automatically to your path.
-2.. Go to https://nodejs.org/download/ and download and install Node. Node is the runtime for this software, which basically means you need it to make the software work. Only one person needs Node (assumed to be the DM). 
+2.. Go to https://nodejs.org/en/download/ and download and install Node. Node is the runtime for this software, which basically means you need it to make the software work. Only one person needs Node (assumed to be the DM). 
 3. Once Node is installed, open a command prompt. 
   * For Mac users, press Command + Space and type "terminal" into Spotlight. Press enter and a prompt should open. 
   * For Windows users, press the Windows key and type "command prompt" or "cmd" into the search box and then press enter.
